@@ -1,0 +1,17 @@
+javascript:
+  dedupeOnLockfileChange: true
+  inferTasksFromScripts: false
+  packageManager: pnpm
+  syncProjectWorkspaceDependencies: true
+
+node: {}
+
+pnpm: {}
+
+rust:
+  components: ["clippy", "rustfmt"]
+  syncToolchainConfig: true
+  targets: ["wasm32-unknown-unknown"]
+
+proto:
+  version: "0.62.3"

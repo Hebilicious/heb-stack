@@ -1,0 +1,13 @@
+# Local gates that stand in for CI. Install them once per clone with `moon run app:hooks-install`.
+# Never bypass them with `--no-verify`: fix the failure.
+no_auto_install: true
+
+pre-commit:
+  commands:
+    format:
+      run: moon run app:format-check
+
+pre-push:
+  commands:
+    verify:
+      run: moon run app:lint app:typecheck

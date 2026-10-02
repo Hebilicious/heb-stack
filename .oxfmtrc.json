@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "ignorePatterns": [
+    "**/moon.yml",
+    ".moon/**/*.yml",
+    ".artifacts/**",
+    ".vize/**",
+    "**/.cloudflare/**",
+    "**/.wrangler/**",
+    "**/dist/**",
+    "**/node_modules/**",
+    "crates/**",
+    "apps/web/public/**",
+    "apps/web/src/**/*.vue",
+    "pnpm-lock.yaml"
+  ]
+}

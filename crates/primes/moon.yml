@@ -1,0 +1,45 @@
+language: "rust"
+layer: "library"
+
+project:
+  title: "Primes crate"
+  description: "smallest_factor(n: u64) -> u64, compiled to WebAssembly."
+
+tasks:
+  build:
+    description: "Build the crate as a WebAssembly module."
+    command: "cargo"
+    args: ["build", "--target", "wasm32-unknown-unknown", "--release", "--locked"]
+    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "/rust-toolchain.toml"]
+    outputs: ["target/wasm32-unknown-unknown/release/primes.wasm"]
+    toolchains: ["rust"]
+
+  test:
+    description: "Run the crate's tests natively."
+    command: "cargo"
+    args: ["test", "--locked"]
+    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
+    toolchains: ["rust"]
+
+  lint:
+    description: "Lint the crate with clippy, denying warnings."
+    command: "cargo"
+    args: ["clippy", "--locked", "--all-targets", "--", "-D", "warnings"]
+    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
+    toolchains: ["rust"]
+
+  format:
+    description: "Format the crate."
+    command: "cargo"
+    args: ["fmt"]
+    inputs: ["Cargo.toml", "src/**/*", "tests/**/*"]
+    toolchains: ["rust"]
+    options:
+      cache: false
+
+  format-check:
+    description: "Check the crate's formatting."
+    command: "cargo"
+    args: ["fmt", "--", "--check"]
+    inputs: ["Cargo.toml", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
+    toolchains: ["rust"]

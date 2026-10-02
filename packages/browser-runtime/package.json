@@ -1,0 +1,17 @@
+{
+  "name": "@heb-stack/browser-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser Layers for the AcidCat root: PrimeMath over capnweb, the history in browser storage, and WebMCP.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@heb-stack/acidcat": "workspace:*",
+    "@heb-stack/rpc": "workspace:*",
+    "capnweb": "catalog:",
+    "effect": "catalog:"
+  }
+}
