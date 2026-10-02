@@ -1,0 +1,18 @@
+{
+  "name": "@heb-stack/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@effect/atom-vue": "catalog:",
+    "@heb-stack/acidcat": "workspace:*",
+    "@heb-stack/browser-runtime": "workspace:*",
+    "effect": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@hebilicious/cssforge-unplugin": "catalog:",
+    "@vizejs/vite-plugin": "catalog:",
+    "vite": "catalog:"
+  }
+}

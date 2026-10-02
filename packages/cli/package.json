@@ -1,0 +1,19 @@
+{
+  "name": "@heb-stack/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The heb-stack command line: the catalog the cli target allows, driven from a terminal.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/main.ts",
+    "./catalog": "./src/catalog.ts",
+    "./location": "./src/location.ts"
+  },
+  "dependencies": {
+    "@effect/platform-node": "catalog:",
+    "@heb-stack/acidcat": "workspace:*",
+    "@heb-stack/node-runtime": "workspace:*",
+    "effect": "catalog:"
+  }
+}

@@ -1,0 +1,25 @@
+# Dependencies and toolchains
+node_modules/
+.pnpm-store/
+.proto/
+
+# Build output
+**/dist/
+crates/primes/target/
+apps/web/public/acidcat-manifest.generated.json
+
+# Tool state
+.moon/cache/
+.moon/docker/
+.vize/
+**/.vize/
+**/.wrangler/
+**/.cloudflare/
+
+# Disposable artifacts: bundles, binaries, traces
+.artifacts/
+
+# Local secrets never belong in the repository
+.env
+.env.*
+.dev.vars

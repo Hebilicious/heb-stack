@@ -1,0 +1,15 @@
+{
+  "name": "@heb-stack/edge-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Worker Layers for the AcidCat root: the compiled crate, and no caller state.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@heb-stack/acidcat": "workspace:*",
+    "effect": "catalog:"
+  }
+}

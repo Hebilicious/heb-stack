@@ -1,0 +1,17 @@
+{
+  "name": "@heb-stack/api-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@heb-stack/acidcat": "workspace:*",
+    "@heb-stack/edge-runtime": "workspace:*",
+    "@heb-stack/mcp": "workspace:*",
+    "@heb-stack/rpc": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "cf": "catalog:",
+    "wrangler": "catalog:"
+  }
+}

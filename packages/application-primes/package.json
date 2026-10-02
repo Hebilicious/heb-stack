@@ -1,0 +1,18 @@
+{
+  "name": "@heb-stack/application-primes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/capabilities.ts",
+    "./contracts": "./src/contracts.ts",
+    "./runtime": "./src/runtime.ts"
+  },
+  "dependencies": {
+    "@heb-stack/acidcat-kernel": "workspace:*",
+    "@xstate/effect": "catalog:",
+    "effect": "catalog:",
+    "xstate": "catalog:"
+  }
+}

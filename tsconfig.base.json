@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2024", "DOM", "DOM.Iterable", "ESNext.Disposable"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        "diagnosticSeverity": {
+          "anyUnknownInErrorContext": "error",
+          "asyncFunction": "off",
+          "cryptoRandomUUIDInEffect": "error",
+          "floatingEffect": "error",
+          "globalConsoleInEffect": "error",
+          "globalDate": "off",
+          "globalDateInEffect": "error",
+          "globalErrorInEffectCatch": "error",
+          "globalErrorInEffectFailure": "error",
+          "globalFetchInEffect": "error",
+          "globalRandomInEffect": "error",
+          "globalTimersInEffect": "error",
+          "instanceOfSchema": "error",
+          "leakingRequirements": "error",
+          "missingEffectContext": "error",
+          "missingEffectError": "error",
+          "missingLayerContext": "error",
+          "newPromise": "off",
+          "nodeBuiltinImport": "off",
+          "returnEffectInGen": "error",
+          "runEffectInsideEffect": "error",
+          "schemaSyncInEffect": "error",
+          "tryCatchInEffectGen": "error",
+          "unknownInEffectCatch": "error",
+          "unsafeEffectTypeAssertion": "error",
+          // effect/cli, effect/ai, effect/http and the atom modules are the stack's adapters; 4.0.0 marks them unstable.
+          "unstableApiUsage": "off"
+        }
+      }
+    ]
+  }
+}

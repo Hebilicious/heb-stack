@@ -1,0 +1,66 @@
+packages:
+  - "."
+  - "apps/*"
+  - "packages/*"
+  - "workers/*"
+
+# Every dependency is pinned exactly, once, here. Workspace packages name `catalog:` and never a version.
+catalog:
+  "@cloudflare/workers-types": 5.20261001.1
+  "@cucumber/cucumber-expressions": 20.1.0
+  "@cucumber/gherkin": 42.0.1
+  "@cucumber/messages": 34.2.1
+  "@cucumber/tag-expressions": 11.0.1
+  "@effect/atom-vue": 4.0.0
+  "@effect/platform-node": 4.0.0
+  "@effect/tsgo": 0.47.2
+  "@hebilicious/cssforge": 0.9.0
+  "@hebilicious/cssforge-unplugin": 0.1.1
+  "@oxlint/plugins": 1.86.0
+  "@playwright/test": 1.63.0
+  "@types/node": 26.6.3
+  "@vizejs/vite-plugin": 0.429.2
+  "@xstate/effect": 0.1.0-alpha.6
+  capnweb: 0.12.0
+  cf: 1.0.0-beta.10
+  effect: 4.0.0
+  happy-dom: 20.14.5
+  lefthook: 2.1.15
+  oxfmt: 0.71.0
+  oxlint: 1.86.0
+  oxlint-tsgolint: 7.0.2003
+  typescript: 7.0.2
+  vite: 8.3.2
+  vitest: 5.0.3
+  vize: 0.429.2
+  vue: 3.6.0-rc.10
+  wrangler: 4.145.0
+  xstate: 6.0.0-alpha.63
+
+overrides:
+  # One XState core for every consumer, the one @xstate/effect pairs with.
+  "xstate@*": "catalog:"
+
+allowBuilds:
+  esbuild: true
+  workerd: true
+  # Its postinstall writes git hooks; `moon run app:hooks-install` does that on purpose.
+  lefthook: false
+
+minimumReleaseAgeExclude:
+  - "@effect/atom-vue@4.0.0"
+  - "@effect/platform-node-shared@4.0.0"
+  - "@effect/platform-node@4.0.0"
+  - "@effect/tsgo-darwin-arm64@0.47.2"
+  - "@effect/tsgo-darwin-x64@0.47.2"
+  - "@effect/tsgo-linux-arm64@0.47.2"
+  - "@effect/tsgo-linux-arm@0.47.2"
+  - "@effect/tsgo-linux-x64@0.47.2"
+  - "@effect/tsgo-win32-arm64@0.47.2"
+  - "@effect/tsgo-win32-x64@0.47.2"
+  - "@effect/tsgo@0.47.2"
+  - "@xstate/effect@0.1.0-alpha.6"
+  - cf@1.0.0-beta.10
+  - effect@4.0.0
+  - vite@8.3.2
+  - "@cloudflare/workers-types@5.20261001.1"

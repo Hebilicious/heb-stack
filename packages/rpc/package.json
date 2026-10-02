@@ -1,0 +1,16 @@
+{
+  "name": "@heb-stack/rpc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The capnweb PrimesApi: one contract the Worker serves at /rpc and the browser calls.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/api.ts",
+    "./server": "./src/server.ts"
+  },
+  "dependencies": {
+    "@heb-stack/acidcat-kernel": "workspace:*",
+    "capnweb": "catalog:"
+  }
+}

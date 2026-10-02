@@ -1,0 +1,49 @@
+language: "typescript"
+layer: "application"
+
+project:
+  title: "API Worker"
+  description: "Serves the built page, capnweb at /rpc, and MCP at /mcp."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+fileGroups:
+  worker-sources:
+    - "src/**/*.ts"
+    - "cloudflare.config.ts"
+    - "wrangler.config.ts"
+    - "worker-env.d.ts"
+    - "tsconfig.json"
+    - "/packages/*/src/**/*.ts"
+    - "/packages/*/package.json"
+
+tasks:
+  typecheck:
+    description: "Type-check the Worker against its inferred bindings."
+    command: "tsc"
+    args: ["-p", "tsconfig.json"]
+    inputs: ["@group(worker-sources)", "/tsconfig.base.json"]
+
+  dev:
+    description: "Serve the built page, /rpc and /mcp locally with cf dev; pass `-- --port <port>` to move it."
+    command: "cf"
+    args: ["dev", "--mode", "local", "--port", "8787"]
+    deps:
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    preset: "server"
+
+  build:
+    description: "Bundle and validate the preview Worker with the built page, without uploading it."
+    command: "cf"
+    args: ["deploy", "--dry-run", "--mode", "preview"]
+    deps:
+      - target: "app:web-build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+      - "typecheck"
+    inputs: ["@group(worker-sources)", "/apps/web/dist/**/*"]
+    options:
+      cache: false

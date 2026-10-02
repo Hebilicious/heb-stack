@@ -1,0 +1,258 @@
+language: "typescript"
+layer: "application"
+
+project:
+  title: "heb-stack"
+  description: "The prime checker: one AcidCat catalog served to Vue, WebMCP, the CLI, MCP and capnweb."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+fileGroups:
+  sources:
+    - "packages/*/src/**/*.ts"
+    - "packages/*/package.json"
+    - "apps/web/src/**/*"
+    - "apps/web/index.html"
+    - "cssforge.config.ts"
+    - "vize.config.ts"
+  configs:
+    - "tsconfig.json"
+    - "tsconfig.base.json"
+    - "apps/web/tsconfig.json"
+    - "apps/web/vite.config.ts"
+    - "vitest.config.ts"
+    - "vite.cli.config.ts"
+    - "playwright.config.ts"
+    - "package.json"
+    - "pnpm-workspace.yaml"
+  evidence:
+    - "features/**/*"
+    - "e2e/**/*"
+  lint-configs:
+    - ".oxlintrc.json"
+    - "tools/oxlint/anti-slop/**/*.ts"
+
+tasks:
+  # Development
+
+  dev:
+    description: "Rebuild the page on every change and serve it with /rpc and /mcp on http://127.0.0.1:8787."
+    command: "noop"
+    deps: ["web-watch", "api-worker:dev"]
+    options:
+      runDepsInParallel: true
+
+  web-watch:
+    description: "Rebuild the page into apps/web/dist whenever a source changes."
+    command: "vite"
+    args: ["build", "--watch", "--config", "apps/web/vite.config.ts"]
+    deps: ["manifest-generate"]
+    preset: "server"
+
+  hooks-install:
+    description: "Install the lefthook git hooks for this clone."
+    command: "lefthook"
+    args: ["install"]
+    inputs: ["lefthook.yml"]
+    options:
+      cache: false
+      runInCI: "skip"
+
+  # Builds
+
+  build:
+    description: "Build the page, the Worker, the command line and the crate."
+    command: "noop"
+    deps: ["web-build", "cli-build", "api-worker:build", "primes:build"]
+
+  manifest-generate:
+    description: "Derive the WebMCP manifest from the capability definitions."
+    command: "node"
+    args: ["scripts/generate-manifest.ts", "apps/web/public/acidcat-manifest.generated.json"]
+    inputs: ["scripts/generate-manifest.ts", "packages/*/src/**/*.ts", "packages/*/package.json"]
+    outputs: ["apps/web/public/acidcat-manifest.generated.json"]
+
+  web-build:
+    description: "Build the Vapor page into apps/web/dist."
+    command: "vite"
+    args: ["build", "--config", "apps/web/vite.config.ts"]
+    deps: ["manifest-generate"]
+    inputs: ["@group(sources)", "@group(configs)", "apps/web/public/**/*"]
+    outputs: ["apps/web/dist/**/*"]
+
+  cli-build:
+    description: "Bundle the command line into the one Node entry point a caller runs."
+    command: "vite"
+    args: ["build", "--config", "vite.cli.config.ts"]
+    inputs: ["@group(sources)", "@group(configs)"]
+    outputs: [".artifacts/cli/**/*"]
+
+  cli-install:
+    description: "Build the command line and write the `heb-stack` binary to .artifacts/bin; pass `-- --directory <dir>` to put it elsewhere."
+    command: "node"
+    args: ["scripts/install-cli-binary.ts"]
+    deps:
+      - target: "cli-build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    inputs: ["scripts/install-cli-binary.ts"]
+    options:
+      cache: false
+
+  # Checks
+
+  typecheck:
+    description: "Type-check every TypeScript and Vue source, and fail on Effect diagnostics."
+    command: "noop"
+    deps: ["tsc", "web-typecheck", "effect-diagnostics", "api-worker:typecheck"]
+
+  tsc:
+    description: "Type-check packages, features, scripts and configs."
+    command: "tsc"
+    args: ["-p", "tsconfig.json"]
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)", "scripts/**/*.ts"]
+
+  web-typecheck:
+    description: "Type-check the Vue page with vize."
+    command: "vize"
+    args: ["check", "--tsconfig", "apps/web/tsconfig.json", "apps/web/src"]
+    inputs: ["@group(sources)", "@group(configs)"]
+
+  effect-diagnostics:
+    description: "Fail on Effect language-service errors and warnings."
+    command: "effect-tsgo"
+    args: ["diagnostics", "--project", "tsconfig.json", "--format", "text", "--severity", "error,warning"]
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)", "scripts/**/*.ts"]
+
+  lint:
+    description: "Lint TypeScript with oxlint and the anti-slop rules, Vue with vize, and the crate with clippy."
+    command: "noop"
+    deps: ["oxlint", "vize-lint", "primes:lint"]
+
+  oxlint:
+    description: "Run oxlint with type-aware rules, denying warnings."
+    command: "oxlint"
+    args:
+      - "--type-aware"
+      - "--deny-warnings"
+      - "apps/web/src"
+      - "packages"
+      - "features"
+      - "e2e"
+      - "scripts"
+      - "workers/api/src"
+      - "workers/api/cloudflare.config.ts"
+      - "workers/api/wrangler.config.ts"
+      - "cssforge.config.ts"
+      - "playwright.config.ts"
+      - "vite.cli.config.ts"
+      - "vitest.config.ts"
+      - "vize.config.ts"
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)", "@group(lint-configs)", "scripts/**/*.ts", "workers/api/**/*.ts"]
+
+  vize-lint:
+    description: "Lint the Vue page with vize, denying warnings."
+    command: "vize"
+    args: ["lint", "--max-warnings", "0", "apps/web/src"]
+    inputs: ["apps/web/src/**/*", "vize.config.ts"]
+
+  format:
+    description: "Format TypeScript, JSON, Markdown and YAML with oxfmt, Vue with vize, and Rust with rustfmt."
+    command: "noop"
+    deps: ["oxfmt", "vize-format", "primes:format"]
+
+  oxfmt:
+    description: "Format the repository with oxfmt."
+    command: "oxfmt"
+    args: ["."]
+    options:
+      cache: false
+
+  vize-format:
+    description: "Format the Vue page with vize."
+    command: "vize"
+    args: ["fmt", "--write", "apps/web/src/**/*.vue"]
+    options:
+      cache: false
+
+  format-check:
+    description: "Check formatting without changing a file."
+    command: "noop"
+    deps: ["oxfmt-check", "vize-format-check", "primes:format-check"]
+
+  oxfmt-check:
+    description: "Check the repository's formatting with oxfmt."
+    command: "oxfmt"
+    args: ["--check", "."]
+    options:
+      cache: false
+
+  vize-format-check:
+    description: "Check the Vue page's formatting with vize."
+    command: "vize"
+    args: ["fmt", "--check", "apps/web/src/**/*.vue"]
+    inputs: ["apps/web/src/**/*.vue", "vize.config.ts"]
+
+  # Evidence
+
+  test:
+    description: "Run the domain tests and the CLI and MCP adapter tests."
+    command: "vitest"
+    args: ["run", "--project", "node", "packages", "features/adapters"]
+    deps:
+      - target: "cli-build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)"]
+
+  feature-test:
+    description: "Run the Gherkin features: the capabilities and targets in Node, and the page as a Vapor component."
+    command: "vitest"
+    args: ["run", "features/primes", "features/web"]
+    deps:
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)"]
+
+  browser-test:
+    description: "Run the Playwright scenario against the built page served by the Worker under cf dev."
+    command: "playwright"
+    args: ["test"]
+    deps:
+      - target: "web-build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+      - "browser-install"
+    inputs: ["@group(sources)", "@group(configs)", "@group(evidence)", "workers/api/**/*.ts"]
+
+  browser-install:
+    description: "Install the Chromium build Playwright drives."
+    command: "playwright"
+    args: ["install", "chromium"]
+    inputs: ["pnpm-workspace.yaml"]
+
+  cargo-test:
+    description: "Run the crate's tests."
+    command: "noop"
+    deps: ["primes:test"]
+
+  verify:
+    description: "Every check and every proof: formatting, lint, types, tests, features, the browser and the crate."
+    command: "noop"
+    deps: ["format-check", "lint", "typecheck", "test", "feature-test", "browser-test", "cargo-test"]
+
+  # Deployment
+
+  branch-deploy:
+    description: "Upload this branch as a Cloudflare preview version under its own alias, leaving the live deployment untouched."
+    command: "node"
+    args: ["scripts/branch-deploy.ts"]
+    deps: ["api-worker:build"]
+    inputs: ["scripts/branch-deploy.ts"]
+    options:
+      cache: false
+      runInCI: "skip"

@@ -1,0 +1,17 @@
+{
+  "name": "@heb-stack/webmcp-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/webmcp-machine.ts",
+    "./manifest": "./src/manifest.ts"
+  },
+  "dependencies": {
+    "@heb-stack/acidcat-kernel": "workspace:*",
+    "@xstate/effect": "catalog:",
+    "effect": "catalog:",
+    "xstate": "catalog:"
+  }
+}
