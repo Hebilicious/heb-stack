@@ -3,7 +3,7 @@ import { AsyncResult, Atom, useAtomValue } from "@effect/atom-vue";
 import type { HistoryEntry } from "@heb-stack/acidcat/primes";
 import { Effect, Option } from "effect";
 import { computed, shallowRef, watch } from "vue";
-import { checkLine, draftNumber } from "./presentation.ts";
+import { checkedAtLabel, checkLine, draftNumber } from "./presentation.ts";
 import { useAcidCat } from "./root.ts";
 import { useSnapshot } from "./use-snapshot.ts";
 
@@ -137,7 +137,7 @@ function entryLine(entry: HistoryEntry): string {
       <ol v-if="entries.length > 0" class="entries" aria-label="Checks">
         <li v-for="entry in entries" :key="`${entry.checkedAt}-${entry.n}`" class="entry" :data-prime="entry.prime">
           <span>{{ entryLine(entry) }}</span>
-          <time class="time" :datetime="entry.checkedAt">{{ entry.checkedAt.slice(11, 19) }}</time>
+          <time class="time" :datetime="entry.checkedAt">{{ checkedAtLabel(entry.checkedAt) }}</time>
         </li>
       </ol>
       <p v-else class="empty">No checks yet.</p>
