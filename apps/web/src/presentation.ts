@@ -20,3 +20,8 @@ export function draftNumber(draft: string): number | null {
   const value = Number(trimmed);
   return Number.isSafeInteger(value) ? value : null;
 }
+
+/** When a check answered, as the visitor's local clock reads it. */
+export function checkedAtLabel(checkedAt: string): string {
+  return new Date(checkedAt).toLocaleTimeString();
+}
