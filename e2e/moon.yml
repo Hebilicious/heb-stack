@@ -1,0 +1,28 @@
+language: "typescript"
+layer: "automation"
+
+project:
+  title: "Browser evidence"
+  description: "The Playwright scenario against the built page served by alchemy dev."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+tasks:
+  test:
+    description: "Run the browser scenario: a check travels over capnweb, and the history survives a reload."
+    command: "playwright"
+    args: ["test"]
+    deps:
+      - target: "web:build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+      - "browser-install"
+    inputs: ["**/*", "/workers/api/src/**/*.ts", "/workers/api/alchemy.run.ts", "/apps/web/dist/**/*"]
+
+  browser-install:
+    description: "Install the Chromium build Playwright drives."
+    command: "playwright"
+    args: ["install", "chromium"]
+    inputs: ["/pnpm-workspace.yaml"]

@@ -1,15 +1,16 @@
 import { defineRule } from "@oxlint/plugins";
 import type { ESTree } from "@oxlint/plugins";
 
-import { isGlobalReflectMethodCall } from "../shared/reflect-method.ts";
 import { hasBoundaryComment } from "../shared/boundary-comment.ts";
+import { isGlobalReflectMethodCall } from "../shared/reflect-method.ts";
 
 /** Ban Reflect.get, which bypasses ordinary property access and useful type evidence. */
 export const noReflectGetRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Disallow Reflect.get; use typed property access or parse dynamic input into a domain type.",
+      description:
+        "Disallow Reflect.get; use typed property access or parse dynamic input into a domain type.",
     },
     messages: {
       reflectGet:
@@ -29,7 +30,11 @@ export const noReflectGetRule = defineRule({
   createOnce(context) {
     return {
       CallExpression(node) {
-        if (node.callee.type === "Super" || node.callee.type === "V8IntrinsicExpression") return;
+        if (
+          node.callee.type === "Super" ||
+          node.callee.type === "V8IntrinsicExpression"
+        )
+          return;
         if (isGlobalReflectMethodCall(context.sourceCode, node.callee, "get")) {
           const option = context.options?.[0];
           const allowWithBoundaryComment =
@@ -37,7 +42,11 @@ export const noReflectGetRule = defineRule({
             option !== null &&
             !Array.isArray(option) &&
             option.allowWithBoundaryComment === true;
-          if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
+          if (
+            allowWithBoundaryComment &&
+            hasBoundaryComment(context.sourceCode, node)
+          )
+            return;
           context.report({ node, messageId: "reflectGet" });
         }
       },

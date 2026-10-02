@@ -3,7 +3,13 @@
     "target": "ES2024",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2024", "DOM", "DOM.Iterable", "ESNext.Disposable"],
+    "lib": [
+      "ES2024",
+      "DOM",
+      "DOM.Iterable",
+      "DOM.AsyncIterable",
+      "ESNext.Disposable"
+    ],
     "types": ["node"],
     "strict": true,
     "noEmit": true,

@@ -1,5 +1,4 @@
 import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree, SourceCode } from "@oxlint/plugins";
 
 import { hasBoundaryComment } from "../shared/boundary-comment.ts";
@@ -8,14 +7,20 @@ type RuntimeFunction = ESTree.ArrowFunctionExpression | ESTree.Function;
 
 function isRuntimeFunction(node: ESTree.Node): node is RuntimeFunction {
   return (
-    node.type === "ArrowFunctionExpression" || node.type === "FunctionDeclaration" || node.type === "FunctionExpression"
+    node.type === "ArrowFunctionExpression" ||
+    node.type === "FunctionDeclaration" ||
+    node.type === "FunctionExpression"
   );
 }
 
 function isInsideTypeGuard(node: ESTree.Node): boolean {
   let current: ESTree.Node | null = node.parent;
   while (current !== null && current.type !== "Program") {
-    if (isRuntimeFunction(current) && current.returnType?.typeAnnotation.type === "TSTypePredicate") return true;
+    if (
+      isRuntimeFunction(current) &&
+      current.returnType?.typeAnnotation.type === "TSTypePredicate"
+    )
+      return true;
     current = current.parent;
   }
   return false;
@@ -30,7 +35,10 @@ function enclosingRuntimeFunction(node: ESTree.Node): RuntimeFunction | null {
   return null;
 }
 
-function hasOwnerBoundaryComment(sourceCode: SourceCode, node: ESTree.Node): boolean {
+function hasOwnerBoundaryComment(
+  sourceCode: SourceCode,
+  node: ESTree.Node
+): boolean {
   const owner = enclosingRuntimeFunction(node);
   return owner !== null && hasBoundaryComment(sourceCode, owner);
 }
@@ -66,14 +74,19 @@ export const noRuntimeTypeofRule = defineRule({
         additionalProperties: false,
       },
     ],
-    defaultOptions: [{ allowInTypeGuards: false, allowWithBoundaryComment: false }],
+    defaultOptions: [
+      { allowInTypeGuards: false, allowWithBoundaryComment: false },
+    ],
   },
   createOnce(context) {
     return {
       UnaryExpression(node) {
         const option = context.options?.[0];
         const allowInTypeGuards =
-          typeof option === "object" && option !== null && !Array.isArray(option) && option.allowInTypeGuards === true;
+          typeof option === "object" &&
+          option !== null &&
+          !Array.isArray(option) &&
+          option.allowInTypeGuards === true;
         const allowWithBoundaryComment =
           typeof option === "object" &&
           option !== null &&
@@ -83,7 +96,8 @@ export const noRuntimeTypeofRule = defineRule({
           node.operator === "typeof" &&
           !isExistenceProbe(node) &&
           (!allowInTypeGuards || !isInsideTypeGuard(node)) &&
-          (!allowWithBoundaryComment || !hasOwnerBoundaryComment(context.sourceCode, node))
+          (!allowWithBoundaryComment ||
+            !hasOwnerBoundaryComment(context.sourceCode, node))
         ) {
           context.report({ node, messageId: "runtimeTypeof" });
         }

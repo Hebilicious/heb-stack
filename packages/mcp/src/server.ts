@@ -1,7 +1,8 @@
 import { Layer } from "effect";
 import { McpProtocol, McpServer } from "effect/ai";
+
 import { MCP_HTTP_PATH } from "./path.ts";
-import { type McpToolkit } from "./toolkit.ts";
+import type { McpToolkit } from "./toolkit.ts";
 
 /** What the endpoint tells a client it is. */
 export interface McpServerIdentity {
@@ -24,13 +25,13 @@ export function mcpServerLayer(options: {
 }) {
   return Layer.mergeAll(
     McpServer.layerHttp({
-      name: options.identity.name,
-      version: options.identity.version,
+      allowedOrigins: [options.origin],
       instructions: options.identity.instructions,
+      name: options.identity.name,
       path: MCP_HTTP_PATH,
       protocols: [McpProtocol.v2026_07_28],
-      allowedOrigins: [options.origin],
+      version: options.identity.version,
     }),
-    McpServer.toolkit(options.tools.toolkit),
+    McpServer.toolkit(options.tools.toolkit)
   ).pipe(Layer.provide(options.tools.handlers));
 }

@@ -1,0 +1,68 @@
+language: "typescript"
+layer: "application"
+
+project:
+  title: "Web"
+  description: "The prime checker page: Vue Vapor, built by Vite and vize, styled with cssforge."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+fileGroups:
+  sources:
+    - "src/**/*"
+    - "index.html"
+    - "cssforge.config.ts"
+    - "vize.config.ts"
+    - "vite.config.ts"
+    - "tsconfig.json"
+    - "/packages/*/src/**/*.ts"
+    - "/packages/*/package.json"
+
+tasks:
+  manifest:
+    description: "Derive the WebMCP manifest from the capability definitions."
+    command: "node"
+    args: ["scripts/generate-manifest.ts", "public/acidcat-manifest.generated.json"]
+    inputs: ["scripts/generate-manifest.ts", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
+    outputs: ["public/acidcat-manifest.generated.json"]
+
+  build:
+    description: "Build the page into dist."
+    command: "vite"
+    args: ["build"]
+    deps: ["manifest"]
+    inputs: ["@group(sources)", "public/**/*"]
+    outputs: ["dist/**/*"]
+
+  dev:
+    description: "Rebuild the page into dist whenever a source changes."
+    command: "vite"
+    args: ["build", "--watch"]
+    deps: ["manifest"]
+    preset: "server"
+
+  typecheck:
+    description: "Type-check the page with vize."
+    command: "vize"
+    args: ["check", "--tsconfig", "tsconfig.json", "src"]
+    inputs: ["@group(sources)"]
+
+  lint:
+    description: "Lint the Vue components with vize, denying warnings."
+    command: "vize"
+    args: ["lint", "--max-warnings", "0", "src"]
+    inputs: ["src/**/*", "vize.config.ts"]
+
+  format:
+    description: "Format the Vue components with vize."
+    command: "vize"
+    args: ["fmt", "--write", "src/**/*.vue"]
+    options:
+      cache: false
+
+  format-check:
+    description: "Check the Vue components' formatting with vize."
+    command: "vize"
+    args: ["fmt", "--check", "src/**/*.vue"]
+    inputs: ["src/**/*.vue", "vize.config.ts"]

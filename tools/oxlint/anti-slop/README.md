@@ -8,12 +8,12 @@ The registered Effect-specific plugin keeps XState transition ownership separate
 
 Some vendored rules are registered but not enabled in `.oxlintrc.json`:
 
-| Rule                                              | Why it is off                                                                                                                       |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Rule | Why it is off |
+| --- | --- |
 | `anti-slop-effect/no-service-constructor-imports` | It flags every imported `make*` function, including pure value constructors, until capability modules follow its naming convention. |
-| `anti-slop-effect/prefer-effect-match`            | Chained literal ternaries here read better as lookup tables than as `Match`.                                                        |
-| `anti-slop/no-array-filter-map`                   | It rewrites readable `filter`/`map` chains for an allocation cost no measurement has shown.                                         |
-| `anti-slop/require-readable-spacing`              | Its blank-line policy is a style choice this template leaves to the project that adopts it.                                         |
+| `anti-slop-effect/prefer-effect-match` | Chained literal ternaries here read better as lookup tables than as `Match`. |
+| `anti-slop/no-array-filter-map` | It rewrites readable `filter`/`map` chains for an allocation cost no measurement has shown. |
+| `anti-slop/require-readable-spacing` | Its blank-line policy is a style choice this template leaves to the project that adopts it. |
 
 Definition placement rules resolve imported and local aliases to XState machine factories and AcidCat capability constructors. Machines belong in `machine.ts`, `*-machine.ts`, or `*.machine.ts`; capabilities belong in `capabilities.ts`, `*-capability.ts`, or `*.capabilities.ts`. Type references, unrelated methods, and evidence fixtures do not define production machines or capabilities.
 

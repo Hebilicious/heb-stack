@@ -9,8 +9,10 @@ import { useSnapshot } from "./use-snapshot.ts";
 
 const root = useAcidCat();
 const { check, next } = root.catalog.primes;
-const history = root.catalog.history;
-if (check.snapshot === undefined) throw new Error("primes.check publishes no lifecycle snapshot");
+const { history } = root.catalog;
+if (check.snapshot === undefined) {
+  throw new Error("primes.check publishes no lifecycle snapshot");
+}
 const lifecycle = useSnapshot(check.snapshot);
 const webmcp = root.webmcp === null ? null : useSnapshot(root.webmcp.snapshot);
 
@@ -21,33 +23,41 @@ const historyRevision = shallowRef(0);
 const line = computed(() => checkLine(lifecycle.value));
 const draftValue = computed(() => draftNumber(draft.value));
 const retryable = computed(
-  () => lifecycle.value.status === "failed" && lifecycle.value.failure?._tag === "CheckUnanswered",
+  () =>
+    lifecycle.value.status === "failed" &&
+    lifecycle.value.failure?._tag === "CheckUnanswered",
 );
 
 // A check that answers adds to the history, whoever asked: this page, or an agent through WebMCP.
 watch(lifecycle, (snapshot) => {
-  if (snapshot.status === "result") historyRevision.value += 1;
+  if (snapshot.status === "result") {
+    historyRevision.value += 1;
+  }
 });
 
 const historyQuery = computed(() => {
   const revision = historyRevision.value;
   return Atom.make(
     Effect.tryPromise({
-      try: (signal) => history.list.execute({}, { signal }),
       catch: () => "The history could not be read.",
-    }).pipe(Effect.map((result) => ({ revision, result }))),
+      try: (signal) => history.list.execute({}, { signal }),
+    }).pipe(Effect.map((result) => ({ result, revision }))),
   );
 });
 const historyState = useAtomValue(() => historyQuery.value);
 // The last list that answered stays on screen while the next one loads.
 const entries = computed<readonly HistoryEntry[]>((previous) => {
   const loaded = Option.getOrNull(AsyncResult.value(historyState.value));
-  if (loaded === null) return previous ?? [];
+  if (loaded === null) {
+    return previous ?? [];
+  }
   return loaded.result.ok ? loaded.result.value.entries : [];
 });
 
 const webmcpLine = computed(() => {
-  if (webmcp === null) return "This browser exposes no model context, so no WebMCP tools are registered.";
+  if (webmcp === null) {
+    return "This browser exposes no model context, so no WebMCP tools are registered.";
+  }
   const status = webmcp.value;
   return status.phase === "ready"
     ? "The capability catalog is registered as WebMCP tools."
@@ -55,52 +65,63 @@ const webmcpLine = computed(() => {
 });
 
 /** The lifecycle shows the outcome; a call another call replaced, or one that failed, needs nothing more here. */
-function ask(n: number): void {
+async function ask(n: number): Promise<void> {
   notice.value = null;
-  check.execute({ n }).catch(() => undefined);
+  try {
+    await check.execute({ n });
+  } catch {
+    // The lifecycle snapshot already says how the check ended.
+  }
 }
 
 function onInput(event: Event): void {
-  if (!(event.target instanceof HTMLInputElement)) return;
+  if (!(event.target instanceof HTMLInputElement)) {
+    return;
+  }
   draft.value = event.target.value;
   const n = draftNumber(draft.value);
-  if (n !== null) ask(n);
+  if (n !== null) {
+    void ask(n);
+  }
 }
 
 function retry(): void {
-  const n = lifecycle.value.n;
-  if (n !== null) ask(n);
+  const { n } = lifecycle.value;
+  if (n !== null) {
+    void ask(n);
+  }
 }
 
-function askNext(): void {
+async function askNext(): Promise<void> {
   const after = draftValue.value;
-  if (after === null) return;
+  if (after === null) {
+    return;
+  }
   notice.value = null;
-  next.execute({ after }).then(
-    (result) => {
-      if (!result.ok) {
-        notice.value = `There is no next prime to show; enter a number from ${result.error.min} to ${result.error.max}.`;
-        return;
-      }
-      draft.value = String(result.value.prime);
-      ask(result.value.prime);
-    },
-    () => {
-      notice.value = "The next prime could not be found. Try again.";
-    },
-  );
+  try {
+    const result = await next.execute({ after });
+    if (!result.ok) {
+      notice.value = `There is no next prime to show; enter a number from ${result.error.min} to ${result.error.max}.`;
+      return;
+    }
+    draft.value = String(result.value.prime);
+    await ask(result.value.prime);
+  } catch {
+    notice.value = "The next prime could not be found. Try again.";
+  }
 }
 
-function clear(): void {
-  history.clear.execute({}).then(
-    (result) => {
-      if (result.ok) historyRevision.value += 1;
-      else notice.value = `The history could not be cleared: ${result.error.reason}`;
-    },
-    () => {
-      notice.value = "The history could not be cleared. Try again.";
-    },
-  );
+async function clear(): Promise<void> {
+  try {
+    const result = await history.clear.execute({});
+    if (result.ok) {
+      historyRevision.value += 1;
+    } else {
+      notice.value = `The history could not be cleared: ${result.error.reason}`;
+    }
+  } catch {
+    notice.value = "The history could not be cleared. Try again.";
+  }
 }
 
 function entryLine(entry: HistoryEntry): string {
@@ -116,26 +137,46 @@ function entryLine(entry: HistoryEntry): string {
       <input
         class="input"
         :value="draft"
-        inputmode="numeric"
-        autocomplete="off"
-        placeholder="97"
         aria-label="Number"
+        autocomplete="off"
+        inputmode="numeric"
+        placeholder="97"
         @input="onInput"
       />
     </label>
-    <p class="result" :data-status="lifecycle.status" role="status" aria-live="polite">{{ line }}</p>
+    <p
+      class="result"
+      :data-status="lifecycle.status"
+      aria-live="polite"
+      role="status"
+    >{{ line }}</p>
     <div class="actions">
-      <button class="button" type="button" :disabled="draftValue === null" @click="askNext">Next prime</button>
+      <button
+        class="button"
+        type="button"
+        :disabled="draftValue === null"
+        @click="askNext"
+      >Next prime</button>
       <button v-if="retryable" class="button" type="button" @click="retry">Retry</button>
     </div>
     <p v-if="notice !== null" class="notice" role="alert">{{ notice }}</p>
-    <section class="history" aria-labelledby="history-title">
+    <section aria-labelledby="history-title" class="history">
       <header class="history-header">
         <h2 id="history-title" class="subtitle">History</h2>
-        <button class="button quiet" type="button" :disabled="entries.length === 0" @click="clear">Clear</button>
+        <button
+          class="button quiet"
+          type="button"
+          :disabled="entries.length === 0"
+          @click="clear"
+        >Clear</button>
       </header>
-      <ol v-if="entries.length > 0" class="entries" aria-label="Checks">
-        <li v-for="entry in entries" :key="`${entry.checkedAt}-${entry.n}`" class="entry" :data-prime="entry.prime">
+      <ol v-if="entries.length > 0" aria-label="Checks" class="entries">
+        <li
+          v-for="entry in entries"
+          :key="`${entry.checkedAt}-${entry.n}`"
+          class="entry"
+          :data-prime="entry.prime"
+        >
           <span>{{ entryLine(entry) }}</span>
           <time class="time" :datetime="entry.checkedAt">{{ checkedAtLabel(entry.checkedAt) }}</time>
         </li>

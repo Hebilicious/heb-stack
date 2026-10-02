@@ -1,25 +1,30 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
-import { createAcidCat, type AcidCat, type SessionTarget } from "@heb-stack/acidcat";
+import path from "node:path";
+
+import { createAcidCat } from "@heb-stack/acidcat";
+import type { AcidCat, SessionTarget } from "@heb-stack/acidcat";
 import {
   StorageUnavailableSchema,
   checkHistoryLayer,
   primeMathWasmLayer,
-  type HistoryText,
 } from "@heb-stack/acidcat/primes";
+import type { HistoryText } from "@heb-stack/acidcat/primes";
 import { Effect, Layer, Predicate } from "effect";
 
 /** The crate's release module, relative to the repository root. */
-export const DEFAULT_WASM_PATH = "crates/primes/target/wasm32-unknown-unknown/release/primes.wasm";
+export const DEFAULT_WASM_PATH =
+  "crates/primes/target/wasm32-unknown-unknown/release/primes.wasm";
 
 /** Where a Node session keeps its checks unless a caller names a file: the user's XDG state directory. */
 export function defaultHistoryFile(): string {
-  const state = process.env["XDG_STATE_HOME"];
-  return join(
-    state === undefined || state === "" ? join(homedir(), ".local", "state") : state,
+  const state = process.env.XDG_STATE_HOME;
+  return path.join(
+    state === undefined || state === ""
+      ? path.join(homedir(), ".local", "state")
+      : state,
     "heb-stack",
-    "history.json",
+    "history.json"
   );
 }
 
@@ -36,38 +41,53 @@ export interface NodeSession {
 }
 
 /** Open the canonical AcidCat session without a browser: the crate in this process, the history in a file. */
-export async function createNodeAcidCat(session: NodeSession): Promise<AcidCat> {
+export async function createNodeAcidCat(
+  session: NodeSession
+): Promise<AcidCat> {
   const module = await WebAssembly.compile(await readFile(session.wasmPath));
   const math = primeMathWasmLayer(module);
-  return createAcidCat(
+  return await createAcidCat(
     { target: session.target },
-    session.historyFile === null ? math : Layer.merge(math, checkHistoryLayer(fileText(session.historyFile))),
+    session.historyFile === null
+      ? math
+      : Layer.merge(math, checkHistoryLayer(fileText(session.historyFile)))
   );
 }
 
 /** The history document as one file, created with its directory on the first write. */
-function fileText(path: string): HistoryText {
+function fileText(file: string): HistoryText {
   const unavailable = (cause: unknown) =>
-    StorageUnavailableSchema.make({ reason: `${path}: ${cause instanceof Error ? cause.message : "unavailable"}` });
+    StorageUnavailableSchema.make({
+      reason: `${file}: ${cause instanceof Error ? cause.message : "unavailable"}`,
+    });
   return {
     read: Effect.tryPromise({
-      try: () => readFile(path, "utf8"),
-      catch: (cause) => ({ cause }),
-    }).pipe(
-      Effect.catch(({ cause }) =>
-        Predicate.hasProperty(cause, "code") && cause.code === "ENOENT"
-          ? Effect.succeed(null)
-          : Effect.fail(unavailable(cause)),
-      ),
-    ),
+      catch: unavailable,
+      // An absent file is a history nobody has written yet, not a failure.
+      try: async () => {
+        try {
+          return await readFile(file, "utf-8");
+        } catch (error) {
+          if (Predicate.hasProperty(error, "code") && error.code === "ENOENT") {
+            return null;
+          }
+          throw error;
+        }
+      },
+    }),
+    remove: Effect.tryPromise({
+      catch: unavailable,
+      try: async () => {
+        await rm(file, { force: true });
+      },
+    }),
     write: (text) =>
       Effect.tryPromise({
-        try: async () => {
-          await mkdir(dirname(path), { recursive: true });
-          await writeFile(path, `${text}\n`, "utf8");
-        },
         catch: unavailable,
+        try: async () => {
+          await mkdir(path.dirname(file), { recursive: true });
+          await writeFile(file, `${text}\n`, "utf-8");
+        },
       }),
-    remove: Effect.tryPromise({ try: () => rm(path, { force: true }), catch: unavailable }),
   };
 }

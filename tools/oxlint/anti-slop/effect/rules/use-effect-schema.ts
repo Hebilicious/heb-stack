@@ -1,9 +1,25 @@
 import { defineRule, type ESTree } from "@oxlint/plugins";
-import { isApplication, moduleReferences, normalizedPath, propertyName } from "../ast.ts";
 
-const COMPETING_SCHEMA_LIBRARIES = /^(?:valibot|zod|ajv|yup|joi|@sinclair\/typebox)(?:\/|$)/u;
-const TEST_OR_EVIDENCE_FILE = /(?:^|\/)(?:features|test|tests)\/|\.(?:test|spec)\.[cm]?[jt]sx?$/u;
-const JSON_TYPES = new Set(["object", "array", "string", "number", "integer", "boolean", "null"]);
+import {
+  isApplication,
+  moduleReferences,
+  normalizedPath,
+  propertyName,
+} from "../ast.ts";
+
+const COMPETING_SCHEMA_LIBRARIES =
+  /^(?:valibot|zod|ajv|yup|joi|@sinclair\/typebox)(?:\/|$)/u;
+const TEST_OR_EVIDENCE_FILE =
+  /(?:^|\/)(?:features|test|tests)\/|\.(?:test|spec)\.[cm]?[jt]sx?$/u;
+const JSON_TYPES = new Set([
+  "object",
+  "array",
+  "string",
+  "number",
+  "integer",
+  "boolean",
+  "null",
+]);
 
 function isJsonSchema(node: ESTree.ObjectExpression): boolean {
   return node.properties.some((property) => {
@@ -23,7 +39,10 @@ function isJsonSchema(node: ESTree.ObjectExpression): boolean {
 export const useEffectSchemaRule = defineRule({
   meta: {
     type: "problem",
-    docs: { description: "Use Effect Schema and derive the external JSON Schema contract." },
+    docs: {
+      description:
+        "Use Effect Schema and derive the external JSON Schema contract.",
+    },
     messages: {
       competingSchema:
         "Use Effect Schema for capability contracts and decoding. Derive types and typed failures from those schemas; standardSchemaValidator() may assert the same schemas at the XState boundary.",
@@ -38,14 +57,19 @@ export const useEffectSchemaRule = defineRule({
     let importsEffect = capability;
     const competingImports: ESTree.Node[] = [];
     const manualJsonCalls: ESTree.CallExpression[] = [];
-    const isTestOrEvidence = TEST_OR_EVIDENCE_FILE.test(normalizedPath(context.filename));
+    const isTestOrEvidence = TEST_OR_EVIDENCE_FILE.test(
+      normalizedPath(context.filename)
+    );
     return {
       ...moduleReferences((source, node) => {
-        if (source === "effect" || source.startsWith("effect/")) importsEffect = true;
-        if (COMPETING_SCHEMA_LIBRARIES.test(source)) competingImports.push(node);
+        if (source === "effect" || source.startsWith("effect/"))
+          importsEffect = true;
+        if (COMPETING_SCHEMA_LIBRARIES.test(source))
+          competingImports.push(node);
       }),
       ObjectExpression(node) {
-        if (capability && isJsonSchema(node)) context.report({ node, messageId: "authoredSchema" });
+        if (capability && isJsonSchema(node))
+          context.report({ node, messageId: "authoredSchema" });
       },
       CallExpression(node) {
         if (isTestOrEvidence) return;
@@ -60,8 +84,10 @@ export const useEffectSchemaRule = defineRule({
       },
       "Program:exit"() {
         if (!importsEffect) return;
-        for (const node of competingImports) context.report({ node, messageId: "competingSchema" });
-        for (const node of manualJsonCalls) context.report({ node, messageId: "manualJson" });
+        for (const node of competingImports)
+          context.report({ node, messageId: "competingSchema" });
+        for (const node of manualJsonCalls)
+          context.report({ node, messageId: "manualJson" });
       },
     };
   },

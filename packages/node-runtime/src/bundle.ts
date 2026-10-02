@@ -13,13 +13,13 @@ export interface AdapterBundleOptions {
  */
 export function adapterBundleConfig(options: AdapterBundleOptions) {
   return defineConfig({
-    ssr: { noExternal: true, target: "node" },
     build: {
-      ssr: options.entry,
-      outDir: options.outDir,
       emptyOutDir: true,
+      outDir: options.outDir,
+      rolldownOptions: { output: { entryFileNames: "main.js", format: "esm" } },
+      ssr: options.entry,
       target: "node24",
-      rolldownOptions: { output: { format: "esm", entryFileNames: "main.js" } },
     },
+    ssr: { noExternal: true, target: "node" },
   });
 }

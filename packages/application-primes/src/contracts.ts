@@ -10,17 +10,22 @@ export const LARGEST_SAFE_PRIME = 2 ** 53 - 111;
 export const HISTORY_LIMIT = 20;
 
 export const OutOfRangeSchema = Schema.TaggedStruct("OutOfRange", {
-  n: Schema.Number,
-  min: Schema.Number,
   max: Schema.Number,
+  min: Schema.Number,
+  n: Schema.Number,
 });
 export type OutOfRange = typeof OutOfRangeSchema.Type;
 
-export const StorageUnavailableSchema = Schema.TaggedStruct("StorageUnavailable", { reason: Schema.String });
+export const StorageUnavailableSchema = Schema.TaggedStruct(
+  "StorageUnavailable",
+  { reason: Schema.String }
+);
 export type StorageUnavailable = typeof StorageUnavailableSchema.Type;
 
 export const CheckInputSchema = Schema.Struct({
-  n: Schema.Int.annotate({ description: `The integer to check, from ${SMALLEST_CHECKABLE} to 2^53 − 1.` }),
+  n: Schema.Int.annotate({
+    description: `The integer to check, from ${SMALLEST_CHECKABLE} to 2^53 − 1.`,
+  }),
 });
 export type CheckInput = typeof CheckInputSchema.Type;
 
@@ -28,36 +33,49 @@ export const CheckOutputSchema = Schema.Struct({
   n: Schema.Int,
   prime: Schema.Boolean,
   smallestFactor: Schema.Int.annotate({
-    description: "The smallest factor greater than one; n itself when n is prime.",
+    description:
+      "The smallest factor greater than one; n itself when n is prime.",
   }),
 });
 export type CheckOutput = typeof CheckOutputSchema.Type;
 
 export const NextInputSchema = Schema.Struct({
-  after: Schema.Int.annotate({ description: "The integer to search above, from 1 to 2^53 − 2." }),
+  after: Schema.Int.annotate({
+    description: "The integer to search above, from 1 to 2^53 − 2.",
+  }),
 });
 export type NextInput = typeof NextInputSchema.Type;
 
 export const NextOutputSchema = Schema.Struct({
   after: Schema.Int,
-  prime: Schema.Int.annotate({ description: "The smallest prime greater than after." }),
+  prime: Schema.Int.annotate({
+    description: "The smallest prime greater than after.",
+  }),
 });
 export type NextOutput = typeof NextOutputSchema.Type;
 
 export const HistoryEntrySchema = Schema.Struct({
+  checkedAt: Schema.String.annotate({
+    description: "When the check answered, as an ISO 8601 instant.",
+  }),
   n: Schema.Int,
   prime: Schema.Boolean,
-  checkedAt: Schema.String.annotate({ description: "When the check answered, as an ISO 8601 instant." }),
 });
 export type HistoryEntry = typeof HistoryEntrySchema.Type;
 
-export const HistoryEntriesSchema = Schema.Array(HistoryEntrySchema).check(Schema.isMaxLength(HISTORY_LIMIT));
+export const HistoryEntriesSchema = Schema.Array(HistoryEntrySchema).check(
+  Schema.isMaxLength(HISTORY_LIMIT)
+);
 
-export const HistoryListOutputSchema = Schema.Struct({ entries: HistoryEntriesSchema });
+export const HistoryListOutputSchema = Schema.Struct({
+  entries: HistoryEntriesSchema,
+});
 export type HistoryListOutput = typeof HistoryListOutputSchema.Type;
 
 export const HistoryClearOutputSchema = Schema.Struct({
-  cleared: Schema.Int.annotate({ description: "How many entries the clear removed." }),
+  cleared: Schema.Int.annotate({
+    description: "How many entries the clear removed.",
+  }),
 });
 export type HistoryClearOutput = typeof HistoryClearOutputSchema.Type;
 
@@ -67,6 +85,9 @@ export const EmptyInputSchema = Schema.Struct({});
 export const NoFailureSchema = Schema.Never;
 
 /** The history a new entry produces: newest first, and never longer than the limit. */
-export function withEntry(entries: readonly HistoryEntry[], entry: HistoryEntry): readonly HistoryEntry[] {
+export function withEntry(
+  entries: readonly HistoryEntry[],
+  entry: HistoryEntry
+): readonly HistoryEntry[] {
   return [entry, ...entries].slice(0, HISTORY_LIMIT);
 }

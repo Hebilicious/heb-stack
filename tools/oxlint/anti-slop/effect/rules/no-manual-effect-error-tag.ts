@@ -11,7 +11,8 @@ export const noManualEffectErrorTagRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Use Effect tagged error handlers instead of manually branching on `_tag` in a catch handler.",
+      description:
+        "Use Effect tagged error handlers instead of manually branching on `_tag` in a catch handler.",
     },
     messages: {
       tag: "Use Effect.catchTag or Effect.catchTags instead of manually discriminating a tagged error in a broad Effect catch handler.",
@@ -32,7 +33,10 @@ export const noManualEffectErrorTagRule = defineRule({
         });
       },
       SwitchStatement(node) {
-        if (!isTagMember(node.discriminant) || !isInsideBroadEffectHandler(node)) {
+        if (
+          !isTagMember(node.discriminant) ||
+          !isInsideBroadEffectHandler(node)
+        ) {
           return;
         }
         context.report({

@@ -1,9 +1,11 @@
 import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree } from "@oxlint/plugins";
 
 import { hasBoundaryComment } from "../shared/boundary-comment.ts";
-import { functionParameterBindingName, functionParameterTypeAnnotation } from "../shared/function-parameters.ts";
+import {
+  functionParameterBindingName,
+  functionParameterTypeAnnotation,
+} from "../shared/function-parameters.ts";
 import {
   createTypeAliasEnvironment,
   resolvedTypeMatches,
@@ -61,7 +63,11 @@ export const noObjectParametersRule = defineRule({
         option !== null &&
         !Array.isArray(option) &&
         option.allowWithBoundaryComment === true;
-      if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
+      if (
+        allowWithBoundaryComment &&
+        hasBoundaryComment(context.sourceCode, node)
+      )
+        return;
       for (const parameter of node.params) {
         const annotation = functionParameterTypeAnnotation(parameter);
         if (annotation === null || annotation === undefined) continue;
@@ -69,14 +75,22 @@ export const noObjectParametersRule = defineRule({
         context.report({
           node: annotation.typeAnnotation,
           messageId: "objectParameter",
-          data: { parameter: functionParameterBindingName(parameter, context.sourceCode) },
+          data: {
+            parameter: functionParameterBindingName(
+              parameter,
+              context.sourceCode
+            ),
+          },
         });
       }
     };
 
     return {
       Program(node) {
-        environment = createTypeAliasEnvironment(node, context.sourceCode.visitorKeys);
+        environment = createTypeAliasEnvironment(
+          node,
+          context.sourceCode.visitorKeys
+        );
       },
       ArrowFunctionExpression: checkParameters,
       FunctionDeclaration: checkParameters,

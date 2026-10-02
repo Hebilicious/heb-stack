@@ -1,6 +1,7 @@
 import { createAcidCat } from "@heb-stack/acidcat";
 import { PRIMES_RPC_PATH } from "@heb-stack/rpc";
 import { Layer } from "effect";
+
 import { checkHistoryLocalLayer } from "./check-history-local.ts";
 import { primeMathRemoteLayer } from "./prime-math-remote.ts";
 import { connectBrowserWebMcp } from "./webmcp.ts";
@@ -19,17 +20,23 @@ export async function createBrowserAcidCat(options: BrowserSessionOptions) {
     { target: "web" },
     Layer.merge(
       primeMathRemoteLayer(new URL(PRIMES_RPC_PATH, options.origin).href),
-      checkHistoryLocalLayer(options.storage),
-    ),
+      checkHistoryLocalLayer(options.storage)
+    )
   );
   try {
-    return Object.freeze({ ...root, webmcp: await connectBrowserWebMcp(root, options.document) });
-  } catch (cause) {
+    return Object.freeze({
+      ...root,
+      webmcp: await connectBrowserWebMcp(root, options.document),
+    });
+  } catch (error) {
     await root.dispose();
-    throw cause;
+    throw error;
   }
 }
 
 export type BrowserAcidCat = Awaited<ReturnType<typeof createBrowserAcidCat>>;
-export { CHECK_HISTORY_STORAGE_KEY, checkHistoryLocalLayer } from "./check-history-local.ts";
+export {
+  CHECK_HISTORY_STORAGE_KEY,
+  checkHistoryLocalLayer,
+} from "./check-history-local.ts";
 export { MANIFEST_PATH } from "./webmcp.ts";

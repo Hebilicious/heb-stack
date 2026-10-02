@@ -1,7 +1,12 @@
 projects:
   app: "."
-  api-worker: "workers/api"
+  web: "apps/web"
+  api: "workers/api"
+  cli: "packages/cli"
+  application-primes: "packages/application-primes"
   primes: "crates/primes"
+  features: "features"
+  e2e: "e2e"
 
 defaultProject: "app"
 telemetry: false
@@ -15,8 +20,7 @@ hasher:
   ignorePatterns:
     - "**/node_modules/**"
     - "**/.vize/**"
-    - "**/.wrangler/**"
-    - "**/.cloudflare/**"
+    - "**/.alchemy/**"
     - ".artifacts/**"
     - "**/dist/**"
     - "crates/primes/target/**"

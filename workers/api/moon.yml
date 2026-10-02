@@ -3,47 +3,75 @@ layer: "application"
 
 project:
   title: "API Worker"
-  description: "Serves the built page, capnweb at /rpc, and MCP at /mcp."
+  description: "The Alchemy stack: one Worker serving the page, capnweb at /rpc and MCP at /mcp."
 
 toolchains:
   default: ["javascript", "node", "pnpm"]
 
 fileGroups:
-  worker-sources:
+  sources:
     - "src/**/*.ts"
-    - "cloudflare.config.ts"
-    - "wrangler.config.ts"
-    - "worker-env.d.ts"
+    - "alchemy.run.ts"
     - "tsconfig.json"
+    - "package.json"
     - "/packages/*/src/**/*.ts"
     - "/packages/*/package.json"
 
 tasks:
   typecheck:
-    description: "Type-check the Worker against its inferred bindings."
+    description: "Type-check the Worker and its stack."
     command: "tsc"
     args: ["-p", "tsconfig.json"]
-    inputs: ["@group(worker-sources)", "/tsconfig.base.json"]
+    inputs: ["@group(sources)", "/tsconfig.base.json"]
 
   dev:
-    description: "Serve the built page, /rpc and /mcp locally with cf dev; pass `-- --port <port>` to move it."
-    command: "cf"
-    args: ["dev", "--mode", "local", "--port", "8787"]
+    description: "Run the Worker in workerd on http://localhost:1337 with alchemy dev; it reloads on every change."
+    command: "alchemy"
+    args: ["dev"]
     deps:
+      - target: "web:build"
+        cacheStrategy: "outputs"
       - target: "primes:build"
         cacheStrategy: "outputs"
     preset: "server"
 
-  build:
-    description: "Bundle and validate the preview Worker with the built page, without uploading it."
-    command: "cf"
-    args: ["deploy", "--dry-run", "--mode", "preview"]
+  plan:
+    description: "Show what deploying a stage would change; pass `-- --stage <name>` (default live_$USER)."
+    command: "alchemy"
+    args: ["plan", "--no-input"]
+    env:
+      HEB_STACK_STATE: "cloudflare"
     deps:
-      - target: "app:web-build"
+      - target: "web:build"
         cacheStrategy: "outputs"
       - target: "primes:build"
         cacheStrategy: "outputs"
-      - "typecheck"
-    inputs: ["@group(worker-sources)", "/apps/web/dist/**/*"]
     options:
       cache: false
+      runInCI: "skip"
+
+  deploy:
+    description: "Deploy a stage as its own heb-stack-<stage> Worker; pass `-- --stage <name>` (default live_$USER)."
+    command: "alchemy"
+    args: ["deploy", "--yes", "--no-input"]
+    env:
+      HEB_STACK_STATE: "cloudflare"
+    deps:
+      - "typecheck"
+      - target: "web:build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    options:
+      cache: false
+      runInCI: "skip"
+
+  destroy:
+    description: "Delete every resource a stage created; pass `-- --stage <name>`."
+    command: "alchemy"
+    args: ["destroy", "--yes", "--no-input"]
+    env:
+      HEB_STACK_STATE: "cloudflare"
+    options:
+      cache: false
+      runInCI: "skip"

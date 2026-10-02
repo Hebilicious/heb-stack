@@ -1,5 +1,4 @@
 import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree, Scope, SourceCode, Variable } from "@oxlint/plugins";
 
 /**
@@ -20,7 +19,8 @@ const minimumBudgetMilliseconds = 1;
  * The rule governs evidence. Production code may classify a measured duration
  * into a telemetry bucket; a test may not require a duration to be short.
  */
-const evidenceFilePattern = /(?:^|\/)(?:[^/]+\.(?:test|spec|manifest|graph)\.ts)$/;
+const evidenceFilePattern =
+  /(?:^|\/)(?:[^/]+\.(?:test|spec|manifest|graph)\.ts)$/;
 
 /** Matchers that state "the actual value is below this budget". */
 const upperBoundMatchers = new Set(["toBeLessThan", "toBeLessThanOrEqual"]);
@@ -29,7 +29,10 @@ function isEvidenceFile(filename: string): boolean {
   return evidenceFilePattern.test(filename);
 }
 
-function resolveVariable(sourceCode: SourceCode, identifier: ESTree.IdentifierReference): Variable | null {
+function resolveVariable(
+  sourceCode: SourceCode,
+  identifier: ESTree.IdentifierReference
+): Variable | null {
   let scope: Scope | null = sourceCode.getScope(identifier);
   while (scope !== null) {
     const variable = scope.set.get(identifier.name);
@@ -45,9 +48,18 @@ function resolveVariable(sourceCode: SourceCode, identifier: ESTree.IdentifierRe
  * aliases, so moving the budget into a named constant does not take it out of
  * the rule's reach.
  */
-function numericValue(sourceCode: SourceCode, node: ESTree.Node, followed = new Set<Variable>()): number | null {
-  if (node.type === "Literal" && typeof node.value === "number") return node.value;
-  if (node.type === "UnaryExpression" && node.operator === "-" && node.argument.type === "Literal") {
+function numericValue(
+  sourceCode: SourceCode,
+  node: ESTree.Node,
+  followed = new Set<Variable>()
+): number | null {
+  if (node.type === "Literal" && typeof node.value === "number")
+    return node.value;
+  if (
+    node.type === "UnaryExpression" &&
+    node.operator === "-" &&
+    node.argument.type === "Literal"
+  ) {
     const value = node.argument.value;
     return typeof value === "number" ? -value : null;
   }
@@ -58,8 +70,16 @@ function numericValue(sourceCode: SourceCode, node: ESTree.Node, followed = new 
     if (variable === null || followed.has(variable)) return null;
     followed.add(variable);
     const definition = variable.defs[0];
-    if (definition?.type !== "Variable" || definition.parent?.type !== "VariableDeclaration") return null;
-    if (definition.parent.kind !== "const" || definition.node.type !== "VariableDeclarator") return null;
+    if (
+      definition?.type !== "Variable" ||
+      definition.parent?.type !== "VariableDeclaration"
+    )
+      return null;
+    if (
+      definition.parent.kind !== "const" ||
+      definition.node.type !== "VariableDeclarator"
+    )
+      return null;
     const init = definition.node.init;
     return init === null ? null : numericValue(sourceCode, init, followed);
   }
@@ -74,9 +94,16 @@ function numericValue(sourceCode: SourceCode, node: ESTree.Node, followed = new 
  */
 function isDurationName(name: string): boolean {
   const lower = name.toLowerCase();
-  const measured = /(?:milliseconds|millisecond|millis|ms|nanoseconds|seconds|elapsed|latency)$/.test(lower);
-  const quantity = /^(?:median|mean|average|p95|p99|worst|max|min|slow|total)/.test(lower);
-  return measured || (quantity && /duration|latency|frame|interval|time|elapsed/.test(lower));
+  const measured =
+    /(?:milliseconds|millisecond|millis|ms|nanoseconds|seconds|elapsed|latency)$/.test(
+      lower
+    );
+  const quantity =
+    /^(?:median|mean|average|p95|p99|worst|max|min|slow|total)/.test(lower);
+  return (
+    measured ||
+    (quantity && /duration|latency|frame|interval|time|elapsed/.test(lower))
+  );
 }
 
 /**
@@ -87,7 +114,12 @@ function isDurationName(name: string): boolean {
 function isDurationExpression(node: ESTree.Node): boolean {
   if (node.type === "CallExpression") {
     const callee = node.callee;
-    if (callee.type !== "MemberExpression" || callee.computed || callee.property.type !== "Identifier") return false;
+    if (
+      callee.type !== "MemberExpression" ||
+      callee.computed ||
+      callee.property.type !== "Identifier"
+    )
+      return false;
     const method = callee.property.name;
     return method === "now" || method === "getTime" || method === "valueOf";
   }
@@ -95,7 +127,11 @@ function isDurationExpression(node: ESTree.Node): boolean {
     return isDurationExpression(node.left) || isDurationExpression(node.right);
   }
   if (node.type === "Identifier") return isDurationName(node.name);
-  if (node.type === "MemberExpression" && !node.computed && node.property.type === "Identifier") {
+  if (
+    node.type === "MemberExpression" &&
+    !node.computed &&
+    node.property.type === "Identifier"
+  ) {
     return isDurationName(node.property.name);
   }
   return false;
@@ -111,12 +147,18 @@ function isLoopCondition(node: ESTree.Node): boolean {
   let parent = node.parent;
   while (parent !== null && parent !== undefined && parent.type !== "Program") {
     if (
-      (parent.type === "WhileStatement" || parent.type === "DoWhileStatement" || parent.type === "ForStatement") &&
+      (parent.type === "WhileStatement" ||
+        parent.type === "DoWhileStatement" ||
+        parent.type === "ForStatement") &&
       parent.test === current
     ) {
       return true;
     }
-    if (parent.type !== "LogicalExpression" && parent.type !== "UnaryExpression") return false;
+    if (
+      parent.type !== "LogicalExpression" &&
+      parent.type !== "UnaryExpression"
+    )
+      return false;
     current = parent;
     parent = parent.parent;
   }
@@ -124,12 +166,23 @@ function isLoopCondition(node: ESTree.Node): boolean {
 }
 
 /** `expect(duration)` for a `toBeLessThan*` call, or `null` when the call is anything else. */
-function expectedUpperBoundSubject(node: ESTree.CallExpression): ESTree.Node | null {
+function expectedUpperBoundSubject(
+  node: ESTree.CallExpression
+): ESTree.Node | null {
   const callee = node.callee;
-  if (callee.type !== "MemberExpression" || callee.computed || callee.property.type !== "Identifier") return null;
+  if (
+    callee.type !== "MemberExpression" ||
+    callee.computed ||
+    callee.property.type !== "Identifier"
+  )
+    return null;
   if (!upperBoundMatchers.has(callee.property.name)) return null;
   const expectation = callee.object;
-  if (expectation.type !== "CallExpression" || expectation.callee.type !== "Identifier") return null;
+  if (
+    expectation.type !== "CallExpression" ||
+    expectation.callee.type !== "Identifier"
+  )
+    return null;
   if (expectation.callee.name !== "expect") return null;
   return expectation.arguments[0] ?? null;
 }
@@ -162,7 +215,12 @@ export const noWallClockBudgetRule = defineRule({
             : node.operator === ">" || node.operator === ">="
               ? { duration: node.right, budget: node.left }
               : null;
-        if (below === null || !isDurationExpression(below.duration) || !isBudget(below.budget)) return;
+        if (
+          below === null ||
+          !isDurationExpression(below.duration) ||
+          !isBudget(below.budget)
+        )
+          return;
         if (isLoopCondition(node)) return;
         context.report({ node, messageId: "budget" });
       },
@@ -170,7 +228,13 @@ export const noWallClockBudgetRule = defineRule({
         if (!isEvidenceFile(context.filename)) return;
         const subject = expectedUpperBoundSubject(node);
         const budget = node.arguments[0];
-        if (subject === null || budget === undefined || !isDurationExpression(subject) || !isBudget(budget)) return;
+        if (
+          subject === null ||
+          budget === undefined ||
+          !isDurationExpression(subject) ||
+          !isBudget(budget)
+        )
+          return;
         context.report({ node, messageId: "budget" });
       },
     };

@@ -1,9 +1,13 @@
-import { resolveVariable } from "./scope.ts";
-
 import type { ESTree, SourceCode } from "@oxlint/plugins";
 
-function isGlobalReflect(sourceCode: SourceCode, expression: ESTree.Expression): boolean {
-  if (expression.type !== "Identifier" || expression.name !== "Reflect") return false;
+import { resolveVariable } from "./scope.ts";
+
+function isGlobalReflect(
+  sourceCode: SourceCode,
+  expression: ESTree.Expression
+): boolean {
+  if (expression.type !== "Identifier" || expression.name !== "Reflect")
+    return false;
   if (sourceCode.isGlobalReference(expression)) return true;
   const variable = resolveVariable(sourceCode, expression);
   return variable === null || variable.defs.length === 0;
@@ -13,9 +17,14 @@ function isGlobalReflect(sourceCode: SourceCode, expression: ESTree.Expression):
 export function isGlobalReflectMethodCall(
   sourceCode: SourceCode,
   callee: ESTree.Expression,
-  methodName: string,
+  methodName: string
 ): boolean {
-  if (!("property" in callee) || !("object" in callee) || !("computed" in callee)) return false;
+  if (
+    !("property" in callee) ||
+    !("object" in callee) ||
+    !("computed" in callee)
+  )
+    return false;
   if (!isGlobalReflect(sourceCode, callee.object)) return false;
   const property = callee.property;
   return callee.computed

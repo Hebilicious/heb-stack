@@ -5,7 +5,8 @@ export const noEffectPortsRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Disallow interfaces named *Port whose contract returns Effect values.",
+      description:
+        "Disallow interfaces named *Port whose contract returns Effect values.",
     },
     messages: {
       effectPort:
@@ -16,7 +17,8 @@ export const noEffectPortsRule = defineRule({
     return {
       TSInterfaceDeclaration(node) {
         if (!node.id.name.endsWith("Port")) return;
-        if (!/\bEffect\.Effect\s*</u.test(context.sourceCode.getText(node))) return;
+        if (!/\bEffect\.Effect\s*</u.test(context.sourceCode.getText(node)))
+          return;
         context.report({ node: node.id, messageId: "effectPort" });
       },
     };

@@ -1,3 +1,5 @@
+import { constantSource } from "@heb-stack/acidcat-kernel";
+import type { Availability, SessionTarget } from "@heb-stack/acidcat-kernel";
 import {
   checkDefinition,
   historyClearDefinition,
@@ -7,13 +9,16 @@ import {
 import {
   PrimeChecker,
   primeCheckerLayer,
-  type CheckHistory,
-  type PrimeMath,
 } from "@heb-stack/application-primes/runtime";
-import { constantSource, type Availability, type SessionTarget } from "@heb-stack/acidcat-kernel";
+import type {
+  CheckHistory,
+  PrimeMath,
+} from "@heb-stack/application-primes/runtime";
 import type { ModelContextPort } from "@heb-stack/webmcp-adapter";
 import { Effect, Exit, Layer, ManagedRuntime, Scope } from "effect";
-import { bindCapability, type CapabilitySession } from "./executor.ts";
+
+import { bindCapability } from "./executor.ts";
+import type { CapabilitySession } from "./executor.ts";
 
 export interface AcidCatOptions {
   /** The target this session serves; a capability outside its audience never registers. */
@@ -21,38 +26,77 @@ export interface AcidCatOptions {
 }
 
 /** What a host supplies: arithmetic always, and a history when the host keeps one. */
-export type AcidCatServices = Layer.Layer<PrimeMath> | Layer.Layer<PrimeMath | CheckHistory>;
+export type AcidCatServices =
+  | Layer.Layer<PrimeMath>
+  | Layer.Layer<PrimeMath | CheckHistory>;
 
 const available: Availability = Object.freeze({ available: true as const });
 
 /** The only managed application runtime; each host supplies its service Layers and nothing else. */
-export async function createAcidCat(options: AcidCatOptions, services: AcidCatServices) {
+export async function createAcidCat(
+  options: AcidCatOptions,
+  services: AcidCatServices
+) {
   const disposal = new AbortController();
-  const runtime = ManagedRuntime.make(primeCheckerLayer.pipe(Layer.provideMerge(services)));
+  const runtime = ManagedRuntime.make(
+    primeCheckerLayer.pipe(Layer.provideMerge(services))
+  );
   try {
     const checker = await runtime.runPromise(PrimeChecker);
-    const session: CapabilitySession = Object.freeze({ signal: disposal.signal, target: options.target });
+    const session: CapabilitySession = Object.freeze({
+      signal: disposal.signal,
+      target: options.target,
+    });
     const always = constantSource(available);
     const catalog = {
-      primes: {
-        check: bindCapability(checkDefinition, runtime, { availability: always, snapshot: checker.snapshot }, session),
-        next: bindCapability(nextDefinition, runtime, { availability: always }, session),
-      },
       history: {
-        list: bindCapability(historyListDefinition, runtime, { availability: always }, session),
-        clear: bindCapability(historyClearDefinition, runtime, { availability: always }, session),
+        clear: bindCapability(
+          historyClearDefinition,
+          runtime,
+          { availability: always },
+          session
+        ),
+        list: bindCapability(
+          historyListDefinition,
+          runtime,
+          { availability: always },
+          session
+        ),
+      },
+      primes: {
+        check: bindCapability(
+          checkDefinition,
+          runtime,
+          { availability: always, snapshot: checker.snapshot },
+          session
+        ),
+        next: bindCapability(
+          nextDefinition,
+          runtime,
+          { availability: always },
+          session
+        ),
       },
     };
     const ensureOpen = () => {
-      if (disposal.signal.aborted) throw new Error("The AcidCat session is closed");
+      if (disposal.signal.aborted) {
+        throw new Error("The AcidCat session is closed");
+      }
     };
     return Object.freeze({
-      target: options.target,
       catalog,
+      dispose: async () => {
+        disposal.abort();
+        await runtime.dispose();
+      },
       // BOUNDARY: The adapter decodes fetched manifest data before registration.
-      installWebMcp: async (port: ModelContextPort, loadManifest: (signal: AbortSignal) => Promise<unknown>) => {
+      installWebMcp: async (
+        port: ModelContextPort,
+        loadManifest: (signal: AbortSignal) => Promise<unknown>
+      ) => {
         ensureOpen();
-        const { installWebMcpAdapter } = await import("@heb-stack/webmcp-adapter");
+        const { installWebMcpAdapter } =
+          await import("@heb-stack/webmcp-adapter");
         ensureOpen();
         const scope = await runtime.runPromise(Scope.make());
         const adapter = await runtime.runPromise(
@@ -61,27 +105,28 @@ export async function createAcidCat(options: AcidCatOptions, services: AcidCatSe
               catalog,
               port,
               Effect.tryPromise({
-                try: (signal) => loadManifest(signal),
                 catch: () => "Tool registration metadata could not be loaded",
-              }),
+                try: async (signal) => await loadManifest(signal),
+              })
             ),
-            scope,
-          ),
+            scope
+          )
         );
         return Object.freeze({
+          dispose: async () => {
+            await runtime.runPromise(Scope.close(scope, Exit.void));
+          },
+          retry: async () => {
+            await runtime.runPromise(adapter.retry);
+          },
           snapshot: adapter.snapshot,
-          retry: () => runtime.runPromise(adapter.retry),
-          dispose: () => runtime.runPromise(Scope.close(scope, Exit.void)),
         });
       },
-      dispose: async () => {
-        disposal.abort();
-        await runtime.dispose();
-      },
+      target: options.target,
     });
-  } catch (cause) {
+  } catch (error) {
     await runtime.dispose();
-    throw cause;
+    throw error;
   }
 }
 export type AcidCat = Awaited<ReturnType<typeof createAcidCat>>;

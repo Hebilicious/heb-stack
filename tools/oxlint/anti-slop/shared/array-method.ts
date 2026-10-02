@@ -16,7 +16,10 @@ export function unwrapArrayExpression(node: ESTree.Node): ESTree.Node {
 }
 
 /** Resolve a local binding by scope, not by identifier spelling. */
-export function resolveArrayBinding(sourceCode: SourceCode, node: ESTree.Node): Variable | null {
+export function resolveArrayBinding(
+  sourceCode: SourceCode,
+  node: ESTree.Node
+): Variable | null {
   node = unwrapArrayExpression(node);
   if (node.type !== "Identifier") return null;
   let scope: Scope | null = sourceCode.getScope(node);
@@ -29,14 +32,20 @@ export function resolveArrayBinding(sourceCode: SourceCode, node: ESTree.Node): 
 }
 
 /** Read static method names, including computed string literals, without evaluating expressions. */
-export function arrayMethodTarget(node: ESTree.Node): { readonly name: string; readonly object: ESTree.Node } | null {
+export function arrayMethodTarget(
+  node: ESTree.Node
+): { readonly name: string; readonly object: ESTree.Node } | null {
   node = unwrapArrayExpression(node);
   if (node.type !== "MemberExpression") return null;
   const property = node.property;
   if (!node.computed && property.type === "Identifier") {
     return { name: property.name, object: node.object };
   }
-  if (node.computed && property.type === "Literal" && typeof property.value === "string") {
+  if (
+    node.computed &&
+    property.type === "Literal" &&
+    typeof property.value === "string"
+  ) {
     return { name: property.value, object: node.object };
   }
   return null;
@@ -44,7 +53,8 @@ export function arrayMethodTarget(node: ESTree.Node): { readonly name: string; r
 
 function isArrayAnnotation(type: ESTree.TSType): boolean {
   if (type.type === "TSArrayType" || type.type === "TSTupleType") return true;
-  if (type.type === "TSParenthesizedType") return isArrayAnnotation(type.typeAnnotation);
+  if (type.type === "TSParenthesizedType")
+    return isArrayAnnotation(type.typeAnnotation);
   if (type.type === "TSTypeOperator" && type.operator === "readonly") {
     return isArrayAnnotation(type.typeAnnotation);
   }
@@ -59,7 +69,7 @@ function isArrayAnnotation(type: ESTree.TSType): boolean {
 export function isKnownArrayExpression(
   sourceCode: SourceCode,
   node: ESTree.Node,
-  visited = new Set<Variable>(),
+  visited = new Set<Variable>()
 ): boolean {
   node = unwrapArrayExpression(node);
   if (node.type === "ArrayExpression") return true;
@@ -67,7 +77,16 @@ export function isKnownArrayExpression(
     const method = arrayMethodTarget(node.callee);
     return (
       method !== null &&
-      ["map", "filter", "flatMap", "slice", "concat", "toSorted", "toReversed", "toSpliced"].includes(method.name) &&
+      [
+        "map",
+        "filter",
+        "flatMap",
+        "slice",
+        "concat",
+        "toSorted",
+        "toReversed",
+        "toSpliced",
+      ].includes(method.name) &&
       isKnownArrayExpression(sourceCode, method.object, visited)
     );
   }
@@ -75,7 +94,12 @@ export function isKnownArrayExpression(
   const variable = resolveArrayBinding(sourceCode, node);
   if (variable === null || visited.has(variable)) return false;
   visited.add(variable);
-  if (variable.references.some((reference) => reference.isWrite() && !reference.init)) return false;
+  if (
+    variable.references.some(
+      (reference) => reference.isWrite() && !reference.init
+    )
+  )
+    return false;
   for (const identifier of variable.identifiers) {
     const annotation = identifier.typeAnnotation?.typeAnnotation;
     if (annotation !== undefined) return isArrayAnnotation(annotation);

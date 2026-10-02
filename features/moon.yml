@@ -1,0 +1,21 @@
+language: "typescript"
+layer: "automation"
+
+project:
+  title: "Features"
+  description: "The Gherkin features and the adapter proofs."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+tasks:
+  test:
+    description: "Run the features (capabilities and targets in Node, the page as a Vapor component) and the CLI and MCP proofs."
+    command: "vitest"
+    args: ["run"]
+    deps:
+      - target: "cli:build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    inputs: ["**/*", "/packages/*/src/**/*.ts", "/packages/*/package.json", "/apps/web/src/**/*", "/apps/web/vize.config.ts"]

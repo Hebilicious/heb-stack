@@ -13,8 +13,7 @@ apps/web/public/acidcat-manifest.generated.json
 .moon/docker/
 .vize/
 **/.vize/
-**/.wrangler/
-**/.cloudflare/
+**/.alchemy/
 
 # Disposable artifacts: bundles, binaries, traces
 .artifacts/

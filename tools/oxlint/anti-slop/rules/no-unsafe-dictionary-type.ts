@@ -1,5 +1,7 @@
 import { defineRule } from "@oxlint/plugins";
+import type { ESTree } from "@oxlint/plugins";
 
+import { hasBoundaryComment } from "../shared/boundary-comment.ts";
 import {
   classifyUnsafeDictionary,
   classifyUnsafeDictionaryValue,
@@ -7,9 +9,6 @@ import {
   type TypeEnvironment,
 } from "../shared/dictionary-types.ts";
 import { visibleTypeAlias } from "../shared/type-alias-resolution.ts";
-
-import type { ESTree } from "@oxlint/plugins";
-import { hasBoundaryComment } from "../shared/boundary-comment.ts";
 
 const typeNodeKinds: ReadonlySet<string> = new Set([
   "JSDocNonNullableType",
@@ -68,8 +67,12 @@ function isInsideTypeAliasDeclaration(node: ESTree.Node): boolean {
   return false;
 }
 
-function isPlainAliasConsumerUse(node: ESTree.TSType, environment: TypeEnvironment): boolean {
-  if (node.type !== "TSTypeReference" || node.typeArguments?.params.length) return false;
+function isPlainAliasConsumerUse(
+  node: ESTree.TSType,
+  environment: TypeEnvironment
+): boolean {
+  if (node.type !== "TSTypeReference" || node.typeArguments?.params.length)
+    return false;
   const name = typeReferenceName(node);
   return (
     name !== null &&
@@ -82,20 +85,28 @@ function isInsideTypeParameterConstraint(node: ESTree.TSType): boolean {
   let child: ESTree.Node = node;
   let parent: ESTree.Node | null = child.parent;
   while (parent !== null && parent.type !== "Program") {
-    if (parent.type === "TSTypeParameter" && parent.constraint === child) return true;
+    if (parent.type === "TSTypeParameter" && parent.constraint === child)
+      return true;
     child = parent;
     parent = child.parent;
   }
   return false;
 }
 
-function shouldReportType(node: ESTree.TSType, environment: TypeEnvironment): boolean {
+function shouldReportType(
+  node: ESTree.TSType,
+  environment: TypeEnvironment
+): boolean {
   if (isInsideTypeParameterConstraint(node)) return false;
   if (isPlainAliasConsumerUse(node, environment)) return false;
   if (classifyUnsafeDictionary(node, environment) === null) return false;
   let current: ESTree.Node | null = node.parent;
   while (current !== null && current.type !== "Program") {
-    if (isTypeNode(current) && classifyUnsafeDictionary(current, environment) !== null) return false;
+    if (
+      isTypeNode(current) &&
+      classifyUnsafeDictionary(current, environment) !== null
+    )
+      return false;
     current = current.parent;
   }
   return true;
@@ -136,7 +147,11 @@ export const noUnsafeDictionaryTypeRule = defineRule({
         option !== null &&
         !Array.isArray(option) &&
         option.allowWithBoundaryComment === true;
-      if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
+      if (
+        allowWithBoundaryComment &&
+        hasBoundaryComment(context.sourceCode, node)
+      )
+        return;
       if (environment === null || !shouldReportType(node, environment)) return;
       const unsafe = classifyUnsafeDictionary(node, environment);
       if (unsafe === null) return;
@@ -145,7 +160,10 @@ export const noUnsafeDictionaryTypeRule = defineRule({
 
     return {
       Program(node) {
-        environment = createTypeEnvironment(node, context.sourceCode.visitorKeys);
+        environment = createTypeEnvironment(
+          node,
+          context.sourceCode.visitorKeys
+        );
       },
       TSTypeReference: reportIfUnsafe,
       TSTypeLiteral: reportIfUnsafe,
@@ -157,9 +175,21 @@ export const noUnsafeDictionaryTypeRule = defineRule({
           option !== null &&
           !Array.isArray(option) &&
           option.allowWithBoundaryComment === true;
-        if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
-        if (environment === null || node.typeAnnotation === null || node.parent.type === "TSTypeLiteral") return;
-        const unsafe = classifyUnsafeDictionaryValue(node.typeAnnotation.typeAnnotation, environment);
+        if (
+          allowWithBoundaryComment &&
+          hasBoundaryComment(context.sourceCode, node)
+        )
+          return;
+        if (
+          environment === null ||
+          node.typeAnnotation === null ||
+          node.parent.type === "TSTypeLiteral"
+        )
+          return;
+        const unsafe = classifyUnsafeDictionaryValue(
+          node.typeAnnotation.typeAnnotation,
+          environment
+        );
         if (unsafe !== null) report(node, unsafe.unsafeValue);
       },
     };

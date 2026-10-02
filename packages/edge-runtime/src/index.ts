@@ -1,4 +1,5 @@
-import { createAcidCat, type AcidCat } from "@heb-stack/acidcat";
+import { createAcidCat } from "@heb-stack/acidcat";
+import type { AcidCat } from "@heb-stack/acidcat";
 import { primeMathWasmLayer } from "@heb-stack/acidcat/primes";
 
 export interface EdgeSessionOptions {
@@ -14,6 +15,11 @@ export interface EdgeSessionOptions {
  * An isolate serves every caller, so the session keeps no history: `primes.check` answers without recording, and the
  * history leaves, which neither tool target declares, are never reachable here.
  */
-export function createEdgeAcidCat(options: EdgeSessionOptions): Promise<AcidCat> {
-  return createAcidCat({ target: options.target }, primeMathWasmLayer(options.module));
+export async function createEdgeAcidCat(
+  options: EdgeSessionOptions
+): Promise<AcidCat> {
+  return await createAcidCat(
+    { target: options.target },
+    primeMathWasmLayer(options.module)
+  );
 }

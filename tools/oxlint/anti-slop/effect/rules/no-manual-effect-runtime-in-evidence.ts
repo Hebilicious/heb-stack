@@ -1,5 +1,4 @@
 import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree } from "@oxlint/plugins";
 
 /**
@@ -27,11 +26,17 @@ const EFFECT_RUNNERS = new Set([
 
 function manualRunner(callee: ESTree.Node): string | null {
   if (callee.type !== "MemberExpression" || callee.computed) return null;
-  if (callee.object.type !== "Identifier" || callee.property.type !== "Identifier") return null;
+  if (
+    callee.object.type !== "Identifier" ||
+    callee.property.type !== "Identifier"
+  )
+    return null;
   const owner = callee.object.name;
   const method = callee.property.name;
-  if (owner === "Effect" && EFFECT_RUNNERS.has(method)) return `Effect.${method}`;
-  if (owner === "ManagedRuntime" && method === "make") return "ManagedRuntime.make";
+  if (owner === "Effect" && EFFECT_RUNNERS.has(method))
+    return `Effect.${method}`;
+  if (owner === "ManagedRuntime" && method === "make")
+    return "ManagedRuntime.make";
   return null;
 }
 
@@ -39,7 +44,8 @@ export const noManualEffectRuntimeInEvidenceRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Disallow running Effects or building runtimes by hand in evidence; the harness runs them.",
+      description:
+        "Disallow running Effects or building runtimes by hand in evidence; the harness runs them.",
     },
     messages: {
       manualRunner:
@@ -51,7 +57,12 @@ export const noManualEffectRuntimeInEvidenceRule = defineRule({
       CallExpression(node) {
         if (!evidenceFilePattern.test(context.filename)) return;
         const runner = manualRunner(node.callee);
-        if (runner !== null) context.report({ node: node.callee, messageId: "manualRunner", data: { runner } });
+        if (runner !== null)
+          context.report({
+            node: node.callee,
+            messageId: "manualRunner",
+            data: { runner },
+          });
       },
     };
   },

@@ -11,6 +11,7 @@
     "@effect/atom-vue": "catalog:",
     "@effect/platform-node": "catalog:",
     "@effect/tsgo": "catalog:",
+    "@gommage/cli": "catalog:",
     "@heb-stack/acidcat": "workspace:*",
     "@heb-stack/acidcat-kernel": "workspace:*",
     "@heb-stack/browser-runtime": "workspace:*",
@@ -29,7 +30,6 @@
     "@vizejs/vite-plugin": "catalog:",
     "@xstate/effect": "catalog:",
     "capnweb": "catalog:",
-    "cf": "catalog:",
     "effect": "catalog:",
     "happy-dom": "catalog:",
     "lefthook": "catalog:",
@@ -37,11 +37,11 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "typescript": "catalog:",
+    "ultracite": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "vize": "catalog:",
     "vue": "catalog:",
-    "wrangler": "catalog:",
     "xstate": "catalog:"
   },
   "packageManager": "pnpm@12.8.1"

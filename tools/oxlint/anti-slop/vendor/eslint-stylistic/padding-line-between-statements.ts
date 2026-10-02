@@ -10,7 +10,6 @@ import type {
 } from "@oxlint/plugins";
 type ASTNode = ESTree.Node;
 type Token = SyntaxToken | Comment;
-import type { RuleOptions, SelectorOption, StatementOption } from "./padding-line-options.d.ts";
 import {
   isClosingBraceToken,
   isFunction,
@@ -23,6 +22,11 @@ import {
   LINEBREAKS,
   skipChainExpression,
 } from "./padding-line-ast.ts";
+import type {
+  RuleOptions,
+  SelectorOption,
+  StatementOption,
+} from "./padding-line-options.d.ts";
 
 const CJS_EXPORT = /^(?:module\s*\.\s*)?exports(?:\s*\.|\s*\[|$)/u;
 const CJS_IMPORT = /^require\(/u;
@@ -48,7 +52,10 @@ interface NodeTestObject {
 }
 
 const LT = `[${Array.from(LINEBREAKS).join("")}]`;
-const PADDING_LINE_SEQUENCE = new RegExp(String.raw`^(\s*?${LT})\s*${LT}(\s*;?)$`, "u");
+const PADDING_LINE_SEQUENCE = new RegExp(
+  String.raw`^(\s*?${LT})\s*${LT}(\s*;?)$`,
+  "u"
+);
 
 function isSelectorOption(option: StatementOption): option is SelectorOption {
   return typeof option === "object" && !Array.isArray(option);
@@ -61,11 +68,16 @@ function isSelectorOption(option: StatementOption): option is SelectorOption {
  * @returns the created tester.
  * @private
  */
-function newKeywordTester(type: string | string[], keyword: string): NodeTestObject {
+function newKeywordTester(
+  type: string | string[],
+  keyword: string
+): NodeTestObject {
   return {
     test(node, sourceCode): boolean {
       const isSameKeyword = sourceCode.getFirstToken(node)?.value === keyword;
-      const isSameType = Array.isArray(type) ? type.includes(node.type) : type === node.type;
+      const isSameType = Array.isArray(type)
+        ? type.includes(node.type)
+        : type === node.type;
 
       return isSameKeyword && isSameType;
     },
@@ -93,13 +105,17 @@ function newNodeTypeTester(type: string): NodeTestObject {
 function isIIFEStatement(node: ASTNode): boolean {
   if (node.type === "ExpressionStatement") {
     let expression = skipChainExpression(node.expression);
-    if (expression.type === "UnaryExpression") expression = skipChainExpression(expression.argument);
+    if (expression.type === "UnaryExpression")
+      expression = skipChainExpression(expression.argument);
 
     if (expression.type === "CallExpression") {
       let node: ASTNode = expression.callee;
       while (node.type === "SequenceExpression") {
         const lastExpression = node.expressions.at(-1);
-        if (lastExpression === undefined) throw new Error("Padding rule invariant: sequence expression is empty");
+        if (lastExpression === undefined)
+          throw new Error(
+            "Padding rule invariant: sequence expression is empty"
+          );
         node = lastExpression;
       }
 
@@ -153,9 +169,15 @@ function isBlockLikeStatement(node: ASTNode, sourceCode: SourceCode): boolean {
   // Checks the last token is a closing brace of blocks.
   const lastToken = sourceCode.getLastToken(node, isNotSemicolonToken);
   const belongingNode =
-    lastToken && isClosingBraceToken(lastToken) ? sourceCode.getNodeByRangeIndex(lastToken.range[0]) : null;
+    lastToken && isClosingBraceToken(lastToken)
+      ? sourceCode.getNodeByRangeIndex(lastToken.range[0])
+      : null;
 
-  return !!belongingNode && (belongingNode.type === "BlockStatement" || belongingNode.type === "SwitchStatement");
+  return (
+    !!belongingNode &&
+    (belongingNode.type === "BlockStatement" ||
+      belongingNode.type === "SwitchStatement")
+  );
 }
 
 /**
@@ -180,7 +202,12 @@ function isDirective(node: ASTNode, sourceCode: SourceCode): boolean {
  * @returns `true` if the node is a part of directive prologue.
  */
 function isDirectivePrologue(node: ASTNode, sourceCode: SourceCode): boolean {
-  if (isDirective(node, sourceCode) && node.parent && "body" in node.parent && Array.isArray(node.parent.body)) {
+  if (
+    isDirective(node, sourceCode) &&
+    node.parent &&
+    "body" in node.parent &&
+    Array.isArray(node.parent.body)
+  ) {
     for (const sibling of node.parent.body) {
       if (sibling === node) break;
 
@@ -208,7 +235,9 @@ function isCJSExport(node: ASTNode): boolean {
         return (
           left.object.type === "Identifier" &&
           (left.object.name === "exports" ||
-            (left.object.name === "module" && left.property.type === "Identifier" && left.property.name === "exports"))
+            (left.object.name === "module" &&
+              left.property.type === "Identifier" &&
+              left.property.name === "exports"))
         );
       }
     }
@@ -223,7 +252,10 @@ function isCJSExport(node: ASTNode): boolean {
  * @returns `true` if the node is an expression
  */
 function isExpression(node: ASTNode, sourceCode: SourceCode): boolean {
-  return node.type === "ExpressionStatement" && !isDirectivePrologue(node, sourceCode);
+  return (
+    node.type === "ExpressionStatement" &&
+    !isDirectivePrologue(node, sourceCode)
+  );
 }
 
 /**
@@ -239,7 +271,10 @@ function isExpression(node: ASTNode, sourceCode: SourceCode): boolean {
  * @returns The actual last token.
  * @private
  */
-function getActualLastToken(node: ASTNode, sourceCode: SourceCode): Token | null {
+function getActualLastToken(
+  node: ASTNode,
+  sourceCode: SourceCode
+): Token | null {
   const semiToken = sourceCode.getLastToken(node)!;
   const prevToken = sourceCode.getTokenBefore(semiToken);
   const nextToken = sourceCode.getTokenAfter(semiToken);
@@ -262,7 +297,11 @@ function getActualLastToken(node: ASTNode, sourceCode: SourceCode): Token | null
  * @returns The concatenation of trailingSpaces and indentSpaces.
  * @private
  */
-function replacerToRemovePaddingLines(_: string, trailingSpaces: string, indentSpaces: string): string {
+function replacerToRemovePaddingLines(
+  _: string,
+  trailingSpaces: string,
+  indentSpaces: string
+): string {
   return trailingSpaces + indentSpaces;
 }
 
@@ -271,7 +310,8 @@ function getReportLoc(node: ASTNode, sourceCode: SourceCode): Location {
 
   const line = node.loc.start.line;
   const sourceLine = sourceCode.lines[line - 1];
-  if (sourceLine === undefined) throw new Error("Padding rule invariant: statement source line is missing");
+  if (sourceLine === undefined)
+    throw new Error("Padding rule invariant: statement source line is missing");
 
   return {
     start: node.loc.start,
@@ -305,7 +345,12 @@ function verifyForAny(): void {
  *
  * @private
  */
-function verifyForNever(context: RuleContext, _: ASTNode, nextNode: ASTNode, paddingLines: [Token, Token][]): void {
+function verifyForNever(
+  context: RuleContext,
+  _: ASTNode,
+  nextNode: ASTNode,
+  paddingLines: [Token, Token][]
+): void {
   if (paddingLines.length === 0) return;
 
   context.report({
@@ -316,7 +361,10 @@ function verifyForNever(context: RuleContext, _: ASTNode, nextNode: ASTNode, pad
       if (paddingLines.length >= 2) return null;
 
       const paddingPair = paddingLines[0];
-      if (paddingPair === undefined) throw new Error("Padding rule invariant: reported padding pair is missing");
+      if (paddingPair === undefined)
+        throw new Error(
+          "Padding rule invariant: reported padding pair is missing"
+        );
       const [prevToken, nextToken] = paddingPair;
       const start = prevToken.range[1];
       const end = nextToken.range[0];
@@ -346,7 +394,7 @@ function verifyForAlways(
   context: RuleContext,
   prevNode: ASTNode,
   nextNode: ASTNode,
-  paddingLines: [Token, Token][],
+  paddingLines: [Token, Token][]
 ): void {
   if (paddingLines.length > 0) return;
 
@@ -389,7 +437,9 @@ function verifyForAlways(
             return true;
           },
         })! || nextNode;
-      const insertText = isTokenOnSameLine(prevToken, nextToken) ? "\n\n" : "\n";
+      const insertText = isTokenOnSameLine(prevToken, nextToken)
+        ? "\n\n"
+        : "\n";
 
       return fixer.insertTextAfter(prevToken, insertText);
     },
@@ -412,12 +462,21 @@ const MaybeMultilineStatementType: Record<string, NodeTestObject> = {
   "block-like": { test: isBlockLikeStatement },
   expression: { test: isExpression },
   return: newKeywordTester("ReturnStatement", "return"),
-  export: newKeywordTester(["ExportAllDeclaration", "ExportDefaultDeclaration", "ExportNamedDeclaration"], "export"),
+  export: newKeywordTester(
+    [
+      "ExportAllDeclaration",
+      "ExportDefaultDeclaration",
+      "ExportNamedDeclaration",
+    ],
+    "export"
+  ),
   var: newKeywordTester("VariableDeclaration", "var"),
   let: newKeywordTester("VariableDeclaration", "let"),
   const: newKeywordTester("VariableDeclaration", "const"),
   using: {
-    test: (node) => node.type === "VariableDeclaration" && (node.kind === "using" || node.kind === "await using"),
+    test: (node) =>
+      node.type === "VariableDeclaration" &&
+      (node.kind === "using" || node.kind === "await using"),
   },
   type: newKeywordTester("TSTypeAliasDeclaration", "type"),
 };
@@ -444,9 +503,15 @@ const StatementTypes: Record<string, NodeTestObject> = {
   class: newKeywordTester("ClassDeclaration", "class"),
   continue: newKeywordTester("ContinueStatement", "continue"),
   debugger: newKeywordTester("DebuggerStatement", "debugger"),
-  default: newKeywordTester(["SwitchCase", "ExportDefaultDeclaration"], "default"),
+  default: newKeywordTester(
+    ["SwitchCase", "ExportDefaultDeclaration"],
+    "default"
+  ),
   do: newKeywordTester("DoWhileStatement", "do"),
-  for: newKeywordTester(["ForStatement", "ForInStatement", "ForOfStatement"], "for"),
+  for: newKeywordTester(
+    ["ForStatement", "ForInStatement", "ForOfStatement"],
+    "for"
+  ),
   if: newKeywordTester("IfStatement", "if"),
   import: newKeywordTester("ImportDeclaration", "import"),
   switch: newKeywordTester("SwitchStatement", "switch"),
@@ -479,22 +544,26 @@ const StatementTypes: Record<string, NodeTestObject> = {
         `singleline-${key}`,
         {
           ...value,
-          test: (node, sourceCode) => value.test(node, sourceCode) && isSingleLine(node),
+          test: (node, sourceCode) =>
+            value.test(node, sourceCode) && isSingleLine(node),
         },
       ],
       [
         `multiline-${key}`,
         {
           ...value,
-          test: (node, sourceCode) => value.test(node, sourceCode) && !isSingleLine(node),
+          test: (node, sourceCode) =>
+            value.test(node, sourceCode) && !isSingleLine(node),
         },
       ],
-    ]),
+    ])
   ),
 };
 
 /** Build the vendored padding rule with caller-owned, typed policy options. */
-export default function createPaddingLineRule(options: RuleOptions): CreateRule {
+export default function createPaddingLineRule(
+  options: RuleOptions
+): CreateRule {
   return {
     meta: {
       type: "layout",
@@ -529,7 +598,10 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
             additionalProperties: false,
           },
           statementMatcher: {
-            anyOf: [{ $ref: "#/$defs/statementType" }, { $ref: "#/$defs/selectorOption" }],
+            anyOf: [
+              { $ref: "#/$defs/statementType" },
+              { $ref: "#/$defs/selectorOption" },
+            ],
           },
           statementOption: {
             anyOf: [
@@ -623,9 +695,11 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
       function match(node: ASTNode, type: StatementOption): boolean {
         let innerStatementNode = node;
 
-        while (innerStatementNode.type === "LabeledStatement") innerStatementNode = innerStatementNode.body;
+        while (innerStatementNode.type === "LabeledStatement")
+          innerStatementNode = innerStatementNode.body;
 
-        if (Array.isArray(type)) return type.some(match.bind(null, innerStatementNode));
+        if (Array.isArray(type))
+          return type.some(match.bind(null, innerStatementNode));
 
         if (isSelectorOption(type)) {
           const matchedNodes = selectorMatchedNodes.get(type.selector);
@@ -633,14 +707,18 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
 
           const lineMode = type.lineMode;
 
-          if (lineMode === "singleline") return isSingleLine(innerStatementNode);
-          else if (lineMode === "multiline") return !isSingleLine(innerStatementNode);
+          if (lineMode === "singleline")
+            return isSingleLine(innerStatementNode);
+          else if (lineMode === "multiline")
+            return !isSingleLine(innerStatementNode);
 
           return true;
         } else {
           const statementType = StatementTypes[type];
           if (statementType === undefined)
-            throw new Error(`Padding rule invariant: unsupported statement type ${type}`);
+            throw new Error(
+              `Padding rule invariant: unsupported statement type ${type}`
+            );
           return statementType.test(innerStatementNode, sourceCode);
         }
       }
@@ -652,11 +730,20 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
        * @returns The tester of the last matched configure.
        * @private
        */
-      function getPaddingType(prevNode: ASTNode, nextNode: ASTNode): (typeof PaddingTypes)[keyof typeof PaddingTypes] {
+      function getPaddingType(
+        prevNode: ASTNode,
+        nextNode: ASTNode
+      ): (typeof PaddingTypes)[keyof typeof PaddingTypes] {
         for (let i = options.length - 1; i >= 0; --i) {
           const configure = options[i];
-          if (configure === undefined) throw new Error("Padding rule invariant: configuration entry is missing");
-          if (match(prevNode, configure.prev) && match(nextNode, configure.next)) {
+          if (configure === undefined)
+            throw new Error(
+              "Padding rule invariant: configuration entry is missing"
+            );
+          if (
+            match(prevNode, configure.prev) &&
+            match(nextNode, configure.next)
+          ) {
             return PaddingTypes[configure.blankLine];
           }
         }
@@ -671,7 +758,10 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
        * @returns The array of token pairs.
        * @private
        */
-      function getPaddingLineSequences(prevNode: ASTNode, nextNode: ASTNode): [Token, Token][] {
+      function getPaddingLineSequences(
+        prevNode: ASTNode,
+        nextNode: ASTNode
+      ): [Token, Token][] {
         const pairs: [Token, Token][] = [];
         let prevToken: Token = getActualLastToken(prevNode, sourceCode)!;
 
@@ -681,7 +771,8 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
               includeComments: true,
             })!;
 
-            if (token.loc.start.line - prevToken.loc.end.line >= 2) pairs.push([prevToken, token]);
+            if (token.loc.start.line - prevToken.loc.end.line >= 2)
+              pairs.push([prevToken, token]);
 
             prevToken = token;
           } while (prevToken.range[0] < nextNode.range[0]);
@@ -749,7 +840,7 @@ export default function createPaddingLineRule(options: RuleOptions): CreateRule 
           (node: ASTNode): void => {
             selectorMatchedNodes.get(selector)?.add(node);
           },
-        ]),
+        ])
       );
 
       return {

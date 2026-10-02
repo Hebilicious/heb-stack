@@ -1,0 +1,16 @@
+language: "typescript"
+layer: "library"
+
+project:
+  title: "Prime domain"
+  description: "The prime checker's capabilities, lifecycle machine and services."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+tasks:
+  test:
+    description: "Prove the lifecycle below AcidCat: replacement interrupts the check in flight, and a failed check retries."
+    command: "vitest"
+    args: ["run"]
+    inputs: ["src/**/*.ts", "vitest.config.ts", "/features/support/**/*.ts"]

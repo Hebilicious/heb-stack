@@ -1,11 +1,10 @@
-import { definitions } from "@heb-stack/acidcat/catalog";
-import {
-  walkCapabilities,
-  walkDefinitions,
-  type Catalog,
-  type ExternalCapability,
-  type Result,
+import { walkCapabilities, walkDefinitions } from "@heb-stack/acidcat-kernel";
+import type {
+  Catalog,
+  ExternalCapability,
+  Result,
 } from "@heb-stack/acidcat-kernel";
+import { definitions } from "@heb-stack/acidcat/catalog";
 import { Effect, Option, Schema } from "effect";
 import { Tool, Toolkit } from "effect/ai";
 
@@ -26,22 +25,37 @@ export interface McpToolSource {
  * reports available. The pure descriptor tree adds only the schemas, so this holds no capability map and nothing
  * has to be kept in step with the generated manifest.
  */
-export function servedToolSources(catalog: Catalog): Effect.Effect<readonly McpToolSource[]> {
-  const descriptors = new Map(walkDefinitions(definitions).map((descriptor) => [descriptor.id, descriptor]));
-  const served = walkCapabilities(catalog).filter((leaf) => leaf.availability.getSnapshot().available);
-  return Effect.forEach(served, (leaf) =>
-    Effect.gen(function* () {
-      const descriptor = descriptors.get(leaf.id);
-      if (descriptor === undefined)
-        return yield* Effect.die(`The catalog holds ${leaf.id}, which no capability definition declares`);
-      const program = yield* descriptor.load;
-      return {
-        id: leaf.id,
-        description: leaf.description,
-        input: program.input,
-        invoke: (input) => invokeLeaf(leaf, input),
-      };
-    }),
+export function servedToolSources(
+  catalog: Catalog
+): Effect.Effect<readonly McpToolSource[]> {
+  const descriptors = new Map(
+    walkDefinitions(definitions).map((descriptor) => [
+      descriptor.id,
+      descriptor,
+    ])
+  );
+  const served = walkCapabilities(catalog).filter(
+    (leaf) => leaf.availability.getSnapshot().available
+  );
+  return Effect.all(
+    served.map((leaf) =>
+      Effect.gen(function* () {
+        const descriptor = descriptors.get(leaf.id);
+        if (descriptor === undefined) {
+          return yield* Effect.die(
+            `The catalog holds ${leaf.id}, which no capability definition declares`
+          );
+        }
+        const program = yield* descriptor.load;
+        return {
+          description: leaf.description,
+          id: leaf.id,
+          input: program.input,
+          // BOUNDARY: A tool call's arguments are the client's data; the capability's own decoder reads them.
+          invoke: async (input: unknown) => await invokeLeaf(leaf, input),
+        };
+      })
+    )
   );
 }
 
@@ -55,11 +69,11 @@ export function mcpToolkit(sources: readonly McpToolSource[]) {
   const tools: readonly Tool.Any[] = sources.map((source) =>
     Tool.dynamic(source.id, {
       description: source.description,
-      parameters: source.input,
-      success: Schema.Json,
       failure: Schema.Json,
       failureMode: "error",
-    }),
+      parameters: source.input,
+      success: Schema.Json,
+    })
   );
   const toolkit = Toolkit.make(...tools);
   // BOUNDARY: A tool call's arguments are the client's data; the capability's own decoder reads them, so the
@@ -68,12 +82,15 @@ export function mcpToolkit(sources: readonly McpToolSource[]) {
   for (const source of sources) {
     handlers[source.id] = (input) => invokeServedTool(source, input);
   }
-  return { toolkit, handlers: toolkit.toLayer(handlers) };
+  return { handlers: toolkit.toLayer(handlers), toolkit };
 }
 
 // BOUNDARY: A tool call's arguments are the client's data; the capability's own decoder reads them.
-function invokeLeaf(leaf: ExternalCapability, input: unknown): Promise<Result<unknown, unknown>> {
-  return leaf.invokeExternal(input);
+async function invokeLeaf(
+  leaf: ExternalCapability,
+  input: unknown
+): Promise<Result<unknown, unknown>> {
+  return await leaf.invokeExternal(input);
 }
 
 /** What a tool answers with and fails with, which is the JSON its own schema declares to a client. */
@@ -83,21 +100,29 @@ type ToolHandler = Effect.Effect<ToolValue, ToolValue>;
 // BOUNDARY: A tool call's arguments are the client's data; the capability's own decoder reads them.
 function invokeServedTool(source: McpToolSource, input: unknown): ToolHandler {
   return Effect.tryPromise({
-    try: () => source.invoke(input),
-    catch: (cause): ToolValue => ({ message: cause instanceof Error ? cause.message : "The tool call failed" }),
+    catch: (cause): ToolValue => ({
+      message: cause instanceof Error ? cause.message : "The tool call failed",
+    }),
+    try: async () => await source.invoke(input),
   }).pipe(
     Effect.flatMap((result) =>
       result.ok
         ? asToolValue(result.value)
-        : asToolValue(result.error).pipe(Effect.flatMap((failure) => Effect.fail(failure))),
-    ),
+        : asToolValue(result.error).pipe(
+            Effect.flatMap((failure) => Effect.fail(failure))
+          )
+    )
   );
 }
 
 /** BOUNDARY: A capability's value is application data; the JSON schema is what its tool declares. */
 function asToolValue(value: unknown): Effect.Effect<ToolValue> {
   return Effect.sync(() => Schema.decodeUnknownOption(Schema.Json)(value)).pipe(
-    Effect.map(Option.getOrElse((): ToolValue => ({ message: "The capability answered no JSON value" }))),
+    Effect.map(
+      Option.getOrElse((): ToolValue => ({
+        message: "The capability answered no JSON value",
+      }))
+    )
   );
 }
 

@@ -1,0 +1,30 @@
+language: "typescript"
+layer: "application"
+
+project:
+  title: "CLI"
+  description: "The heb-stack command line over the Node host."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+tasks:
+  build:
+    description: "Bundle the command line into the one Node entry point a caller runs."
+    command: "vite"
+    args: ["build"]
+    inputs: ["src/**/*.ts", "vite.config.ts", "package.json", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
+    outputs: ["/.artifacts/cli/**/*"]
+
+  install:
+    description: "Build the command line and write the `heb-stack` binary to .artifacts/bin; pass `-- --directory <dir>` to put it elsewhere."
+    command: "node"
+    args: ["scripts/install.ts"]
+    deps:
+      - target: "build"
+        cacheStrategy: "outputs"
+      - target: "primes:build"
+        cacheStrategy: "outputs"
+    inputs: ["scripts/install.ts"]
+    options:
+      cache: false

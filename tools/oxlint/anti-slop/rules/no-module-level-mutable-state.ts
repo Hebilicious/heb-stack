@@ -23,9 +23,15 @@ export const noModuleLevelMutableStateRule = defineRule({
         const parent = node.parent;
         const moduleLevel =
           parent.type === "Program" ||
-          ((parent.type === "ExportNamedDeclaration" || parent.type === "ExportDefaultDeclaration") &&
+          ((parent.type === "ExportNamedDeclaration" ||
+            parent.type === "ExportDefaultDeclaration") &&
             parent.parent.type === "Program");
-        if (moduleLevel) context.report({ node, messageId: "moduleState", data: { kind: node.kind } });
+        if (moduleLevel)
+          context.report({
+            node,
+            messageId: "moduleState",
+            data: { kind: node.kind },
+          });
       },
     };
   },

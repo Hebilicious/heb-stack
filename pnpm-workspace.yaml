@@ -6,14 +6,34 @@ packages:
 
 # Every dependency is pinned exactly, once, here. Workspace packages name `catalog:` and never a version.
 catalog:
+  "@alchemy.run/cloudflare-runtime": https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz
+  "@alchemy.run/floci": https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz
+  "@alchemy.run/frontend-frameworks": https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz
+  "@alchemy.run/node-utils": https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz
   "@cloudflare/workers-types": 5.20261001.1
   "@cucumber/cucumber-expressions": 20.1.0
   "@cucumber/gherkin": 42.0.1
   "@cucumber/messages": 34.2.1
   "@cucumber/tag-expressions": 11.0.1
+  "@distilled.cloud/acme": https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz
+  "@distilled.cloud/aws": https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz
+  "@distilled.cloud/axiom": https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz
+  "@distilled.cloud/cloudflare": https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz
+  "@distilled.cloud/core": https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz
+  "@distilled.cloud/doppler": https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz
+  "@distilled.cloud/fly-io": https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz
+  "@distilled.cloud/hetzner": https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz
+  "@distilled.cloud/infisical": https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz
+  "@distilled.cloud/neon": https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz
+  "@distilled.cloud/planetscale": https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz
+  "@distilled.cloud/prisma": https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz
+  "@distilled.cloud/railway": https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz
+  "@distilled.cloud/stripe": https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz
+  "@distilled.cloud/zerossl": https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz
   "@effect/atom-vue": 4.0.0
   "@effect/platform-node": 4.0.0
   "@effect/tsgo": 0.47.2
+  "@gommage/cli": 0.1.0
   "@hebilicious/cssforge": 0.9.0
   "@hebilicious/cssforge-unplugin": 0.1.1
   "@oxlint/plugins": 1.86.0
@@ -21,8 +41,8 @@ catalog:
   "@types/node": 26.6.3
   "@vizejs/vite-plugin": 0.429.2
   "@xstate/effect": 0.1.0-alpha.6
+  alchemy: https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz
   capnweb: 0.12.0
-  cf: 1.0.0-beta.10
   effect: 4.0.0
   happy-dom: 20.14.5
   lefthook: 2.1.15
@@ -30,16 +50,41 @@ catalog:
   oxlint: 1.86.0
   oxlint-tsgolint: 7.0.2003
   typescript: 7.0.2
+  ultracite: 7.12.2
   vite: 8.3.2
   vitest: 5.0.3
   vize: 0.429.2
   vue: 3.6.0-rc.10
-  wrangler: 4.145.0
   xstate: 6.0.0-alpha.63
 
 overrides:
   # One XState core for every consumer, the one @xstate/effect pairs with.
   "xstate@*": "catalog:"
+  # Alchemy's Effect 4 build is published to its own registry, which names each sub-package by a content-hashed URL.
+  # These hold every one of them to the catalog's pin.
+  "@alchemy.run/cloudflare-runtime": "catalog:"
+  "@alchemy.run/floci": "catalog:"
+  "@alchemy.run/node-utils": "catalog:"
+  "@distilled.cloud/acme": "catalog:"
+  "@distilled.cloud/zerossl": "catalog:"
+  "@distilled.cloud/aws": "catalog:"
+  "@distilled.cloud/axiom": "catalog:"
+  "@distilled.cloud/cloudflare": "catalog:"
+  "@distilled.cloud/core": "catalog:"
+  "@distilled.cloud/doppler": "catalog:"
+  "@distilled.cloud/fly-io": "catalog:"
+  "@distilled.cloud/hetzner": "catalog:"
+  "@distilled.cloud/infisical": "catalog:"
+  "@distilled.cloud/neon": "catalog:"
+  "@distilled.cloud/planetscale": "catalog:"
+  "@distilled.cloud/prisma": "catalog:"
+  "@distilled.cloud/railway": "catalog:"
+  "@distilled.cloud/stripe": "catalog:"
+  "@alchemy.run/frontend-frameworks": "catalog:"
+
+# Off only while Alchemy's Effect 4 build lives on its own registry: it names its sub-packages by URL, which pnpm
+# otherwise refuses below the workspace's own manifests. Every such URL is pinned by content hash in the catalog.
+blockExoticSubdeps: false
 
 allowBuilds:
   esbuild: true
@@ -60,7 +105,6 @@ minimumReleaseAgeExclude:
   - "@effect/tsgo-win32-x64@0.47.2"
   - "@effect/tsgo@0.47.2"
   - "@xstate/effect@0.1.0-alpha.6"
-  - cf@1.0.0-beta.10
   - effect@4.0.0
   - vite@8.3.2
   - "@cloudflare/workers-types@5.20261001.1"

@@ -17,5 +17,14 @@ export {
   walkCatalogEntries,
   type CatalogEntry,
 } from "@heb-stack/acidcat-kernel";
-export { createAcidCat, type AcidCat, type AcidCatOptions, type AcidCatServices } from "./root.ts";
-export type { ModelContextPort, ModelContextTool, WebMcpStatus } from "@heb-stack/webmcp-adapter";
+export {
+  createAcidCat,
+  type AcidCat,
+  type AcidCatOptions,
+  type AcidCatServices,
+} from "./root.ts";
+export type {
+  ModelContextPort,
+  ModelContextTool,
+  WebMcpStatus,
+} from "@heb-stack/webmcp-adapter";

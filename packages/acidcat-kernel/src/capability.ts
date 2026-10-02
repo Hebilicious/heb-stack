@@ -1,12 +1,15 @@
 import type { Effect, Schema } from "effect";
-import {
-  constantSource,
-  type Availability,
-  type AvailabilitySource,
-  type ReadonlySnapshotSource,
+
+import { constantSource } from "./projection.ts";
+import type {
+  Availability,
+  AvailabilitySource,
+  ReadonlySnapshotSource,
 } from "./projection.ts";
 
-export const capabilityTypeId: unique symbol = Symbol.for("@heb-stack/acidcat/Capability");
+export const capabilityTypeId: unique symbol = Symbol.for(
+  "@heb-stack/acidcat/Capability"
+);
 
 /**
  * What a session is for. `web` is the page: Vue interaction and the WebMCP tools that drive it. `cli`, `mcp`, and
@@ -21,7 +24,13 @@ export interface CapabilityProgram<Input, Output, Failure, Requirements> {
   readonly run: (input: Input) => Effect.Effect<Output, Failure, Requirements>;
 }
 
-export interface CapabilityDefinition<Id extends string, Input, Output, Failure, Requirements> {
+export interface CapabilityDefinition<
+  Id extends string,
+  Input,
+  Output,
+  Failure,
+  Requirements,
+> {
   readonly [capabilityTypeId]: true;
   readonly id: Id;
   readonly description: string;
@@ -31,22 +40,39 @@ export interface CapabilityDefinition<Id extends string, Input, Output, Failure,
    * deliberate declaration at a time.
    */
   readonly audience: readonly SessionTarget[];
-  readonly load: Effect.Effect<CapabilityProgram<Input, Output, Failure, Requirements>>;
+  readonly load: Effect.Effect<
+    CapabilityProgram<Input, Output, Failure, Requirements>
+  >;
 }
 
-export function defineCapability<const Id extends string, Input, Output, Failure, Requirements>(
-  definition: Omit<CapabilityDefinition<Id, Input, Output, Failure, Requirements>, typeof capabilityTypeId>,
+export function defineCapability<
+  const Id extends string,
+  Input,
+  Output,
+  Failure,
+  Requirements,
+>(
+  definition: Omit<
+    CapabilityDefinition<Id, Input, Output, Failure, Requirements>,
+    typeof capabilityTypeId
+  >
 ): CapabilityDefinition<Id, Input, Output, Failure, Requirements> {
   return Object.freeze({ ...definition, [capabilityTypeId]: true as const });
 }
 
-export function servesTarget(audience: readonly SessionTarget[], target: SessionTarget): boolean {
+export function servesTarget(
+  audience: readonly SessionTarget[],
+  target: SessionTarget
+): boolean {
   return audience.includes(target);
 }
 
 /** The refusal a capability outside a target's audience reports wherever its availability is read. */
 export function unavailableSource(reason: string): AvailabilitySource {
-  const availability: Availability = Object.freeze({ available: false as const, reason });
+  const availability: Availability = Object.freeze({
+    available: false as const,
+    reason,
+  });
   return constantSource(availability);
 }
 
@@ -58,7 +84,13 @@ export interface ExecuteOptions {
   readonly signal?: AbortSignal;
 }
 
-export interface CapabilityHandle<Id extends string, Input, Output, Failure, Snapshot = never> {
+export interface CapabilityHandle<
+  Id extends string,
+  Input,
+  Output,
+  Failure,
+  Snapshot = never,
+> {
   readonly [capabilityTypeId]: true;
   readonly id: Id;
   readonly description: string;
@@ -66,9 +98,15 @@ export interface CapabilityHandle<Id extends string, Input, Output, Failure, Sna
   readonly audience: readonly SessionTarget[];
   readonly availability: AvailabilitySource;
   readonly snapshot?: ReadonlySnapshotSource<Snapshot>;
-  execute(this: void, input: Input, options?: ExecuteOptions): Promise<Result<Output, Failure>>;
+  readonly execute: (
+    input: Input,
+    options?: ExecuteOptions
+  ) => Promise<Result<Output, Failure>>;
   /** BOUNDARY: The root decodes external invocation input with the leaf’s canonical schema. */
-  invokeExternal(input: unknown, options?: ExecuteOptions): Promise<Result<unknown, unknown>>;
+  readonly invokeExternal: (
+    input: unknown,
+    options?: ExecuteOptions
+  ) => Promise<Result<unknown, unknown>>;
 }
 
 export interface ExternalCapability {
@@ -79,10 +117,15 @@ export interface ExternalCapability {
   readonly audience: readonly SessionTarget[];
   readonly availability: AvailabilitySource;
   /** BOUNDARY: The root decodes external invocation input with the leaf’s canonical schema. */
-  invokeExternal(input: unknown, options?: ExecuteOptions): Promise<Result<unknown, unknown>>;
+  readonly invokeExternal: (
+    input: unknown,
+    options?: ExecuteOptions
+  ) => Promise<Result<unknown, unknown>>;
 }
 
-export type Catalog = { readonly [key: string]: ExternalCapability | Catalog };
+export interface Catalog {
+  readonly [key: string]: ExternalCapability | Catalog;
+}
 
 /** Build tools traverse these same definitions without acquiring any application owner. */
 export interface DescribableCapability {
@@ -99,10 +142,16 @@ export interface DescribableCapability {
   }>;
 }
 
-export type DefinitionCatalog = { readonly [key: string]: DescribableCapability | DefinitionCatalog };
+export interface DefinitionCatalog {
+  readonly [key: string]: DescribableCapability | DefinitionCatalog;
+}
 
-export function walkDefinitions(catalog: DefinitionCatalog): readonly DescribableCapability[] {
-  return Object.values(catalog).flatMap((value) => (capabilityTypeId in value ? [value] : walkDefinitions(value)));
+export function walkDefinitions(
+  catalog: DefinitionCatalog
+): readonly DescribableCapability[] {
+  return Object.values(catalog).flatMap((value) =>
+    capabilityTypeId in value ? [value] : walkDefinitions(value)
+  );
 }
 
 /** One capability with the top-level catalog key that owns it, as a generic adapter sees it. */
@@ -118,21 +167,46 @@ export interface CatalogEntry {
  * adapter from walking the catalog for itself.
  */
 export function walkCatalogEntries(catalog: Catalog): readonly CatalogEntry[] {
-  return Object.entries(catalog).flatMap(([domain, value]) => catalogEntriesOf(domain, value));
+  return Object.entries(catalog).flatMap(([domain, value]) =>
+    catalogEntriesOf(domain, value)
+  );
 }
 
-function catalogEntriesOf(domain: string, value: ExternalCapability | Catalog): readonly CatalogEntry[] {
-  if (capabilityTypeId in value) return [{ domain, capability: value }];
-  return Object.values(value).flatMap((nested) => catalogEntriesOf(domain, nested));
+function catalogEntriesOf(
+  domain: string,
+  value: ExternalCapability | Catalog
+): readonly CatalogEntry[] {
+  if (capabilityTypeId in value) {
+    return [{ capability: value, domain }];
+  }
+  return Object.values(value).flatMap((nested) =>
+    catalogEntriesOf(domain, nested)
+  );
 }
 
-export function walkCapabilities(catalog: Catalog): readonly ExternalCapability[] {
+export function walkCapabilities(
+  catalog: Catalog
+): readonly ExternalCapability[] {
   return walkCatalogEntries(catalog).map((entry) => entry.capability);
 }
 
 /** The leaves a session serves: in the target's audience and available from their owner now. */
-export function servedCapabilities(catalog: Catalog, target: SessionTarget): readonly ExternalCapability[] {
+export function servedCapabilities(
+  catalog: Catalog,
+  target: SessionTarget
+): readonly ExternalCapability[] {
   return walkCapabilities(catalog).filter(
-    (leaf) => servesTarget(leaf.audience, target) && leaf.availability.getSnapshot().available,
+    (leaf) =>
+      servesTarget(leaf.audience, target) &&
+      leaf.availability.getSnapshot().available
   );
 }
+
+export {
+  constantSource,
+  detachedSource,
+  type Availability,
+  type AvailabilitySource,
+  type ReadonlySnapshotSource,
+  type SnapshotSubscription,
+} from "./projection.ts";

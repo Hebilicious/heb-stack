@@ -20,7 +20,10 @@ function hasTypePredicate(owner: ParameterOwner): boolean {
   return owner.returnType?.typeAnnotation.type === "TSTypePredicate";
 }
 
-function isTypePredicateSubject(owner: ParameterOwner, parameterName: string): boolean {
+function isTypePredicateSubject(
+  owner: ParameterOwner,
+  parameterName: string
+): boolean {
   const predicate = owner.returnType?.typeAnnotation;
   return (
     predicate?.type === "TSTypePredicate" &&
@@ -51,25 +54,37 @@ export const noUnknownParametersRule = defineRule({
         additionalProperties: false,
       },
     ],
-    defaultOptions: [{ allowInTypeGuards: false, allowWithBoundaryComment: false }],
+    defaultOptions: [
+      { allowInTypeGuards: false, allowWithBoundaryComment: false },
+    ],
   },
   createOnce(context) {
     const checkParameters = (node: ParameterOwner) => {
       const option = context.options?.[0];
       const allowInTypeGuards =
-        typeof option === "object" && option !== null && !Array.isArray(option) && option.allowInTypeGuards === true;
+        typeof option === "object" &&
+        option !== null &&
+        !Array.isArray(option) &&
+        option.allowInTypeGuards === true;
       const allowWithBoundaryComment =
         typeof option === "object" &&
         option !== null &&
         !Array.isArray(option) &&
         option.allowWithBoundaryComment === true;
       if (allowInTypeGuards && hasTypePredicate(node)) return;
-      if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
+      if (
+        allowWithBoundaryComment &&
+        hasBoundaryComment(context.sourceCode, node)
+      )
+        return;
       for (const parameter of node.params) {
         const annotation = functionParameterTypeAnnotation(parameter);
         if (annotation === null || annotation === undefined) continue;
         if (!containsUnknownType(annotation.typeAnnotation)) continue;
-        const name = functionParameterBindingName(parameter, context.sourceCode);
+        const name = functionParameterBindingName(
+          parameter,
+          context.sourceCode
+        );
         if (name === "cause" || isTypePredicateSubject(node, name)) continue;
         context.report({
           node: annotation.typeAnnotation,

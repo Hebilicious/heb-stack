@@ -7,11 +7,12 @@
     "@heb-stack/acidcat": "workspace:*",
     "@heb-stack/edge-runtime": "workspace:*",
     "@heb-stack/mcp": "workspace:*",
-    "@heb-stack/rpc": "workspace:*"
+    "@heb-stack/rpc": "workspace:*",
+    "alchemy": "catalog:",
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
-    "cf": "catalog:",
-    "wrangler": "catalog:"
+    "@effect/platform-node": "catalog:"
   }
 }

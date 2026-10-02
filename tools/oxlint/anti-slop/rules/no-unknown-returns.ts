@@ -1,5 +1,4 @@
 import { defineRule } from "@oxlint/plugins";
-
 import type { ESTree } from "@oxlint/plugins";
 
 import { hasBoundaryComment } from "../shared/boundary-comment.ts";
@@ -23,7 +22,8 @@ export const noUnknownReturnsRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description: "Disallow functions whose explicit return contract is unknown or Promise<unknown>.",
+      description:
+        "Disallow functions whose explicit return contract is unknown or Promise<unknown>.",
     },
     messages: {
       unknownReturn:
@@ -50,11 +50,13 @@ export const noUnknownReturnsRule = defineRule({
         if (resolved.type === "TSParenthesizedType") {
           return matches(resolved.typeAnnotation);
         }
-        if (resolved.type === "TSUnionType") return resolved.types.some(matches);
+        if (resolved.type === "TSUnionType")
+          return resolved.types.some(matches);
         if (
           resolved.type !== "TSTypeReference" ||
           resolved.typeName.type !== "Identifier" ||
-          (resolved.typeName.name !== "Promise" && resolved.typeName.name !== "PromiseLike")
+          (resolved.typeName.name !== "Promise" &&
+            resolved.typeName.name !== "PromiseLike")
         ) {
           return false;
         }
@@ -69,16 +71,26 @@ export const noUnknownReturnsRule = defineRule({
         option !== null &&
         !Array.isArray(option) &&
         option.allowWithBoundaryComment === true;
-      if (allowWithBoundaryComment && hasBoundaryComment(context.sourceCode, node)) return;
+      if (
+        allowWithBoundaryComment &&
+        hasBoundaryComment(context.sourceCode, node)
+      )
+        return;
       const annotation = node.returnType;
       if (annotation === null || annotation === undefined) return;
       if (!resolvesToUnknown(annotation.typeAnnotation)) return;
-      context.report({ node: annotation.typeAnnotation, messageId: "unknownReturn" });
+      context.report({
+        node: annotation.typeAnnotation,
+        messageId: "unknownReturn",
+      });
     };
 
     return {
       Program(node) {
-        environment = createTypeAliasEnvironment(node, context.sourceCode.visitorKeys);
+        environment = createTypeAliasEnvironment(
+          node,
+          context.sourceCode.visitorKeys
+        );
       },
       ArrowFunctionExpression: checkReturnType,
       FunctionDeclaration: checkReturnType,

@@ -1,9 +1,8 @@
-import { execFile } from "node:child_process";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
 import { stat } from "node:fs/promises";
-import { promisify } from "node:util";
-import { Schema } from "effect";
 
-const execute = promisify(execFile);
+import { Schema } from "effect";
 
 /**
  * How long one adapter run may take before the harness stops it.
@@ -25,47 +24,45 @@ export interface AdapterProcessRun {
  * Run one bundled Node adapter and keep its answer.
  *
  * A Node adapter answers in JSON and reports a domain failure with a non-zero exit, so a proof has to read stdout from
- * a failed run as well as a successful one. This helper owns that: `execFile` rejects with the child's own object on a
- * non-zero exit, and the rejection is turned back into the run it describes.
+ * a failed run as well as a successful one: the run is returned whatever status it exited with.
  */
-export async function runBuiltAdapter(entry: string, ...args: readonly string[]): Promise<AdapterProcessRun> {
-  try {
-    const { stdout, stderr } = await execute(process.execPath, [entry, ...args], {
-      cwd: process.cwd(),
-      maxBuffer: 64 * 1024 * 1024,
-      timeout: RUN_TIMEOUT_MS,
-      killSignal: "SIGKILL",
-    });
-    return { stdout, stderr, status: 0 };
-  } catch (error) {
-    return failedRun(error);
-  }
-}
-
-/* BOUNDARY: A non-zero exit rejects with a Node error object carrying the child's stdout and its exit code. */
-function failedRun(error: unknown): AdapterProcessRun {
-  const stdout = fieldOf(error, "stdout");
-  const stderr = fieldOf(error, "stderr");
-  const code = fieldOf(error, "code");
-  return {
-    stdout: typeof stdout === "string" ? stdout : "",
-    stderr: typeof stderr === "string" ? stderr : "",
-    status: typeof code === "number" ? code : 1,
-  };
+export async function runBuiltAdapter(
+  entry: string,
+  ...args: readonly string[]
+): Promise<AdapterProcessRun> {
+  const child = spawn(process.execPath, [entry, ...args], {
+    killSignal: "SIGKILL",
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: RUN_TIMEOUT_MS,
+  });
+  let stdout = "";
+  let stderr = "";
+  child.stdout.setEncoding("utf-8").on("data", (chunk: string) => {
+    stdout += chunk;
+  });
+  child.stderr.setEncoding("utf-8").on("data", (chunk: string) => {
+    stderr += chunk;
+  });
+  await once(child, "close");
+  // A child the hang guard killed has no exit code; it failed.
+  return { status: child.exitCode ?? 1, stderr, stdout };
 }
 
 /** Require a bundled adapter to be on disk before a run reads a stale or missing bundle as an answer. */
-export async function requireBuiltAdapter(entry: string, buildTarget: string): Promise<void> {
+export async function requireBuiltAdapter(
+  entry: string,
+  buildTarget: string
+): Promise<void> {
   const file = await stat(entry).catch(() => null);
-  if (file?.isFile() !== true) throw new Error(`${entry} is missing; run moon run app:${buildTarget}`);
+  if (file?.isFile() !== true) {
+    throw new Error(`${entry} is missing; run moon run ${buildTarget}`);
+  }
 }
 
 /** Decode one adapter's JSON answer with the schema that owns its shape. */
-export function decodeAdapterAnswer<Value>(schema: Schema.Codec<Value, unknown>, json: string): Value {
+export function decodeAdapterAnswer<Value>(
+  schema: Schema.Codec<Value, unknown>,
+  json: string
+): Value {
   return Schema.decodeUnknownSync(schema)(JSON.parse(json));
-}
-
-/* BOUNDARY: A property read from an untrusted value; a primitive or null carries none. */
-function fieldOf(value: unknown, key: string): unknown {
-  return typeof value === "object" && value !== null ? Reflect.get(value, key) : undefined;
 }

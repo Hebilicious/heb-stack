@@ -2,12 +2,17 @@
 # Never bypass them with `--no-verify`: fix the failure.
 no_auto_install: true
 
+commit-msg:
+  commands:
+    authorship:
+      run: pnpm exec gommage hook --message-file {1}
+
 pre-commit:
   commands:
     format:
-      run: moon run app:format-check
+      run: moon run :format-check
 
 pre-push:
   commands:
     verify:
-      run: moon run app:lint app:typecheck
+      run: moon run :lint :typecheck

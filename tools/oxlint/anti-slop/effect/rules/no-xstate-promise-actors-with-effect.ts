@@ -1,10 +1,13 @@
 import { defineRule, type ESTree } from "@oxlint/plugins";
+
 import { importReference, isApplication } from "../ast.ts";
 
 export const noXstatePromiseActorsWithEffectRule = defineRule({
   meta: {
     type: "problem",
-    docs: { description: "Use invoked Effect actors for Effect workflow settlement." },
+    docs: {
+      description: "Use invoked Effect actors for Effect workflow settlement.",
+    },
     messages: {
       mixedOwnership:
         "Use an invoked fromEffect actor from @xstate/effect to preserve typed errors, requirements, and state-owned interruption. Provide its services through the owning Layer.",
@@ -33,13 +36,17 @@ export const noXstatePromiseActorsWithEffectRule = defineRule({
       },
       CallExpression(node) {
         if (
-          /^xstate(?:-v[^.]*)?\.fromPromise$/u.test(importReference(context, node.callee) ?? "") &&
+          /^xstate(?:-v[^.]*)?\.fromPromise$/u.test(
+            importReference(context, node.callee) ?? ""
+          ) &&
           node.callee.type === "MemberExpression"
         )
           candidates.push(node);
       },
       "Program:exit"() {
-        if (importsEffect) for (const node of candidates) context.report({ node, messageId: "mixedOwnership" });
+        if (importsEffect)
+          for (const node of candidates)
+            context.report({ node, messageId: "mixedOwnership" });
       },
     };
   },
