@@ -89,7 +89,7 @@ The check lifecycle is `idle → checking → result | failed`. A new number int
 
 ## AcidCat
 
-**AcidCat** is the name of the application interface: the one typed catalog of capabilities that every surface reaches. It is a name, not an acronym. The project it comes from defines it by its specification and deliberately does not expand it into letters.
+**AcidCat** stands for **Application Capability Identification Category**. It is the application interface: every capability has a stable identifier such as `primes.check`, sits in a category such as `primes` or `history`, and is reached by every surface through the one typed catalog.
 
 - A domain package owns its capabilities and exports only their definitions. Only `packages/acidcat` imports a domain package; `anti-slop-effect/no-application-bypass` fails the lint if anything else does.
 - Each host supplies Layers and nothing else: the browser, Node and the Worker each provide `PrimeMath`, and `CheckHistory` where they keep one.
