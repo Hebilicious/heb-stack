@@ -29,21 +29,21 @@ const answer = await page.evaluate(async () => {
 // '{"ok":true,"value":{"after":97,"prime":101}}'
 ```
 
-**A terminal**, with `acidcat`. Every leaf is a command derived from the catalog, and every answer is JSON (indented in the terminal, one line each here):
+**A terminal**, with `cli`. Every leaf is a command derived from the catalog, and every answer is JSON (indented in the terminal, one line each here):
 
 ```sh
 $ moon run cli:install
-$ alias acidcat=.artifacts/bin/acidcat
-$ acidcat primes check --n 91
+$ alias cli=.artifacts/bin/cli
+$ cli primes check --n 91
 { "n": 91, "prime": false, "smallestFactor": 7 }
-$ acidcat primes next --after=97
+$ cli primes next --after=97
 { "after": 97, "prime": 101 }
-$ acidcat primes history list
+$ cli primes history list
 { "entries": [{ "checkedAt": "2026-10-07T06:51:24.475Z", "n": 91, "prime": false }] }
-$ acidcat call primes.check '{"n":1}'; echo "exit $?"
+$ cli call primes.check '{"n":1}'; echo "exit $?"
 { "_tag": "OutOfRange", "max": 9007199254740991, "min": 2, "n": 1 }
 exit 1
-$ acidcat list   # every command with its usage, as JSON
+$ cli list   # every command with its usage, as JSON
 ```
 
 **An MCP client**, at `/mcp` (stateless revision `2026-07-28`):
@@ -125,7 +125,7 @@ The check lifecycle is `idle → checking → result | failed`. A new number int
 | `packages/acidcat-kernel` |  | Capability types and the catalog walk every adapter shares |
 | `apps/web` | `web` | The Vapor page, built by Vite and vize, styled with cssforge tokens |
 | `packages/webmcp-adapter` |  | Registers the catalog as in-page WebMCP tools |
-| `packages/cli` | `cli` | `acidcat`, on Effect's CLI, with commands derived from the catalog |
+| `packages/cli` | `cli` | `cli`, on Effect's CLI, with commands derived from the catalog |
 | `packages/mcp` |  | `effect/ai/McpServer` over stateless HTTP |
 | `packages/rpc` |  | The capnweb `PrimesApi` |
 | `packages/browser-runtime` |  | The page's Layers: math over capnweb, history in browser storage, WebMCP |
@@ -167,7 +167,7 @@ Every dependency is pinned exactly, once, in the catalog in `pnpm-workspace.yaml
 | `moon run features:test` | The Gherkin features and the adapter proofs |
 | `moon run e2e:test` | The browser scenarios against `alchemy dev` |
 | `moon run primes-wasm:test` | The crate's tests |
-| `moon run cli:install` | Build the CLI and write `.artifacts/bin/acidcat` |
+| `moon run cli:install` | Build the CLI and write `.artifacts/bin/cli` |
 | `moon run api:deploy -- --stage <name>` | Deploy a stage as its own `heb-stack-<stage>` Worker |
 | `moon run app:authorship-fix -- <range>` | Strip AI attribution from the commits in a range |
 
@@ -181,7 +181,7 @@ Deploying needs an Alchemy profile: run `pnpm exec alchemy profile edit --add Cl
 | Targets | `features/primes/targets.feature`: each adapter lists exactly its leaves; MCP refuses the history |
 | The page | `features/web/check.vue.feature`: typing 91 shows "91 = 7 × 13" |
 | The lifecycle | `packages/primes/src/checker.test.ts`: replacement interrupts; a failed check retries |
-| CLI and MCP | `features/adapters/`: `acidcat` in a process; `tools/list` and `tools/call` |
+| CLI and MCP | `features/adapters/`: `cli` in a process; `tools/list` and `tools/call` |
 | Browser | `e2e/check.e2e.ts` and `e2e/webmcp.e2e.ts`: a check over capnweb and a reload; a WebMCP call |
 | Rust | `crates/primes/tests`: 2, 97, 91 and 2^53 − 111 |
 
@@ -189,7 +189,7 @@ Deadlines are hang guards, never paces, and nothing retries.
 
 ## Make it yours
 
-Rename the `@heb-stack/*` packages, then replace `packages/primes` with your own namespace: define its capabilities in `capabilities.ts` with ids that begin with the namespace, its lifecycle in a `*-machine.ts`, and its services as Effect `Context.Service`s. Compose it in `packages/acidcat`, list it in `settings.acidcat.domains`, give each host its Layers, and every surface serves it, `acidcat <namespace> …` included.
+Rename the `@heb-stack/*` packages, then replace `packages/primes` with your own namespace: define its capabilities in `capabilities.ts` with ids that begin with the namespace, its lifecycle in a `*-machine.ts`, and its services as Effect `Context.Service`s. Compose it in `packages/acidcat`, list it in `settings.acidcat.domains`, give each host its Layers, and every surface serves it, `cli <namespace> …` included.
 
 ---
 

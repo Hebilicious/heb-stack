@@ -23,7 +23,7 @@ export function defaultHistoryFile(): string {
     state === undefined || state === ""
       ? path.join(homedir(), ".local", "state")
       : state,
-    "acidcat",
+    "heb-stack",
     "history.json"
   );
 }

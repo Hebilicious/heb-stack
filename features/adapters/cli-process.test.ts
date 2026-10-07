@@ -21,7 +21,7 @@ import { testEffect } from "../support/vitest-adapter.ts";
 const CLI_ENTRY = path.resolve(REPOSITORY_ROOT, ".artifacts/cli/main.js");
 
 testEffect(
-  "acidcat checks a number through its derived command, records it, and answers a typed failure as JSON",
+  "cli checks a number through its derived command, records it, and answers a typed failure as JSON",
   () =>
     Effect.gen(function* () {
       yield* Effect.promise(async () => {

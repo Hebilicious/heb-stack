@@ -1,7 +1,7 @@
 /**
- * `acidcat`: the AcidCat catalog from a terminal, for agents and people alike.
+ * `cli`: the AcidCat catalog from a terminal, for agents and people alike.
  *
- * Every leaf the `cli` target serves is a command derived from the catalog: `acidcat primes check --n 97`. `call`
+ * Every leaf the `cli` target serves is a command derived from the catalog: `cli primes check --n 97`. `call`
  * invokes any leaf by id with JSON input, and `list` prints what the target serves with each command's usage. Every
  * answer is JSON on standard output; a capability's own failure prints its tagged value and exits 1.
  */
@@ -20,7 +20,7 @@ import { cliSession, sessionFlags } from "./session.ts";
 import type { SessionFlags } from "./session.ts";
 
 /** The binary's name, which every usage line starts with. */
-const BINARY = "acidcat";
+const BINARY = "cli";
 
 /** Open the session the flags describe, run one command against it, and release it. */
 const withSession = Effect.fn("withSession")(function* (
@@ -80,7 +80,7 @@ function invoke(
 
 const { commands, derived } = capabilityCommands(invoke);
 
-/** The human form of a leaf's command, such as `acidcat primes check --n <integer>`. */
+/** The human form of a leaf's command, such as `cli primes check --n <integer>`. */
 function usage(command: DerivedCommand): string {
   const flags = command.flags.map((flag) => `--${flag.name} <${flag.hint}>`);
   return [BINARY, ...command.path, ...flags].join(" ");

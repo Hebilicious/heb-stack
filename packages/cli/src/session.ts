@@ -15,7 +15,7 @@ import { CLI_BUNDLE_DIRECTORY } from "./location.ts";
 export const sessionFlags = {
   historyFile: Flag.String("history-file").pipe(
     Flag.withDescription(
-      "The JSON file holding the check history (default: $XDG_STATE_HOME/acidcat/history.json)."
+      "The JSON file holding the check history (default: $XDG_STATE_HOME/heb-stack/history.json)."
     ),
     Flag.optional
   ),
