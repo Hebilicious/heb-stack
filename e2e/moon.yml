@@ -16,7 +16,7 @@ tasks:
     deps:
       - target: "web:build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
       - "browser-install"
     inputs: ["**/*", "/workers/api/src/**/*.ts", "/workers/api/alchemy.run.ts", "/apps/web/dist/**/*"]

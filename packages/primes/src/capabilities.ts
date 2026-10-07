@@ -56,7 +56,7 @@ export const nextDefinition = defineCapability({
 export const historyListDefinition = defineCapability({
   audience: ["web", "cli"],
   description: "List the last twenty checks, newest first.",
-  id: "history.list",
+  id: "primes.history.list",
   load: Effect.succeed({
     error: NoFailureSchema,
     input: EmptyInputSchema,
@@ -73,7 +73,7 @@ export const historyClearDefinition = defineCapability({
   audience: ["web", "cli"],
   description:
     "Remove every check from the history, answering how many there were.",
-  id: "history.clear",
+  id: "primes.history.clear",
   load: Effect.succeed({
     error: StorageUnavailableSchema,
     input: EmptyInputSchema,
@@ -86,8 +86,11 @@ export const historyClearDefinition = defineCapability({
   }),
 });
 
-/** The domain's capability tree, which the root composes into the one catalog. */
+/** The `primes` namespace: the one namespace this catalog defines, which the root composes as it is. */
 export const primeDefinitions = {
-  history: { clear: historyClearDefinition, list: historyListDefinition },
-  primes: { check: checkDefinition, next: nextDefinition },
+  primes: {
+    check: checkDefinition,
+    history: { clear: historyClearDefinition, list: historyListDefinition },
+    next: nextDefinition,
+  },
 };

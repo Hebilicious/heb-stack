@@ -3,22 +3,21 @@ import path from "node:path";
 
 import { DEFAULT_WASM_PATH, defaultHistoryFile } from "@heb-stack/node-runtime";
 import type { NodeSession } from "@heb-stack/node-runtime";
-import { Option } from "effect";
+import { Option, Schema } from "effect";
 import { Flag } from "effect/cli";
 
 import { CLI_BUNDLE_DIRECTORY } from "./location.ts";
 
-/** The flags every command shares: where the crate and the history live, and how to answer. */
+/**
+ * The flags every command shares: where the crate and the history live. Their names cannot be a capability input's,
+ * so a derived command's flags and these never collide.
+ */
 export const sessionFlags = {
-  history: Flag.String("history").pipe(
+  historyFile: Flag.String("history-file").pipe(
     Flag.withDescription(
-      "The JSON file holding the check history (default: $XDG_STATE_HOME/heb-stack/history.json)."
+      "The JSON file holding the check history (default: $XDG_STATE_HOME/acidcat/history.json)."
     ),
     Flag.optional
-  ),
-  json: Flag.Boolean("json").pipe(
-    Flag.withDescription("Print machine-readable output."),
-    Flag.withDefault(false)
   ),
   wasm: Flag.String("wasm").pipe(
     Flag.withDescription(
@@ -28,10 +27,16 @@ export const sessionFlags = {
   ),
 };
 
-export interface SessionFlags {
-  readonly wasm: Option.Option<string>;
-  readonly history: Option.Option<string>;
-  readonly json: boolean;
+/** The session flags as a command received them. */
+const SessionFlagsSchema = Schema.Struct({
+  historyFile: Schema.Option(Schema.String),
+  wasm: Schema.Option(Schema.String),
+});
+export type SessionFlags = typeof SessionFlagsSchema.Type;
+
+/** BOUNDARY: A derived command's parsed flags are a dynamic record; the session's own two are read back typed. */
+export function sessionFlagsOf(parsed: unknown): SessionFlags {
+  return Schema.decodeUnknownSync(SessionFlagsSchema)(parsed);
 }
 
 /**
@@ -55,7 +60,7 @@ function repositoryRoot(): string | null {
 export function cliSession(flags: SessionFlags): NodeSession {
   const root = repositoryRoot();
   return {
-    historyFile: Option.getOrElse(flags.history, defaultHistoryFile),
+    historyFile: Option.getOrElse(flags.historyFile, defaultHistoryFile),
     target: "cli",
     wasmPath: Option.getOrElse(flags.wasm, () =>
       root === null ? DEFAULT_WASM_PATH : path.resolve(root, DEFAULT_WASM_PATH)

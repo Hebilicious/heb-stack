@@ -21,7 +21,7 @@ import { testEffect } from "../support/vitest-adapter.ts";
 const CLI_ENTRY = path.resolve(REPOSITORY_ROOT, ".artifacts/cli/main.js");
 
 testEffect(
-  "the built command line checks a number and records it in the history file it was given",
+  "acidcat checks a number through its derived command, records it, and answers a typed failure as JSON",
   () =>
     Effect.gen(function* () {
       yield* Effect.promise(async () => {
@@ -42,11 +42,11 @@ testEffect(
         async () =>
           await runBuiltAdapter(
             CLI_ENTRY,
-            "call",
-            "primes.check",
-            '{"n":97}',
-            "--json",
-            "--history",
+            "primes",
+            "check",
+            "--n",
+            "97",
+            "--history-file",
             history
           )
       );
@@ -61,12 +61,10 @@ testEffect(
         async () =>
           await runBuiltAdapter(
             CLI_ENTRY,
-            "call",
-            "history.list",
-            "{}",
-            "--json",
-            "--history",
-            history
+            "primes",
+            "history",
+            "list",
+            `--history-file=${history}`
           )
       );
       assert.equal(listed.status, 0, listed.stderr);
@@ -86,8 +84,7 @@ testEffect(
             "call",
             "primes.check",
             '{"n":1}',
-            "--json",
-            "--history",
+            "--history-file",
             history
           )
       );

@@ -3,7 +3,7 @@ layer: "application"
 
 project:
   title: "CLI"
-  description: "The heb-stack command line over the Node host."
+  description: "acidcat: the AcidCat catalog from a terminal, over the Node host."
 
 toolchains:
   default: ["javascript", "node", "pnpm"]
@@ -17,13 +17,13 @@ tasks:
     outputs: ["/.artifacts/cli/**/*"]
 
   install:
-    description: "Build the command line and write the `heb-stack` binary to .artifacts/bin; pass `-- --directory <dir>` to put it elsewhere."
+    description: "Build the command line and write the `acidcat` binary to .artifacts/bin; pass `-- --directory <dir>` to put it elsewhere."
     command: "node"
     args: ["scripts/install.ts"]
     deps:
       - target: "build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
     inputs: ["scripts/install.ts"]
     options:

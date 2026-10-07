@@ -35,7 +35,16 @@ export default defineConfig({
   forbidOnly: true,
   fullyParallel: false,
   outputDir: "../.artifacts/playwright",
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      // WebMCP is behind a feature flag in Chromium; with it, the page registers its catalog as tools.
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: { args: ["--enable-features=WebMCP"] },
+      },
+    },
+  ],
   reporter: [["list"]],
   retries: 0,
   testDir: ".",

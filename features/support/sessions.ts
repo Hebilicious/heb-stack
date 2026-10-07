@@ -9,10 +9,10 @@ import type { Scope } from "effect";
 /** The checkout these proofs run in, whatever directory the runner started from. */
 export const REPOSITORY_ROOT = path.resolve(import.meta.dirname, "..", "..");
 
-/** The crate's release module, which `moon run primes:build` writes. */
+/** The crate's release module, which `moon run primes-wasm:build` writes. */
 export const CRATE_PATH = path.resolve(REPOSITORY_ROOT, DEFAULT_WASM_PATH);
 
-/** The crate as a Node process compiles it, from the release build `moon run primes:build` writes. */
+/** The crate as a Node process compiles it, from the release build `moon run primes-wasm:build` writes. */
 export const compiledCrate: Effect.Effect<WebAssembly.Module> = Effect.promise(
   async () => await WebAssembly.compile(await readFile(CRATE_PATH))
 );

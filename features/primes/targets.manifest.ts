@@ -54,8 +54,8 @@ export const targetsFeature: ExecutableFeatureManifest<World> = {
   capabilityIds: [
     "primes.check",
     "primes.next",
-    "history.list",
-    "history.clear",
+    "primes.history.list",
+    "primes.history.clear",
   ],
   createWorld: () => ({}),
   id: "targets",

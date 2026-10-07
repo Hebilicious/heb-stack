@@ -40,12 +40,12 @@ tasks:
       - "web:lint"
       - "web:typecheck"
       - "api:typecheck"
-      - "application-primes:test"
+      - "primes:test"
       - "features:test"
       - "e2e:test"
-      - "primes:format-check"
-      - "primes:lint"
-      - "primes:test"
+      - "primes-wasm:format-check"
+      - "primes-wasm:lint"
+      - "primes-wasm:test"
 
   dev:
     description: "Rebuild the page on every change and serve it with /rpc and /mcp on http://localhost:1337."

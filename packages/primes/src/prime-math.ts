@@ -8,4 +8,4 @@ export class PrimeMath extends Context.Service<
     /** The smallest factor of `n` greater than one; `n` itself when `n` is prime. */
     readonly smallestFactor: (n: bigint) => Effect.Effect<bigint>;
   }
->()("@heb-stack/application-primes/PrimeMath") {}
+>()("@heb-stack/primes/PrimeMath") {}

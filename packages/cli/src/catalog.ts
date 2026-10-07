@@ -4,7 +4,7 @@ import type { Catalog, SessionTarget } from "@heb-stack/acidcat";
 /** One capability as the command line lists it. */
 export interface CommandCatalogEntry {
   readonly id: string;
-  readonly domain: string;
+  readonly namespace: string;
   readonly description: string;
 }
 
@@ -18,10 +18,10 @@ export function commandCatalogEntries(
 ): readonly CommandCatalogEntry[] {
   return walkCatalogEntries(catalog)
     .filter(({ capability }) => servesTarget(capability.audience, target))
-    .map(({ domain, capability }) => ({
+    .map(({ namespace, capability }) => ({
       description: capability.description,
-      domain,
       id: capability.id,
+      namespace,
     }))
     .toSorted((left, right) => left.id.localeCompare(right.id));
 }

@@ -1,7 +1,7 @@
 /**
- * Install the built command line as the `heb-stack` binary inside this checkout.
+ * Install the built command line as the `acidcat` binary inside this checkout.
  *
- * `moon run cli:install` builds the bundle, then writes `.artifacts/bin/heb-stack` beside it. The shim execs the
+ * `moon run cli:install` builds the bundle, then writes `.artifacts/bin/acidcat` beside it. The shim execs the
  * bundle with the Node that installed it, so a caller needs neither Moon nor a TypeScript toolchain to run it. Re-run
  * the target after moving the checkout, because the shim names the bundle's absolute path.
  *
@@ -13,7 +13,7 @@ import path from "node:path";
 
 import { CLI_BUNDLE_DIRECTORY } from "../src/location.ts";
 
-const BINARY_NAME = "heb-stack";
+const BINARY_NAME = "acidcat";
 /** The checkout this script sits in: the bundle and the default binary directory live under its `.artifacts`. */
 const ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 const BUNDLE = path.resolve(ROOT, CLI_BUNDLE_DIRECTORY, "main.js");

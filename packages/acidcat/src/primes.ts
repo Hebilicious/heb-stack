@@ -9,7 +9,7 @@ export {
   primeMathWasmLayer,
   type CheckSnapshot,
   type HistoryText,
-} from "@heb-stack/application-primes/runtime";
+} from "@heb-stack/primes/runtime";
 export {
   CheckOutputSchema,
   HISTORY_LIMIT,
@@ -23,4 +23,4 @@ export {
   type NextOutput,
   type OutOfRange,
   type StorageUnavailable,
-} from "@heb-stack/application-primes/contracts";
+} from "@heb-stack/primes/contracts";

@@ -154,33 +154,36 @@ export function walkDefinitions(
   );
 }
 
-/** One capability with the top-level catalog key that owns it, as a generic adapter sees it. */
+/**
+ * One capability with its namespace, as a generic adapter sees it. The namespace is the catalog's top-level key and
+ * the first word of every id beneath it: `primes` owns `primes.check` and `primes.history.list`.
+ */
 export interface CatalogEntry {
-  readonly domain: string;
+  readonly namespace: string;
   readonly capability: ExternalCapability;
 }
 
 /**
- * Walk a catalog into its capabilities, each with its owning top-level key.
+ * Walk a catalog into its capabilities, each with its namespace.
  *
  * Registration, listing, and invocation are one walk, and keeping the key beside the capability is what stops every
  * adapter from walking the catalog for itself.
  */
 export function walkCatalogEntries(catalog: Catalog): readonly CatalogEntry[] {
-  return Object.entries(catalog).flatMap(([domain, value]) =>
-    catalogEntriesOf(domain, value)
+  return Object.entries(catalog).flatMap(([namespace, value]) =>
+    catalogEntriesOf(namespace, value)
   );
 }
 
 function catalogEntriesOf(
-  domain: string,
+  namespace: string,
   value: ExternalCapability | Catalog
 ): readonly CatalogEntry[] {
   if (capabilityTypeId in value) {
-    return [{ capability: value, domain }];
+    return [{ capability: value, namespace }];
   }
   return Object.values(value).flatMap((nested) =>
-    catalogEntriesOf(domain, nested)
+    catalogEntriesOf(namespace, nested)
   );
 }
 

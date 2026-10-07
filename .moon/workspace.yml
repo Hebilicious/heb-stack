@@ -3,8 +3,8 @@ projects:
   web: "apps/web"
   api: "workers/api"
   cli: "packages/cli"
-  application-primes: "packages/application-primes"
-  primes: "crates/primes"
+  primes: "packages/primes"
+  primes-wasm: "crates/primes"
   features: "features"
   e2e: "e2e"
 

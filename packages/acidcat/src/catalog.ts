@@ -1,4 +1,4 @@
-import { primeDefinitions } from "@heb-stack/application-primes";
+import { primeDefinitions } from "@heb-stack/primes";
 
 /** Canonical pure descriptor tree; importing it acquires no application services. */
 export const definitions = { ...primeDefinitions };

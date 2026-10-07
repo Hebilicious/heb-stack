@@ -14,4 +14,4 @@ export class CheckHistory extends Context.Service<
     /** Remove every entry and answer how many there were. */
     readonly clear: Effect.Effect<number, StorageUnavailable>;
   }
->()("@heb-stack/application-primes/CheckHistory") {}
+>()("@heb-stack/primes/CheckHistory") {}

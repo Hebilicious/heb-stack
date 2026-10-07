@@ -5,15 +5,9 @@ import {
   historyClearDefinition,
   historyListDefinition,
   nextDefinition,
-} from "@heb-stack/application-primes";
-import {
-  PrimeChecker,
-  primeCheckerLayer,
-} from "@heb-stack/application-primes/runtime";
-import type {
-  CheckHistory,
-  PrimeMath,
-} from "@heb-stack/application-primes/runtime";
+} from "@heb-stack/primes";
+import { PrimeChecker, primeCheckerLayer } from "@heb-stack/primes/runtime";
+import type { CheckHistory, PrimeMath } from "@heb-stack/primes/runtime";
 import type { ModelContextPort } from "@heb-stack/webmcp-adapter";
 import { Effect, Exit, Layer, ManagedRuntime, Scope } from "effect";
 
@@ -48,21 +42,8 @@ export async function createAcidCat(
       target: options.target,
     });
     const always = constantSource(available);
+    // One namespace, `primes`: every leaf's id begins with it, and the tree mirrors the ids.
     const catalog = {
-      history: {
-        clear: bindCapability(
-          historyClearDefinition,
-          runtime,
-          { availability: always },
-          session
-        ),
-        list: bindCapability(
-          historyListDefinition,
-          runtime,
-          { availability: always },
-          session
-        ),
-      },
       primes: {
         check: bindCapability(
           checkDefinition,
@@ -70,6 +51,20 @@ export async function createAcidCat(
           { availability: always, snapshot: checker.snapshot },
           session
         ),
+        history: {
+          clear: bindCapability(
+            historyClearDefinition,
+            runtime,
+            { availability: always },
+            session
+          ),
+          list: bindCapability(
+            historyListDefinition,
+            runtime,
+            { availability: always },
+            session
+          ),
+        },
         next: bindCapability(
           nextDefinition,
           runtime,

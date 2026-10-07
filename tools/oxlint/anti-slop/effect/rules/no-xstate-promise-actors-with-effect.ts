@@ -14,7 +14,7 @@ export const noXstatePromiseActorsWithEffectRule = defineRule({
     },
   },
   create(context) {
-    let importsEffect = isApplication(context.filename);
+    let importsEffect = isApplication(context);
     const candidates: ESTree.Node[] = [];
     return {
       ImportDeclaration(node) {

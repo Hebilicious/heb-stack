@@ -102,27 +102,76 @@ export function normalizedPath(filename: string): string {
 export function isRoot(filename: string): boolean {
   return /(?:^|\/)packages\/acidcat\/src\//u.test(normalizedPath(filename));
 }
-export function isApplication(filename: string): boolean {
-  return /(?:^|\/)packages\/application-[^/]+\/src\//u.test(
-    normalizedPath(filename)
+/**
+ * The AcidCat domain packages and their npm scope, declared once in the lint config:
+ * `settings: { acidcat: { scope: "@heb-stack", domains: ["primes"] } }`. A domain package lives at
+ * `packages/<domain>` and is published as `<scope>/<domain>`.
+ */
+interface AcidCatSettings {
+  readonly scope: string;
+  readonly domains: readonly string[];
+}
+
+/* BOUNDARY: Lint settings are untyped configuration; anything malformed declares no domain. */
+function acidCatSettings(context: Context): AcidCatSettings {
+  const settings: unknown = context.settings;
+  const acidcat: unknown =
+    typeof settings === "object" && settings !== null && "acidcat" in settings
+      ? settings.acidcat
+      : undefined;
+  if (typeof acidcat !== "object" || acidcat === null)
+    return { domains: [], scope: "" };
+  const scope =
+    "scope" in acidcat && typeof acidcat.scope === "string"
+      ? acidcat.scope
+      : "";
+  const declared: unknown = "domains" in acidcat ? acidcat.domains : [];
+  const domains = Array.isArray(declared)
+    ? declared.filter((domain): domain is string => typeof domain === "string")
+    : [];
+  return { domains, scope };
+}
+
+function escape(text: string): string {
+  return text.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
+/** The domain package a path sits in, such as `packages/primes`, or `undefined`. */
+export function applicationOwner(
+  context: Context,
+  filename: string
+): string | undefined {
+  const path = normalizedPath(filename);
+  return acidCatSettings(context)
+    .domains.map((domain) => `packages/${domain}`)
+    .find((owner) =>
+      new RegExp(`(?:^|/)${escape(owner)}(?:/|$)`, "u").test(path)
+    );
+}
+
+/** Whether the file being linted is a domain package's source. */
+export function isApplication(context: Context): boolean {
+  const owner = applicationOwner(context, context.filename);
+  return (
+    owner !== undefined &&
+    normalizedPath(context.filename).includes(`${owner}/src/`)
   );
 }
 
-export function applicationOwner(filename: string): string | undefined {
-  return normalizedPath(filename).match(
-    /(?:^|\/)(packages\/application-[^/]+)(?:\/|$)/u
-  )?.[1];
-}
-
+/** The domain package an import reaches, by package name or by relative path, or `undefined`. */
 export function applicationImport(
-  source: string,
-  filename: string
+  context: Context,
+  source: string
 ): string | undefined {
-  const packageName = source.match(
-    /^@heb-stack\/(application-[^/]+)(?:\/|$)/u
-  )?.[1];
-  if (packageName) return `packages/${packageName}`;
+  const { domains, scope } = acidCatSettings(context);
+  const named = domains.find(
+    (domain) =>
+      source === `${scope}/${domain}` ||
+      source.startsWith(`${scope}/${domain}/`)
+  );
+  if (named !== undefined) return `packages/${named}`;
   return applicationOwner(
-    source.startsWith(".") ? resolve(dirname(filename), source) : source
+    context,
+    source.startsWith(".") ? resolve(dirname(context.filename), source) : source
   );
 }

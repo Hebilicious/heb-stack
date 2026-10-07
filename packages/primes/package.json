@@ -1,5 +1,5 @@
 {
-  "name": "@heb-stack/application-primes",
+  "name": "@heb-stack/primes",
   "version": "0.1.0",
   "private": true,
   "type": "module",

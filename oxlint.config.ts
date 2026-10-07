@@ -128,4 +128,6 @@ export default defineConfig({
       { classes: true, functions: false, variables: false },
     ],
   },
+  // The AcidCat domains: `packages/<domain>`, published as `<scope>/<domain>`. Only `packages/acidcat` may import them.
+  settings: { acidcat: { domains: ["primes"], scope: "@heb-stack" } },
 });

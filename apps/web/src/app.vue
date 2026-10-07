@@ -8,8 +8,7 @@ import { useAcidCat } from "./root.ts";
 import { useSnapshot } from "./use-snapshot.ts";
 
 const root = useAcidCat();
-const { check, next } = root.catalog.primes;
-const { history } = root.catalog;
+const { check, history, next } = root.catalog.primes;
 if (check.snapshot === undefined) {
   throw new Error("primes.check publishes no lifecycle snapshot");
 }

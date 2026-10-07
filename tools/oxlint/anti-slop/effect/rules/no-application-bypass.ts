@@ -17,17 +17,17 @@ export const noApplicationBypassRule = defineRule({
     },
     messages: {
       bypass:
-        "Consume AcidCat root handles from @heb-stack/acidcat. Only packages/acidcat/src composes application packages; cross-domain work uses semantic Context services wired there. Pure domain/mechanism imports remain available.",
+        "Consume AcidCat root handles from @heb-stack/acidcat. Only packages/acidcat/src composes domain packages; cross-domain work uses semantic Context services wired there. Pure domain/mechanism imports remain available.",
     },
   },
   create(context) {
     if (isRoot(context.filename)) return {};
     return moduleReferences((source, node) => {
-      const importedOwner = applicationImport(source, context.filename);
+      const importedOwner = applicationImport(context, source);
       if (!importedOwner) return;
       if (
         source.startsWith(".") &&
-        importedOwner === applicationOwner(context.filename)
+        importedOwner === applicationOwner(context, context.filename)
       )
         return;
       context.report({ node, messageId: "bypass" });

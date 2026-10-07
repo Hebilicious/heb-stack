@@ -1,20 +1,20 @@
 @domain:acidcat @seam:adapters
 Feature: Each adapter serves exactly the leaves its target declares
 
-  One catalog feeds every adapter. A capability reaches a target only when its own audience names it, so the history
+  One catalog feeds every adapter. A capability reaches a target only when its own audience names it, so the check history
   belongs to the page and the command line, and the Worker's tool surfaces never see it.
 
   @scenario:web-registers-every-leaf
   Scenario: WebMCP registers every leaf the page declares
     Given a web session
     When the WebMCP adapter registers its tools
-    Then the listing is "history.clear, history.list, primes.check, primes.next"
+    Then the listing is "primes.check, primes.history.clear, primes.history.list, primes.next"
 
   @scenario:cli-lists-its-leaves
   Scenario: The command line lists the leaves the cli target declares
     Given a cli session
     When the command line lists its capabilities
-    Then the listing is "history.clear, history.list, primes.check, primes.next"
+    Then the listing is "primes.check, primes.history.clear, primes.history.list, primes.next"
 
   @scenario:mcp-lists-its-leaves
   Scenario: The MCP endpoint lists the leaves the mcp target declares
@@ -31,5 +31,5 @@ Feature: Each adapter serves exactly the leaves its target declares
   @scenario:mcp-refuses-history-by-name
   Scenario: The MCP endpoint refuses a history leaf called by name
     Given an mcp session
-    When an MCP client calls "history.clear"
-    Then the call is refused as an unknown tool named "history.clear"
+    When an MCP client calls "primes.history.clear"
+    Then the call is refused as an unknown tool named "primes.history.clear"

@@ -16,7 +16,7 @@ export const requireEffectComputationsRule = defineRule({
     },
   },
   create(context) {
-    if (!isApplication(context.filename)) return {};
+    if (!isApplication(context)) return {};
     const reportAsync = (node: Extract<ESTree.Node, { async: boolean }>) => {
       if (node.async) context.report({ node, messageId: "promise" });
     };

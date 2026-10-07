@@ -19,7 +19,7 @@ export const useAtomRuntimeInVueRule = defineRule({
     const filename = normalizedPath(context.filename);
     const feature = /(?:^|\/)apps\/web\/src\//u.test(filename);
     const browser = /(?:^|\/)packages\/browser-runtime\/src\//u.test(filename);
-    if (!feature && !browser && !isApplication(filename)) return {};
+    if (!feature && !browser && !isApplication(context)) return {};
     return {
       CallExpression(node) {
         const reference = importReference(context, node.callee);

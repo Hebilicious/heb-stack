@@ -53,7 +53,7 @@ export const useEffectSchemaRule = defineRule({
     },
   },
   create(context) {
-    const capability = isApplication(context.filename);
+    const capability = isApplication(context);
     let importsEffect = capability;
     const competingImports: ESTree.Node[] = [];
     const manualJsonCalls: ESTree.CallExpression[] = [];

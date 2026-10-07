@@ -6,7 +6,7 @@ Before writing any Effect code, read `node_modules/effect/AGENTS.md` completely 
 
 ## Architecture
 
-- AcidCat is the application interface. `packages/application-*` owns a domain's capabilities, machines and services; `packages/acidcat` is the only package that composes domain packages; every adapter (Vue, WebMCP, the CLI, MCP, capnweb) depends on the root catalog, never on a domain implementation. Read [the AcidCat notes in the README](README.md#acidcat) before adding a capability or an adapter.
+- AcidCat (Application Capability IDentification Category) is the application interface. A domain package, such as `packages/primes`, owns one namespace: its capabilities, machines and services, with ids that begin with the namespace. Domains are listed in `settings.acidcat` of `oxlint.config.ts`, and `packages/acidcat` is the only package that composes them; every adapter (Vue, WebMCP, the CLI, MCP, capnweb) depends on the root catalog, never on a domain implementation. Read [the AcidCat notes in the README](README.md#acidcat) before adding a capability or an adapter.
 - A capability reaches a target only when its own `audience` names it. Widen a surface by editing that one list.
 - XState owns lifecycle, concurrency, replacement, retry and cancellation. Effect owns computations, expected failures, services and resources. Vue observes owner snapshots through `@effect/atom-vue` and keeps only presentation state.
 - Keep capability definitions in `capabilities.ts`, `*-capability.ts` or `*.capabilities.ts`, and machines in `machine.ts`, `*-machine.ts` or `*.machine.ts`.

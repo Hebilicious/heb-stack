@@ -16,6 +16,6 @@ tasks:
     deps:
       - target: "cli:build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
     inputs: ["**/*", "/packages/*/src/**/*.ts", "/packages/*/package.json", "/apps/web/src/**/*", "/apps/web/vize.config.ts"]

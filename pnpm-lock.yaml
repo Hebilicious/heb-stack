@@ -435,9 +435,9 @@ importers:
       '@heb-stack/acidcat-kernel':
         specifier: workspace:*
         version: link:../acidcat-kernel
-      '@heb-stack/application-primes':
+      '@heb-stack/primes':
         specifier: workspace:*
-        version: link:../application-primes
+        version: link:../primes
       '@heb-stack/webmcp-adapter':
         specifier: workspace:*
         version: link:../webmcp-adapter
@@ -450,21 +450,6 @@ importers:
       effect:
         specifier: 'catalog:'
         version: 4.0.0
-
-  packages/application-primes:
-    dependencies:
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
-      '@xstate/effect':
-        specifier: 'catalog:'
-        version: 0.1.0-alpha.6(effect@4.0.0)(xstate@6.0.0-alpha.63)
-      effect:
-        specifier: 'catalog:'
-        version: 4.0.0
-      xstate:
-        specifier: 'catalog:'
-        version: 6.0.0-alpha.63
 
   packages/browser-runtime:
     dependencies:
@@ -528,6 +513,21 @@ importers:
       effect:
         specifier: 'catalog:'
         version: 4.0.0
+
+  packages/primes:
+    dependencies:
+      '@heb-stack/acidcat-kernel':
+        specifier: workspace:*
+        version: link:../acidcat-kernel
+      '@xstate/effect':
+        specifier: 'catalog:'
+        version: 0.1.0-alpha.6(effect@4.0.0)(xstate@6.0.0-alpha.63)
+      effect:
+        specifier: 'catalog:'
+        version: 4.0.0
+      xstate:
+        specifier: 'catalog:'
+        version: 6.0.0-alpha.63
 
   packages/rpc:
     dependencies:

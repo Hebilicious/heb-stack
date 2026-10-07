@@ -28,7 +28,7 @@ export class PrimeChecker extends Context.Service<
      */
     readonly check: (n: number) => Effect.Effect<CheckOutput, OutOfRange>;
   }
->()("@heb-stack/application-primes/PrimeChecker") {}
+>()("@heb-stack/primes/PrimeChecker") {}
 
 /** The states a page distinguishes, in the order a snapshot is matched against them. */
 const STATUSES = ["checking", "result", "failed"] as const;

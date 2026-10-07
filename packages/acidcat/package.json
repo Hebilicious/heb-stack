@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@heb-stack/acidcat-kernel": "workspace:*",
-    "@heb-stack/application-primes": "workspace:*",
+    "@heb-stack/primes": "workspace:*",
     "@heb-stack/webmcp-adapter": "workspace:*",
     "effect": "catalog:"
   }

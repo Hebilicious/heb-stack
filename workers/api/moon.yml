@@ -31,7 +31,7 @@ tasks:
     deps:
       - target: "web:build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
     preset: "server"
 
@@ -44,7 +44,7 @@ tasks:
     deps:
       - target: "web:build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
     options:
       cache: false
@@ -60,7 +60,7 @@ tasks:
       - "typecheck"
       - target: "web:build"
         cacheStrategy: "outputs"
-      - target: "primes:build"
+      - target: "primes-wasm:build"
         cacheStrategy: "outputs"
     options:
       cache: false
