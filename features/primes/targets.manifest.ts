@@ -22,6 +22,7 @@ import { vi } from "vitest";
 
 import { eventually } from "../support/eventually.ts";
 import {
+  integerStepArgument,
   noStepArguments,
   step,
   stringStepArgument,
@@ -40,6 +41,7 @@ interface World {
   root?: AcidCat;
   listing?: readonly string[];
   refusal?: { readonly code: number; readonly message: string };
+  status?: number;
 }
 
 function sorted(ids: Iterable<string>): readonly string[] {
@@ -187,6 +189,28 @@ export const targetsFeature: ExecutableFeatureManifest<World> = {
           setListing(world, capabilities);
         })
     ),
+    step(
+      "a capnweb client sends a batch that is not UTF-8",
+      noStepArguments,
+      (world) =>
+        Effect.gen(function* () {
+          const { catalog } = required(world.root, "session");
+          const response = yield* Effect.promise(
+            async () =>
+              await primesRpcResponse(
+                new Request(`${ORIGIN}${PRIMES_RPC_PATH}`, {
+                  // 0xFF never appears in UTF-8.
+                  body: new Uint8Array([0xff, 0xfe]),
+                  headers: { "Content-Type": "text/plain", Origin: ORIGIN },
+                  method: "POST",
+                }),
+                ORIGIN,
+                catalog
+              )
+          );
+          world.status = response.status;
+        })
+    ),
     step("an MCP client calls {string}", stringStepArgument, (world, name) =>
       Effect.gen(function* () {
         const { catalog } = required(world.root, "session");
@@ -208,6 +232,13 @@ export const targetsFeature: ExecutableFeatureManifest<World> = {
         expected.split(", ")
       );
     }),
+    step(
+      "the API answers with status {int}",
+      integerStepArgument,
+      (world, status) => {
+        assert.equal(required(world.status, "status"), status);
+      }
+    ),
     step(
       "the call is refused as an unknown tool named {string}",
       stringStepArgument,

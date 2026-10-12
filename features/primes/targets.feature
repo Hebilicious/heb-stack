@@ -28,6 +28,12 @@ Feature: Each adapter serves exactly the leaves its target declares
     When a capnweb client asks the API for its capabilities
     Then the listing is "primes.check, primes.next"
 
+  @scenario:rpc-refuses-malformed-text
+  Scenario: The capnweb API refuses a batch that is not UTF-8
+    Given an rpc session
+    When a capnweb client sends a batch that is not UTF-8
+    Then the API answers with status 400
+
   @scenario:mcp-refuses-history-by-name
   Scenario: The MCP endpoint refuses a history leaf called by name
     Given an mcp session

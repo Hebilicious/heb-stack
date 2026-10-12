@@ -6,7 +6,7 @@ This repository deliberately receives storage, network, worker, URL, and importe
 
 The registered Effect-specific plugin keeps XState transition ownership separate from Effect execution, requires semantic Context services instead of Effect-returning Port interfaces, keeps expected failures as plain tagged data, and requires Effect Schema rather than competing validators or manual production JSON parsing in Effect modules. Tagged values are built with their schema's `.make` (a union exposes one per case through `Schema.toTaggedUnion`) and branched with `Option.isSome`, `Predicate.isTagged`, or `Match`.
 
-Some vendored rules are registered but not enabled in `.oxlintrc.json`:
+Some vendored rules are registered but not enabled in `oxlint.config.ts`:
 
 | Rule | Why it is off |
 | --- | --- |
@@ -19,7 +19,7 @@ Definition placement rules resolve imported and local aliases to XState machine 
 
 `no-manual-effect-runtime-in-evidence` keeps `Effect.run*` and `ManagedRuntime.make` out of evidence files: a Gherkin step returns its Effect and the runner runs it in the scenario's Scope, and plain Vitest evidence uses the `testEffect` helper in `features/support`.
 
-`no-module-level-mutable-state` keeps headless and Worker modules free of module-level `let` and `var`, which every request an isolate serves and every session an owner hosts would share. Browser presentation, tooling, and evidence files are exempt in `.oxlintrc.json`.
+`no-module-level-mutable-state` keeps headless and Worker modules free of module-level `let` and `var`, which every request an isolate serves and every session an owner hosts would share. Browser presentation, tooling, and evidence files are exempt in `oxlint.config.ts`.
 
 ## Taking upstream changes
 

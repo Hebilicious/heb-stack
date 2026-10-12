@@ -63,8 +63,8 @@ export async function primesRpcResponse(
     request,
     PRIMES_RPC_LIMITS.maxMessageSize
   );
-  if (bounded === null) {
-    return new Response("Request too large", { status: 413 });
+  if (bounded instanceof Response) {
+    return bounded;
   }
   return await newHttpBatchRpcResponse(bounded, new PrimesRpcTarget(catalog), {
     limits: PRIMES_RPC_LIMITS,
@@ -108,23 +108,33 @@ export function rpcRequestRejection(
   return null;
 }
 
-/** The request with its body read up to `maximumBytes`, or null when the body is larger. */
+/**
+ * The request with its body read up to `maximumBytes`, or the refusal for a body that is larger or is not UTF-8.
+ * BOUNDARY: A client writes arbitrary bytes; they become the batch's text only when they decode as UTF-8.
+ */
 async function boundedRpcRequest(
   request: Request,
   maximumBytes: number
-): Promise<Request | null> {
+): Promise<Request | Response> {
+  const tooLarge = new Response("Request too large", { status: 413 });
   const declared = request.headers.get("Content-Length");
   if (declared !== null && Number(declared) > maximumBytes) {
-    return null;
+    return tooLarge;
   }
   if (request.body === null) {
     return new Request(request.url, request);
   }
   const bytes = await readAtMost(request.body, maximumBytes);
   if (bytes === undefined) {
-    return null;
+    return tooLarge;
   }
-  const body = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  let body: string;
+  try {
+    body = decoder.decode(bytes);
+  } catch {
+    return new Response("The request body is not UTF-8", { status: 400 });
+  }
   return new Request(request.url, {
     body,
     headers: request.headers,

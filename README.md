@@ -6,6 +6,8 @@ A starter for an Effect application on Cloudflare. It ships as a **pnpm + Moon w
 
 The shape it teaches: define a **capability** once (Effect Schema input, output and failure, plus one Effect computation), let its owner run the lifecycle in an XState machine, and serve it to every surface from one catalog.
 
+A preview runs at <https://heb-stack-preview.hebilicious.workers.dev>: the page, with `/mcp` and `/rpc` beside it.
+
 ## One capability, every surface
 
 `primes.check` is defined once, in `packages/primes/src/capabilities.ts`. Here it is on each surface, against `moon run app:dev`. Each example is condensed from a test in this repository, or was run as written.
@@ -146,7 +148,7 @@ Every package has a README that says what it does.
 - **XState `6.0.0-alpha.63` with `@xstate/effect` `0.1.0-alpha.6`**: the check lifecycle as a machine, with its work as an invoked Effect.
 - **Vue `3.6.0-rc.10` in Vapor mode** with **`@effect/atom-vue` `4.0.0`**: `<script setup vapor lang="ts">`, compiled by **vize `0.429.2`**, bundled by **Vite `8.3.2`**, styled with **cssforge `0.9.0`** tokens.
 - **capnweb `0.12.0`**: the API at `/rpc`, called by the page over HTTP batches.
-- **Alchemy `2.0.0-beta.79`**: the Worker declared as an Effect program; `alchemy dev` runs it in workerd locally.
+- **Alchemy `2.0.0-beta.81`**: the Worker declared as an Effect program; `alchemy dev` runs it in workerd locally.
 - **Rust**: one crate compiled to `wasm32-unknown-unknown`, behind one typed port.
 - **Vitest `5.0.3`, Gherkin (`@cucumber/gherkin` `42.0.1`) and Playwright `1.63.0`**: features whose steps return Effects, run by a manifest runner on Vitest, and two browser scenarios.
 - **TypeScript `7.0.2` and `@effect/tsgo` `0.47.2`**: strict types, and Effect language-service diagnostics as a gate.
@@ -178,7 +180,7 @@ Deploying needs an Alchemy profile: run `pnpm exec alchemy profile edit --add Cl
 | Seam | Proof |
 | --- | --- |
 | Capabilities | `features/primes/primes.feature`, over the compiled crate |
-| Targets | `features/primes/targets.feature`: each adapter lists exactly its leaves; MCP refuses the history |
+| Targets | `features/primes/targets.feature`: each adapter lists exactly its leaves; MCP refuses the history; capnweb refuses a batch that is not UTF-8 |
 | The page | `features/web/check.vue.feature`: typing 91 shows "91 = 7 × 13" |
 | The lifecycle | `packages/primes/src/checker.test.ts`: replacement interrupts; a failed check retries |
 | CLI and MCP | `features/adapters/`: `cli` in a process; `tools/list` and `tools/call` |
@@ -190,6 +192,10 @@ Deadlines are hang guards, never paces, and nothing retries.
 ## Make it yours
 
 Rename the `@heb-stack/*` packages, then replace `packages/primes` with your own namespace: define its capabilities in `capabilities.ts` with ids that begin with the namespace, its lifecycle in a `*-machine.ts`, and its services as Effect `Context.Service`s. Compose it in `packages/acidcat`, list it in `settings.acidcat.domains`, give each host its Layers, and every surface serves it, `cli <namespace> …` included.
+
+## License
+
+[MIT](LICENSE).
 
 ---
 
