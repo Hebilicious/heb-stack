@@ -213,8 +213,8 @@ catalogs:
       specifier: 0.1.0-alpha.6
       version: 0.1.0-alpha.6
     alchemy:
-      specifier: https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz
-      version: https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz
+      specifier: 2.0.0-beta.81
+      version: 2.0.0-beta.81
     capnweb:
       specifier: 0.12.0
       version: 0.12.0
@@ -260,25 +260,6 @@ catalogs:
 
 overrides:
   xstate@*: 6.0.0-alpha.63
-  '@alchemy.run/cloudflare-runtime': https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz
-  '@alchemy.run/floci': https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz
-  '@alchemy.run/node-utils': https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz
-  '@distilled.cloud/acme': https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz
-  '@distilled.cloud/zerossl': https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz
-  '@distilled.cloud/aws': https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz
-  '@distilled.cloud/axiom': https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz
-  '@distilled.cloud/cloudflare': https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz
-  '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz
-  '@distilled.cloud/doppler': https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz
-  '@distilled.cloud/fly-io': https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz
-  '@distilled.cloud/hetzner': https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz
-  '@distilled.cloud/infisical': https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz
-  '@distilled.cloud/neon': https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz
-  '@distilled.cloud/planetscale': https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz
-  '@distilled.cloud/prisma': https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz
-  '@distilled.cloud/railway': https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz
-  '@distilled.cloud/stripe': https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz
-  '@alchemy.run/frontend-frameworks': https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz
 
 importers:
 
@@ -569,7 +550,7 @@ importers:
         version: link:../../packages/rpc
       alchemy:
         specifier: 'catalog:'
-        version: https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))(ws@8.22.0)
+        version: 2.0.0-beta.81(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))(ws@8.22.0)
       effect:
         specifier: 'catalog:'
         version: 4.0.0
@@ -583,11 +564,10 @@ importers:
 
 packages:
 
-  '@alchemy.run/cloudflare-runtime@https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz':
-    resolution: {integrity: sha512-u6xg0QdVvj6s7K84OWWf2opiFGCzJ8qthJvHNNS+gHD3VTp6UUTPvt2n1oZSyOFvXZazuAtTiUFzrmht63l5pw==, tarball: https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz}
-    version: 2.0.0-beta.79
+  '@alchemy.run/cloudflare-runtime@2.0.0-beta.81':
+    resolution: {integrity: sha512-gGmshJZSFbeyK94UMRgRcrE0prwJrp3H3kQ8aZmGOuWzwJMMxaoCuf4Nulf8nGsvHcjMEAfFi45AXRRQBgbgQQ==}
     peerDependencies:
-      '@distilled.cloud/cloudflare': https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz
+      '@distilled.cloud/cloudflare': 1.0.0-rc.13
       '@effect/platform-bun': ^4.0.0
       '@effect/platform-node': ^4.0.0
       effect: ^4.0.0
@@ -603,58 +583,13 @@ packages:
       vite:
         optional: true
 
-  '@alchemy.run/floci@https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz':
-    resolution: {integrity: sha512-Ti/EzFQnm5HEGvpNJu3yKsHQwRdu4j0zNsdpCDFiRau3XqDXbC9k/gJ1AkW6KInjGwo8dwjHZS/r7JJOFgaP3g==, tarball: https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz}
-    version: 2.0.0-beta.79
+  '@alchemy.run/floci@2.0.0-beta.81':
+    resolution: {integrity: sha512-0mYZqFrQLlRwDUsoJlI/ArnEaAaFid2ZPsJWvUyC5llAScWxlST7pdjQd1r/t1YIFFkhOV9JQO1wa7FI1nY6EQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@alchemy.run/frontend-frameworks@https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz':
-    resolution: {integrity: sha512-hFSUU+BjqJyjVCwupwWsOgwPP8RJv0EX39zB2GQiPOSqTrTOBaXoVFW29Omlk/uq/mDriiTr/GrPzhEB8352qg==, tarball: https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz}
-    version: 2.0.0-beta.79
-    peerDependencies:
-      '@effect/platform-bun': ^4.0.0
-      '@effect/platform-node': ^4.0.0
-      '@octanejs/vite-plugin': '>=0.1.22'
-      '@opennextjs/cloudflare': 1.20.1
-      '@sveltejs/kit': '>=3.0.0-next.27'
-      '@vitejs/plugin-react': ^6.0.2
-      astro: ^7.0.0
-      effect: ^4.0.0
-      hono: ^4.12.14
-      nuxt: '>=4.5.0'
-      vite: ^7.0.0 || ^8.0.0
-      vocs: 2.8.2
-      waku: 1.0.0-beta.7
-    peerDependenciesMeta:
-      '@effect/platform-bun':
-        optional: true
-      '@effect/platform-node':
-        optional: true
-      '@octanejs/vite-plugin':
-        optional: true
-      '@opennextjs/cloudflare':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      '@vitejs/plugin-react':
-        optional: true
-      astro:
-        optional: true
-      hono:
-        optional: true
-      nuxt:
-        optional: true
-      vite:
-        optional: true
-      vocs:
-        optional: true
-      waku:
-        optional: true
-
-  '@alchemy.run/node-utils@https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz':
-    resolution: {integrity: sha512-8o/7l9TOlM6POMAYXgwr1khJ562blws7FEq6N2PKcU6OpdwUH8kCnhNOLdZDn9Nw20TRCn4jOwxuHXsgdBb44A==, tarball: https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz}
-    version: 2.0.0-beta.79
+  '@alchemy.run/node-utils@2.0.0-beta.81':
+    resolution: {integrity: sha512-AcxxGMFbbdiKww7OUbBd/fsSDyRJjoICAIqGwgkJxrIQkkaNt6+9SObrznmnOx70OonA2GH87RGnEaTtORHffw==}
 
   '@alchemy.run/sigil@0.1.0-alpha.1':
     resolution: {integrity: sha512-RtHELG2w+GluVewRsuKm66idtPzC+4STptMr/61X1Vy5uBkDzcCzjzV8G6jUa4iBv6Il0hHV7UL6wvv//9nD/Q==}
@@ -759,98 +694,83 @@ packages:
   '@cucumber/tag-expressions@11.0.1':
     resolution: {integrity: sha512-x0AssM2HKLoxw8gSeAsYo0QK9wImODYBNDO423/K1Pfk2vwA/MdecRS1ky5i3Rl84kohaG0uUXhIBR+HTu/Qjg==}
 
-  '@distilled.cloud/acme@https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz':
-    resolution: {integrity: sha512-JNNMGFPFj0HyPuiMSyJVv84rV7x6EA42dSnYie5DlZSQfM0aNs9gCWSfbI2raHCFwFrk+E88jjKp4EdsHqyFAw==, tarball: https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz}
-    version: 1.0.0-rc.8
+  '@distilled.cloud/acme@1.0.0-rc.13':
+    resolution: {integrity: sha512-3rmzH125jQxk0zpCvXGNEybSaqpAolyCX+8LWDDrXf+wIKs67GflkJyQLjOOh0lKARe29hdUZGgqEbbvpp0LNA==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/aws@https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz':
-    resolution: {integrity: sha512-9qjKG6xz/lbJmsCkFhtMIZOV0NdkSTpJB6kzEuRZzyD5IE8JFC1tXQkWYdpIP7hoY90g4DHEhiyCBdADDTM0WQ==, tarball: https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/aws@1.0.0-rc.13':
+    resolution: {integrity: sha512-6ZGcp0LkniB0I2l8Gr7vKRQgTZTch0/07iuvuMZv9Nu+rWwNuZG9VHTUdlIoarWgCHFUNN8yvSYBGOjaeN99tQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/axiom@https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz':
-    resolution: {integrity: sha512-v4+7ozANKRYHU+66j/nER/qxIqA8dqGhalzQGy6VmqOEL5sUnu3TfpTOlRyNgLPMxx4hIOJ3BgjYZT0vHksMbg==, tarball: https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/axiom@1.0.0-rc.13':
+    resolution: {integrity: sha512-aRoJtvfXgWi5dtfjuJvDwnArRKvv2MPYHCxYeZcxZbqe62IaQA5yu/khft7TJvxeDyJoSDnVXZu3RyJjNmBA4g==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/cloudflare@https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz':
-    resolution: {integrity: sha512-LTlHg0b5Y/9MI8AvtukYLf5QPnaqc9LIywba8PK17gCrqMJwLOxoYzfk6q2Z9Npbd63F8UWDx5c+IBLd6OQN8Q==, tarball: https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/cloudflare@1.0.0-rc.13':
+    resolution: {integrity: sha512-Py5FoA6azyYExDb91VaeC+9x+ravOBSRhXeUmpcQjCtgqmOdiXgc2YZGMMPI68DF+kMuHRVIrR+2uRZNDOhYjw==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/core@https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz':
-    resolution: {integrity: sha512-DO3Sk44J5rvS4JAGubtlTceC9SPnJ0jWuj02ae9dnRVG7deAlzms8leBUftu4/QKi2b6kiqwC785PX4pw4yaJA==, tarball: https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/core@1.0.0-rc.13':
+    resolution: {integrity: sha512-RYyrxW+F5zrTuu1UWV/JoycholBCIkXIusYJdDniDwCdmbjdKGl07KlkkeeY774uBawNGf+pt1ESNGeLVnNHsg==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/doppler@https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz':
-    resolution: {integrity: sha512-mLMZrXs4pYXxxLBFENCaHR0IkueI1jjx55kA+TUE10u6rxmwpTqlrn1udhrjgFIhAP4oOSLXJr9Lhe+TcuTtiw==, tarball: https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/doppler@1.0.0-rc.13':
+    resolution: {integrity: sha512-GgOEUCc4Bx0C+lYNfZ4OqaA3ULvqDUQTJC8gobSh1L0jfrWclv/kRcSr43v4IXyStld+saUvDfDZgeGzlE74OA==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/fly-io@https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz':
-    resolution: {integrity: sha512-X6Qb47N2iK6Sdg5McsCTufwFeeNXMXEJXOuCSj9Qux7SNu+1j9Ggw2VwNPA/QiyKlwJnbkBZ9KmA/7Hk89roFg==, tarball: https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/fly-io@1.0.0-rc.13':
+    resolution: {integrity: sha512-Ipp+9nvs+PzqwDPhZq2/BEHNUeWzXKhrvjfT/eBLFHo/QpH0HgdMH8MSQe6/LGszZoormwA6ZrTv2wxaFO7ZiQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/gcp@1.0.0-rc.12':
-    resolution: {integrity: sha512-95cKLB0KaP5B5sGrM+kiFw4BaApOW1CDi/kw9w0Occw49P17u4Pj/4fu08wQnm1X78DeEHPXzW7Fg6V03UaNmA==}
-    peerDependencies:
-      effect: '>=4.0.0-rc.115 || >=4.0.0'
-
-  '@distilled.cloud/hetzner@https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz':
-    resolution: {integrity: sha512-uwxOVaCIX2kujy4DvV1KKXSVa7jS8Hf57GCs/xEOteWu9AJHlZVpxsCSkDCjopVe9DQV6XNAmcczljT5n1eWkA==, tarball: https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/gcp@1.0.0-rc.13':
+    resolution: {integrity: sha512-un8jqil9ejt96oN+OfEDUsbrEOpC6Ut4B/73DqKDttvt0Btal1OeBNTTQsftVCpeEzXAvkYKGRIT2AeEu1J5jA==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/infisical@https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz':
-    resolution: {integrity: sha512-M/UsWPqdjkevKFNZKiEiqrBtSDejN3Fc9eytAXj+ZcUP34WjvaQ7sz+F1q0DhssTyAEdKFawVeMVjCUoJjpfkQ==, tarball: https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/hetzner@1.0.0-rc.13':
+    resolution: {integrity: sha512-FvqofgMypNkeZbnjGjWMZqvqGd9GxcMzdbi/6JrbcPaHMJG+CCBGt/mAa7mLlEovzwVaGCsBnOXJ6rP5pZjB4Q==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/neon@https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz':
-    resolution: {integrity: sha512-X1UesOJR7xQjB8ckgg6BWQ3xqlWU+0LOg1dr52oX82Nzecc5zRDoLmYNQu/VvLovvjHEBD+2I1rfTiSsfYW4cg==, tarball: https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/infisical@1.0.0-rc.13':
+    resolution: {integrity: sha512-Zz8ksA/Y8UUUnWag2UBxB5WYA6wLqOS78ugWJ3cOr9Ot+4bC0NJYWanq35uFInozLXWhun84USU2wOI+mdwQUQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/planetscale@https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz':
-    resolution: {integrity: sha512-PYU+fqw2Th/KwY52MykPaeckQU4N8LWnGalZgs16Ct9Gq9EVgaaY2s54NGbzoplyetQHIF1ZMRVFWpf1yj/MtQ==, tarball: https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/neon@1.0.0-rc.13':
+    resolution: {integrity: sha512-2JvbBFj1kBfkDVPnWcJZ7TJ1cJwWBtScAY7SNJ2qNBUuAK1Wf2kjJXU0/j16eCJ48BQigPArQFWL51wVu/EUQQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/prisma@https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz':
-    resolution: {integrity: sha512-A/9fX+mcxcrxjotw0tMA3D+ifEegx32tdut32Ayh0fRYoOygckKnxke64VJB6jukVQL0/lXO6hoEKi++tq1k7Q==, tarball: https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/planetscale@1.0.0-rc.13':
+    resolution: {integrity: sha512-AM97YGRnDfZdqsxFgQMQ83p7ZlRqxS6/foTTJA5P590UMbbOyrQyFyd33BD0agul8a3ngZde3Oej6v7BN55aWw==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/railway@https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz':
-    resolution: {integrity: sha512-3CVWJckRaFfxhtKrKeTzZoZtzvzDO6eB/sdKVftu4zXSqWMa5b1ZLbT+/ijcEBtkFUP1HudGStb8T+U/imCx8A==, tarball: https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/prisma@1.0.0-rc.13':
+    resolution: {integrity: sha512-+UmHSp9JV8XQl5t5tTdQBY+dWZ9abrEoc7leYEctA0Ar1TrKZEl2EaeQDoumrg4RyGaacRlirEbxaDFI4SOPtQ==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/stripe@https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz':
-    resolution: {integrity: sha512-MYdF2AtrxlBqSC1EFKWvvAn0PnTCAZnRB8LTkVVUSH11n1MQ/Uh6gfBU6wQ5bssOwiQNB7RU1Zub0uwUF4IACg==, tarball: https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz}
-    version: 1.0.0-rc.12
+  '@distilled.cloud/railway@1.0.0-rc.13':
+    resolution: {integrity: sha512-yXalRS3GFLo3hWM0HXptqudi23NVCM4FRD20db2/Ob9FFcNrMJik1fopv+74HOiV+BuxfkCP609KsEK6LVdB/g==}
     peerDependencies:
       effect: ^4.0.0
 
-  '@distilled.cloud/zerossl@https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz':
-    resolution: {integrity: sha512-TE2f85FmnbQg4o7bj46dbEGtx8Zv4RddkMsuqZOikfE/KXlHMwg20wHxuKwPWdaQOlXOM7cz/dNwaNaHNxWPTg==, tarball: https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz}
-    version: 1.0.0-rc.8
+  '@distilled.cloud/stripe@1.0.0-rc.13':
+    resolution: {integrity: sha512-jLTJ1mg4U39lHZb9EGYBJLR91yB3LSG6fVxix+r1BbqaTovWzE+NuJ7fu9fRSeax9jRAqsGLLxe9IxJbOtwQnQ==}
+    peerDependencies:
+      effect: ^4.0.0
+
+  '@distilled.cloud/zerossl@1.0.0-rc.13':
+    resolution: {integrity: sha512-dnxhg39lZjpTdZbHCVYPoUC9E2r8eSHbqiYDhSq2EurVPJcc9YRXlxZR1bP1nniSp078XV8GA+aUECt/Z56aQg==}
     peerDependencies:
       effect: ^4.0.0
 
@@ -2528,11 +2448,11 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  alchemy@https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz:
-    resolution: {integrity: sha512-GglkrYmCXNw1QgMG2U6mNvq58HDHVCv3HPpnNo3NyE3xDzmDtAWLPohHNswgENSW+sDwaetoJwMqDyAZenCkig==, tarball: https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz}
-    version: 2.0.0-beta.79
+  alchemy@2.0.0-beta.81:
+    resolution: {integrity: sha512-AxEUQSYSln9NgZMuYnSz9Q7ERR8BrKrGpx9vOwJtWity7Ze8/7vI4k62u2EAoJRpBbaOTnI2Bp67Au1y9J7FTA==}
     hasBin: true
     peerDependencies:
+      '@alchemy.run/frontend-frameworks': 2.0.0-beta.81
       '@aws/durable-execution-sdk-js': ^2.1.0
       '@effect/platform-bun': ^4.0.0
       '@effect/platform-node': ^4.0.0
@@ -2551,6 +2471,8 @@ packages:
       vite: ^8.0.7
       ws: ^8.21.0
     peerDependenciesMeta:
+      '@alchemy.run/frontend-frameworks':
+        optional: true
       '@aws/durable-execution-sdk-js':
         optional: true
       '@effect/platform-bun':
@@ -3268,11 +3190,6 @@ packages:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
 
-  srvx@1.0.5:
-    resolution: {integrity: sha512-KvSKRpgPG/oaq3cyT614OQ2bAa7DynuGamivCZeoZzIUULOdbQz6wUtnnVuC4+DCx2Zglzo8v5gBYmWIWYhDxA==}
-    engines: {node: '>=20.16.0'}
-    hasBin: true
-
   std-env@3.10.0:
     resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
 
@@ -3636,11 +3553,11 @@ packages:
 
 snapshots:
 
-  '@alchemy.run/cloudflare-runtime@https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz(@distilled.cloud/cloudflare@https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))':
+  '@alchemy.run/cloudflare-runtime@2.0.0-beta.81(@distilled.cloud/cloudflare@1.0.0-rc.13(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))':
     dependencies:
-      '@alchemy.run/node-utils': https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz
+      '@alchemy.run/node-utils': 2.0.0-beta.81
       '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20260918.1)
-      '@distilled.cloud/cloudflare': https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0)
+      '@distilled.cloud/cloudflare': 1.0.0-rc.13(effect@4.0.0)
       '@puppeteer/browsers': 3.2.3(yauzl@3.4.0)
       capnp-es: 0.0.16(typescript@7.0.2)
       effect: 4.0.0
@@ -3659,30 +3576,11 @@ snapshots:
       - proxy-agent
       - typescript
 
-  '@alchemy.run/floci@https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz(effect@4.0.0)':
+  '@alchemy.run/floci@2.0.0-beta.81(effect@4.0.0)':
     dependencies:
       effect: 4.0.0
 
-  '@alchemy.run/frontend-frameworks@https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))':
-    dependencies:
-      '@alchemy.run/cloudflare-runtime': https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz(@distilled.cloud/cloudflare@https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))
-      '@distilled.cloud/aws': https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz(effect@4.0.0)
-      '@distilled.cloud/cloudflare': https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0)
-      effect: 4.0.0
-      esbuild: 0.28.1
-      rolldown: 1.2.5
-      srvx: 1.0.5
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@effect/platform-node': 4.0.0(effect@4.0.0)(redis@6.3.0)
-      hono: 4.11.4
-      vite: 8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - proxy-agent
-      - typescript
-
-  '@alchemy.run/node-utils@https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz':
+  '@alchemy.run/node-utils@2.0.0-beta.81':
     dependencies:
       chokidar: 5.0.0
       rolldown: 1.2.5
@@ -3764,85 +3662,85 @@ snapshots:
 
   '@cucumber/tag-expressions@11.0.1': {}
 
-  '@distilled.cloud/acme@https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz(effect@4.0.0)':
+  '@distilled.cloud/acme@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/aws@https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz(effect@4.0.0)':
+  '@distilled.cloud/aws@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       '@smithy/types': 4.19.0
       effect: 4.0.0
 
-  '@distilled.cloud/axiom@https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz(effect@4.0.0)':
+  '@distilled.cloud/axiom@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/cloudflare@https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0)':
+  '@distilled.cloud/cloudflare@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/core@https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)':
+  '@distilled.cloud/core@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
       effect: 4.0.0
       graphql: 16.11.0
 
-  '@distilled.cloud/doppler@https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz(effect@4.0.0)':
+  '@distilled.cloud/doppler@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/fly-io@https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz(effect@4.0.0)':
+  '@distilled.cloud/fly-io@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/gcp@1.0.0-rc.12(effect@4.0.0)':
+  '@distilled.cloud/gcp@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/hetzner@https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz(effect@4.0.0)':
+  '@distilled.cloud/hetzner@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/infisical@https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz(effect@4.0.0)':
+  '@distilled.cloud/infisical@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/neon@https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz(effect@4.0.0)':
+  '@distilled.cloud/neon@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/planetscale@https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz(effect@4.0.0)':
+  '@distilled.cloud/planetscale@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/prisma@https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz(effect@4.0.0)':
+  '@distilled.cloud/prisma@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/railway@https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz(effect@4.0.0)':
+  '@distilled.cloud/railway@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/stripe@https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz(effect@4.0.0)':
+  '@distilled.cloud/stripe@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
-  '@distilled.cloud/zerossl@https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz(effect@4.0.0)':
+  '@distilled.cloud/zerossl@1.0.0-rc.13(effect@4.0.0)':
     dependencies:
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
       effect: 4.0.0
 
   '@effect/atom-vue@4.0.0(effect@4.0.0)(vue@3.6.0-rc.10(typescript@7.0.2))':
@@ -4975,29 +4873,28 @@ snapshots:
 
   acorn@8.18.0: {}
 
-  alchemy@https://pkg.alchemy.run/alchemy/-/dbf613d3cde9fd8afe15c4f39bcfa85db23923e25dad5325cafeb8bd433109af.tgz(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))(ws@8.22.0):
+  alchemy@2.0.0-beta.81(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))(ws@8.22.0):
     dependencies:
-      '@alchemy.run/cloudflare-runtime': https://pkg.alchemy.run/@alchemy.run/cloudflare-runtime/-/8420dbdd856a8eba975b334843b55652e5d4b9f4aa988f33d63df379886295e4.tgz(@distilled.cloud/cloudflare@https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))
-      '@alchemy.run/floci': https://pkg.alchemy.run/@alchemy.run/floci/-/e4850e7dec0c4a1e5a28fd8d7f9dfff8917f50493a134730ceea3554a7bb6cde.tgz(effect@4.0.0)
-      '@alchemy.run/frontend-frameworks': https://pkg.alchemy.run/@alchemy.run/frontend-frameworks/-/7af8d990723710fd582f746aada4eaad961b3ce2bc2d11d48d7d017426d3f479.tgz(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(hono@4.11.4)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))
-      '@alchemy.run/node-utils': https://pkg.alchemy.run/@alchemy.run/node-utils/-/4e13f43704c75bd475fb5ecac36f27082d408df44d72f677c852bd89f2aa1187.tgz
+      '@alchemy.run/cloudflare-runtime': 2.0.0-beta.81(@distilled.cloud/cloudflare@1.0.0-rc.13(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))
+      '@alchemy.run/floci': 2.0.0-beta.81(effect@4.0.0)
+      '@alchemy.run/node-utils': 2.0.0-beta.81
       '@alchemy.run/sigil': 0.1.0-alpha.1
-      '@distilled.cloud/acme': https://pkg.alchemy.run/@distilled.cloud/acme/-/52776f079aa5210433b6dbe0a89c5b5759888abcc5416a0aceccbf09cc005f5b.tgz(effect@4.0.0)
-      '@distilled.cloud/aws': https://pkg.alchemy.run/@distilled.cloud/aws/-/7342f2710cdcbad93c64e85d577c67b40d812c94dc27a74e6e179370716749bf.tgz(effect@4.0.0)
-      '@distilled.cloud/axiom': https://pkg.alchemy.run/@distilled.cloud/axiom/-/95fd505e39db4b3befefaa7cb558b2f4242ea444e00bfb32a7696871c0063a1f.tgz(effect@4.0.0)
-      '@distilled.cloud/cloudflare': https://pkg.alchemy.run/@distilled.cloud/cloudflare/-/50e6f9b7ab1e3fe55659dd1478e9e60a49ca098d9903fb52eac735e855e7bac8.tgz(effect@4.0.0)
-      '@distilled.cloud/core': https://pkg.alchemy.run/@distilled.cloud/core/-/1de85213716a168b5d2beadf3d1b010d88353bbd6c3ef79c675ae42d1999650c.tgz(effect@4.0.0)
-      '@distilled.cloud/doppler': https://pkg.alchemy.run/@distilled.cloud/doppler/-/1a86692ca228d2c1adc1c9dccd5b601eabf26c20c94990b96021a2d786b264a3.tgz(effect@4.0.0)
-      '@distilled.cloud/fly-io': https://pkg.alchemy.run/@distilled.cloud/fly-io/-/5e184c58c5e8a598526cc75ec266ac669ca13408ff7a12f5b62f6f23226dfd0c.tgz(effect@4.0.0)
-      '@distilled.cloud/gcp': 1.0.0-rc.12(effect@4.0.0)
-      '@distilled.cloud/hetzner': https://pkg.alchemy.run/@distilled.cloud/hetzner/-/6dd0524ff0c2327a77b58047e0132dc62627abeda62ce101cf394b8b867c5529.tgz(effect@4.0.0)
-      '@distilled.cloud/infisical': https://pkg.alchemy.run/@distilled.cloud/infisical/-/d7f472dad683aa309226c18c2432a5d96109bc4a712016a782db3c21715b33b2.tgz(effect@4.0.0)
-      '@distilled.cloud/neon': https://pkg.alchemy.run/@distilled.cloud/neon/-/56cc7d7da95b80d204c7ebab7ed4fa745fe82e067a8ed79695f4e5edb2b6a8ba.tgz(effect@4.0.0)
-      '@distilled.cloud/planetscale': https://pkg.alchemy.run/@distilled.cloud/planetscale/-/7188ebd25b80320cdd1e536ffe96fbb6c66992b341dced4cbe7dfb09eeb82f00.tgz(effect@4.0.0)
-      '@distilled.cloud/prisma': https://pkg.alchemy.run/@distilled.cloud/prisma/-/c24299c90a9f797e26ab02f2ce3aed52897cc1e5defafcf5e9e8a47c922080f8.tgz(effect@4.0.0)
-      '@distilled.cloud/railway': https://pkg.alchemy.run/@distilled.cloud/railway/-/0ed39b39ca0f0ea849bfa8315183f4e79bd7e6b06153305c0f569b3c171bf9d4.tgz(effect@4.0.0)
-      '@distilled.cloud/stripe': https://pkg.alchemy.run/@distilled.cloud/stripe/-/550e4e9f7b6e2836cab68cbc2d780314bacc8a496f9f2adcba51ac20147be6a3.tgz(effect@4.0.0)
-      '@distilled.cloud/zerossl': https://pkg.alchemy.run/@distilled.cloud/zerossl/-/35b34004e671d1a2fe8dd93ef73b7c403693ef28e929432f15ee3d6580eb1bfa.tgz(effect@4.0.0)
+      '@distilled.cloud/acme': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/aws': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/axiom': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/cloudflare': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/core': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/doppler': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/fly-io': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/gcp': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/hetzner': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/infisical': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/neon': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/planetscale': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/prisma': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/railway': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/stripe': 1.0.0-rc.13(effect@4.0.0)
+      '@distilled.cloud/zerossl': 1.0.0-rc.13(effect@4.0.0)
       '@effect/sql-d1': 4.0.0(effect@4.0.0)
       '@effect/sql-sqlite-do': 4.0.0(effect@4.0.0)
       '@libsql/client': 0.17.4
@@ -5020,22 +4917,14 @@ snapshots:
       vite: 8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1)
       ws: 8.22.0
     transitivePeerDependencies:
-      - '@octanejs/vite-plugin'
-      - '@opennextjs/cloudflare'
-      - '@sveltejs/kit'
       - '@types/node'
       - '@types/react'
-      - '@vitejs/plugin-react'
-      - astro
       - bufferutil
       - hono
-      - nuxt
       - proxy-agent
       - react-devtools-core
       - typescript
       - utf-8-validate
-      - vocs
-      - waku
 
   ansi-escapes@7.3.0:
     dependencies:
@@ -5167,6 +5056,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.28.1
       '@esbuild/win32-ia32': 0.28.1
       '@esbuild/win32-x64': 0.28.1
+    optional: true
 
   escalade@3.2.0: {}
 
@@ -5775,8 +5665,6 @@ snapshots:
       is-fullwidth-code-point: 5.1.0
 
   source-map-js@1.2.2: {}
-
-  srvx@1.0.5: {}
 
   std-env@3.10.0: {}
 
