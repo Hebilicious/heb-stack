@@ -27,6 +27,16 @@ const RefusedSchema = Schema.TaggedStruct("Refused", { reason: Schema.String });
 
 const everywhere = ["app", "mcp", "cli", "api"];
 
+/** One property for each kind of command-line flag. */
+const FlagsSchema = Schema.Struct({
+  count: Schema.optionalKey(Schema.Int),
+  extra: Schema.optionalKey(Schema.Record(Schema.String, Schema.Json)),
+  label: Schema.optionalKey(Schema.String),
+  mode: Schema.Literals(["fast", "slow"]),
+  ratio: Schema.optionalKey(Schema.Finite),
+  verbose: Schema.optionalKey(Schema.Boolean),
+});
+
 export const fixture = App.make({
   capabilities: [
     Capability.make({
@@ -61,6 +71,15 @@ export const fixture = App.make({
         Effect.sleep(milliseconds).pipe(Effect.as(null)),
     }),
     Capability.make({
+      audience: ["cli"],
+      description:
+        "Return the input. The input has one property for each kind of command-line flag.",
+      id: "fixture.flags",
+      input: FlagsSchema,
+      output: FlagsSchema,
+      run: (input) => Effect.succeed(input),
+    }),
+    Capability.make({
       audience: ["app"],
       description: "Only the app target can use this capability.",
       id: "fixture.hidden",
@@ -93,6 +112,7 @@ export const fixture = App.make({
         Switch.use((ref) => SubscriptionRef.set(ref, on)).pipe(Effect.as(null)),
     }),
   ],
+  description: "One capability for each behavior that acid-cat conform tests.",
   targets: {
     api: { bindings: ["http"] },
     app: { bindings: ["typescript", "webmcp"] },

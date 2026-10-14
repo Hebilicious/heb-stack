@@ -1,5 +1,6 @@
 import {
   MCP_HTTP_PATH,
+  WORKER_MCP_IDENTITY,
   edgeMcpResponse,
   edgeRpcResponse,
 } from "@heb-stack/edge-runtime";
@@ -26,7 +27,7 @@ export async function serveRequest(
   }
   if (pathname === MCP_HTTP_PATH) {
     return await edgeMcpResponse(request, {
-      identity: { name: "heb-stack", version: "0.1.0" },
+      identity: WORKER_MCP_IDENTITY,
       module: primesModule,
       origin,
     });

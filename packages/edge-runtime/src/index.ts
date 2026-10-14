@@ -7,11 +7,21 @@ import { primesRpcResponse } from "@heb-stack/rpc/server";
 /** The one URL an MCP client posts to. */
 export const MCP_HTTP_PATH = "/mcp";
 
-/** What the MCP endpoint tells a client it is. */
+/** What the MCP endpoint tells a client it is, and how a model should use it. */
 export interface McpServerIdentity {
   readonly name: string;
   readonly version: string;
+  /** Guidance for a model about the whole server. Without it, the description of the application. */
+  readonly instructions?: string;
 }
+
+/** The Worker's MCP endpoint: its sessions keep no caller state, so the model is told where the history lives. */
+export const WORKER_MCP_IDENTITY: McpServerIdentity = {
+  instructions:
+    "These tools are the heb-stack prime checker served by a Worker session. The session keeps no caller state, so the check history is not available here; it belongs to the page and the command line.",
+  name: "heb-stack",
+  version: "0.1.0",
+};
 
 /**
  * The services of a Worker session: the crate, which workerd compiled once when the isolate started. An isolate serves
@@ -45,6 +55,7 @@ export async function edgeMcpResponse(
     acidCatLayer(edgeServices(options.module)),
     {
       allowedOrigins: [options.origin],
+      instructions: options.identity.instructions,
       name: options.identity.name,
       path: MCP_HTTP_PATH,
       services: "per-request",

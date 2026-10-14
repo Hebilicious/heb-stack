@@ -1,4 +1,4 @@
-import { edgeMcpResponse } from "@heb-stack/edge-runtime";
+import { WORKER_MCP_IDENTITY, edgeMcpResponse } from "@heb-stack/edge-runtime";
 import { Schema } from "effect";
 
 import { decode } from "./sessions.ts";
@@ -40,7 +40,7 @@ export const CallToolResultSchema = Schema.Struct({
 /** One stateless MCP request to an endpoint, decoded as a JSON-RPC message. */
 export async function mcpRequest(
   endpoint: McpEndpoint,
-  method: "tools/list" | "tools/call",
+  method: "server/discover" | "tools/list" | "tools/call",
   params: Readonly<Record<string, typeof Schema.Json.Type>>,
   name?: string
 ): Promise<typeof WireMessageSchema.Type> {
@@ -89,7 +89,7 @@ export async function listedTools(
 export function workerMcpEndpoint(module: WebAssembly.Module): McpEndpoint {
   return async (request) =>
     await edgeMcpResponse(request, {
-      identity: { name: "evidence", version: "0.0.0" },
+      identity: WORKER_MCP_IDENTITY,
       module,
       origin: ORIGIN,
     });
