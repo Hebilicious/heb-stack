@@ -40,6 +40,8 @@ export interface CapabilityDefinition<
    * deliberate declaration at a time.
    */
   readonly audience: readonly SessionTarget[];
+  /** `true` when a call changes nothing a client can see: a hint the catalog and the tool surfaces publish. */
+  readonly readOnly?: true;
   readonly load: Effect.Effect<
     CapabilityProgram<Input, Output, Failure, Requirements>
   >;
@@ -134,6 +136,7 @@ export interface DescribableCapability {
   readonly description: string;
   /** The targets allowed to see this capability, which the conformance walk checks. */
   readonly audience: readonly SessionTarget[];
+  readonly readOnly?: true;
   /** A definition loads its canonical program, whose schemas are whole schemas rather than a structural view. */
   readonly load: Effect.Effect<{
     readonly input: Schema.Top;

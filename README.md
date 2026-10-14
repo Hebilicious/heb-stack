@@ -101,12 +101,12 @@ moon run app:dev             # the page, /rpc and /mcp on http://localhost:1337,
 
 The category is the **namespace**. This catalog defines exactly one, `primes`, owned by `packages/primes`. Every id begins with it, and the catalog tree mirrors the ids:
 
-| Capability | Kind | Answers | Fails with | Served to |
+| Capability | Read-only | Answers | Fails with | Served to |
 | --- | --- | --- | --- | --- |
-| `primes.check` | query | `{ n, prime, smallestFactor }` | `OutOfRange { n, min, max }` | web, cli, mcp, rpc |
-| `primes.next` | query | `{ after, prime }` | `OutOfRange` | web, cli, mcp, rpc |
-| `primes.history.list` | query | `{ entries }`, at most 20, newest first | — | web, cli |
-| `primes.history.clear` | command | `{ cleared }` | `StorageUnavailable { reason }` | web, cli |
+| `primes.check` | yes | `{ n, prime, smallestFactor }` | `OutOfRange { n, min, max }` | web, cli, mcp, rpc |
+| `primes.next` | yes | `{ after, prime }` | `OutOfRange` | web, cli, mcp, rpc |
+| `primes.history.list` | yes | `{ entries }`, the 20 newest checks, newest first | — | web, cli |
+| `primes.history.clear` | no | `{ cleared }` | `StorageUnavailable { reason }` | web, cli |
 
 A second domain would add its own namespace beside `primes`, in its own package.
 

@@ -96,7 +96,8 @@
           ],
           "type": "object"
         }
-      }
+      },
+      "readOnly": true
     },
     "primes.history.clear": {
       "description": "Remove every check from the history, answering how many there were.",
@@ -143,7 +144,7 @@
       }
     },
     "primes.history.list": {
-      "description": "List the last twenty checks, newest first.",
+      "description": "List the checks in the history, newest first. The history holds the 20 newest checks.",
       "audience": [
         "web",
         "cli"
@@ -184,7 +185,8 @@
           "entries"
         ],
         "type": "object"
-      }
+      },
+      "readOnly": true
     },
     "primes.next": {
       "description": "Find the smallest prime greater than an integer.",
@@ -252,7 +254,8 @@
           ],
           "type": "object"
         }
-      }
+      },
+      "readOnly": true
     }
   }
 }

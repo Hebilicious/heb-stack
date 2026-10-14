@@ -12,7 +12,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { Catalog } from "@acid-cat/catalog";
-import type { Schema as JsonSchema } from "@acid-cat/catalog";
+import type {
+  CapabilityOptions,
+  Schema as JsonSchema,
+} from "@acid-cat/catalog";
 import { walkDefinitions } from "@heb-stack/acidcat-kernel";
 import type { SessionTarget } from "@heb-stack/acidcat-kernel";
 import { definitions } from "@heb-stack/acidcat/catalog";
@@ -68,13 +71,19 @@ const renderCatalog = Effect.gen(function* () {
   }
   for (const definition of walkDefinitions(definitions)) {
     const program = yield* definition.load;
-    catalog.capability(definition.id, {
+    const capability: CapabilityOptions = {
       audience: definition.audience,
       description: definition.description,
       failures: failuresOf(program.error),
       input: inputSchema(program.input),
       output: jsonSchema(program.output),
-    });
+    };
+    catalog.capability(
+      definition.id,
+      definition.readOnly === true
+        ? { ...capability, readOnly: true }
+        : capability
+    );
   }
   return catalog.render();
 });

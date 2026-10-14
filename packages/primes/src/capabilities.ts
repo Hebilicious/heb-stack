@@ -8,6 +8,7 @@ import {
   CheckInputSchema,
   CheckOutputSchema,
   EmptyInputSchema,
+  HISTORY_LIMIT,
   HistoryClearOutputSchema,
   HistoryListOutputSchema,
   NextInputSchema,
@@ -39,6 +40,7 @@ export const checkDefinition = defineCapability({
     run: (input: typeof CheckInputSchema.Type) =>
       PrimeChecker.use((checker) => checker.check(input.n)),
   }),
+  readOnly: true,
 });
 
 export const nextDefinition = defineCapability({
@@ -51,11 +53,12 @@ export const nextDefinition = defineCapability({
     output: NextOutputSchema,
     run: (input: typeof NextInputSchema.Type) => nextPrime(input.after),
   }),
+  readOnly: true,
 });
 
 export const historyListDefinition = defineCapability({
   audience: ["web", "cli"],
-  description: "List the last twenty checks, newest first.",
+  description: `List the checks in the history, newest first. The history holds the ${String(HISTORY_LIMIT)} newest checks.`,
   id: "primes.history.list",
   load: Effect.succeed({
     error: NoFailureSchema,
@@ -67,6 +70,7 @@ export const historyListDefinition = defineCapability({
         Effect.map((entries) => ({ entries }))
       ),
   }),
+  readOnly: true,
 });
 
 export const historyClearDefinition = defineCapability({
