@@ -33,6 +33,18 @@ Before writing any Effect code, read `node_modules/effect/AGENTS.md` completely 
 
 ## Working in the repository
 
-- Use Git to inspect every change: `git status` before editing and `git diff` afterwards. Preserve unrelated work and never run destructive Git commands. Work on a branch, not on `main`.
+- Use Git to inspect every change: `git status` before editing and `git diff` afterwards. Preserve unrelated work and never run destructive Git commands.
 - A dev server you start takes an unused port. Leave every server you did not start alone.
 - Keep secrets, account IDs and personal data out of the repository; Alchemy reads the account from its own profile (`pnpm exec alchemy profile`). `moon run api:dev` runs locally with no account. Deploying a stage creates a live Worker, so it is a separate, deliberate decision.
+
+## Branches and pull requests
+
+- Never work directly on `main`. Every change reaches `main` through a pull request, merged with a squash merge; the pull request title becomes the commit on `main`, so it follows the commit style of the history.
+- Each issue or task gets its own branch and its own worktree in `.worktrees/<branch>`. Create it from an up-to-date `main` with `git worktree add .worktrees/<branch> -b <branch> main`, run `pnpm install` in it, and do all the work there, with that worktree as the working directory. The main checkout stays on `main`, as you found it; scratch files and logs go under the worktree's `.artifacts/`.
+- When you start a subagent, tell it which branch and worktree it uses: yours, or a new one that you name. The subagent does not choose.
+- Push the branch and open the pull request before the first handoff, with `gh pr create --base main --head <branch>`. Its body says `Closes #<number>` for each issue it fixes and `Refs #<number>` for one it only advances, and states the evidence: the commands that ran and their result. A task has one pull request, or one stack of them.
+- Use `gh stack` when the work splits into layers a reviewer can read one at a time, and always when it is too large for one pull request: one branch and one pull request for each layer, in the task's worktree. [`.agents/skills/gh-stack/SKILL.md`](.agents/skills/gh-stack/SKILL.md) covers the commands; it is upstream's skill from `github/gh-stack` v0.2.1, kept byte-identical.
+- Every handoff gives the clickable URL of the task's pull request, or of each one in its stack, copied from `gh pr view --json url` or `gh stack view`.
+- A human reviews each pull request. Merge only after the human accepts the work, or when the human's current message explicitly says to merge without review, with `gh pr merge <number> --squash` or `gh stack merge --squash`.
+- Each session owns its branch until it merges: it keeps it rebased on `main`, resolves its conflicts and makes `moon run app:verify` pass. Never push to, rebase or merge a branch that another session owns, and never weaken a check to make it pass.
+- After the merge, bring the main checkout up to date with `git -C <repository root> pull --ff-only origin main`, and remove the worktree with `git worktree remove .worktrees/<branch>`. When the pull refuses, stop and tell the user rather than resetting, stashing or merging.
