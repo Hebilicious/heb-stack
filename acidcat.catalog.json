@@ -1,0 +1,258 @@
+{
+  "acidcat": "0.1",
+  "title": "heb-stack",
+  "description": "A prime checker: check a number, find the next prime, and keep a history of checks.",
+  "targets": {
+    "cli": {
+      "bindings": [
+        "cli"
+      ]
+    },
+    "mcp": {
+      "bindings": [
+        "mcp"
+      ]
+    },
+    "rpc": {
+      "bindings": [
+        "hs:capnweb"
+      ]
+    },
+    "web": {
+      "bindings": [
+        "typescript",
+        "webmcp"
+      ]
+    }
+  },
+  "capabilities": {
+    "primes.check": {
+      "description": "Check whether an integer is prime, answering its smallest factor. A session that keeps a history records the check.",
+      "audience": [
+        "web",
+        "cli",
+        "mcp",
+        "rpc"
+      ],
+      "input": {
+        "additionalProperties": true,
+        "properties": {
+          "n": {
+            "description": "The integer to check, from 2 to 2^53 − 1.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "n"
+        ],
+        "type": "object"
+      },
+      "output": {
+        "additionalProperties": true,
+        "properties": {
+          "n": {
+            "type": "integer"
+          },
+          "prime": {
+            "type": "boolean"
+          },
+          "smallestFactor": {
+            "description": "The smallest factor greater than one; n itself when n is prime.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "n",
+          "prime",
+          "smallestFactor"
+        ],
+        "type": "object"
+      },
+      "failures": {
+        "OutOfRange": {
+          "additionalProperties": true,
+          "properties": {
+            "_tag": {
+              "enum": [
+                "OutOfRange"
+              ],
+              "type": "string"
+            },
+            "max": {
+              "type": "integer"
+            },
+            "min": {
+              "type": "integer"
+            },
+            "n": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "_tag",
+            "max",
+            "min",
+            "n"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    "primes.history.clear": {
+      "description": "Remove every check from the history, answering how many there were.",
+      "audience": [
+        "web",
+        "cli"
+      ],
+      "input": {
+        "type": "object"
+      },
+      "output": {
+        "additionalProperties": true,
+        "properties": {
+          "cleared": {
+            "description": "How many entries the clear removed.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cleared"
+        ],
+        "type": "object"
+      },
+      "failures": {
+        "StorageUnavailable": {
+          "additionalProperties": true,
+          "properties": {
+            "_tag": {
+              "enum": [
+                "StorageUnavailable"
+              ],
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "_tag",
+            "reason"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    "primes.history.list": {
+      "description": "List the last twenty checks, newest first.",
+      "audience": [
+        "web",
+        "cli"
+      ],
+      "input": {
+        "type": "object"
+      },
+      "output": {
+        "additionalProperties": true,
+        "properties": {
+          "entries": {
+            "items": {
+              "additionalProperties": true,
+              "properties": {
+                "checkedAt": {
+                  "description": "When the check answered, as an ISO 8601 instant.",
+                  "type": "string"
+                },
+                "n": {
+                  "type": "integer"
+                },
+                "prime": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "checkedAt",
+                "n",
+                "prime"
+              ],
+              "type": "object"
+            },
+            "maxItems": 20,
+            "type": "array"
+          }
+        },
+        "required": [
+          "entries"
+        ],
+        "type": "object"
+      }
+    },
+    "primes.next": {
+      "description": "Find the smallest prime greater than an integer.",
+      "audience": [
+        "web",
+        "cli",
+        "mcp",
+        "rpc"
+      ],
+      "input": {
+        "additionalProperties": true,
+        "properties": {
+          "after": {
+            "description": "The integer to search above, from 1 to 2^53 − 2.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "after"
+        ],
+        "type": "object"
+      },
+      "output": {
+        "additionalProperties": true,
+        "properties": {
+          "after": {
+            "type": "integer"
+          },
+          "prime": {
+            "description": "The smallest prime greater than after.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "after",
+          "prime"
+        ],
+        "type": "object"
+      },
+      "failures": {
+        "OutOfRange": {
+          "additionalProperties": true,
+          "properties": {
+            "_tag": {
+              "enum": [
+                "OutOfRange"
+              ],
+              "type": "string"
+            },
+            "max": {
+              "type": "integer"
+            },
+            "min": {
+              "type": "integer"
+            },
+            "n": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "_tag",
+            "max",
+            "min",
+            "n"
+          ],
+          "type": "object"
+        }
+      }
+    }
+  }
+}

@@ -10,9 +10,9 @@ export const LARGEST_SAFE_PRIME = 2 ** 53 - 111;
 export const HISTORY_LIMIT = 20;
 
 export const OutOfRangeSchema = Schema.TaggedStruct("OutOfRange", {
-  max: Schema.Number,
-  min: Schema.Number,
-  n: Schema.Number,
+  max: Schema.Int,
+  min: Schema.Int,
+  n: Schema.Int,
 });
 export type OutOfRange = typeof OutOfRangeSchema.Type;
 

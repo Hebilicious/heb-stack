@@ -39,6 +39,7 @@ tasks:
       - "web:format-check"
       - "web:lint"
       - "web:typecheck"
+      - "web:catalog-check"
       - "api:typecheck"
       - "primes:test"
       - "features:test"

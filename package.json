@@ -5,6 +5,8 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
+    "@acid-cat/catalog": "catalog:",
+    "@acid-cat/cli": "catalog:",
     "@cucumber/cucumber-expressions": "catalog:",
     "@cucumber/gherkin": "catalog:",
     "@cucumber/messages": "catalog:",

@@ -110,6 +110,8 @@ The category is the **namespace**. This catalog defines exactly one, `primes`, o
 
 A second domain would add its own namespace beside `primes`, in its own package.
 
+The catalog is also a document: [`acidcat.catalog.json`](acidcat.catalog.json), written from the same definitions in the canonical form of the [AcidCat specification](https://github.com/Hebilicious/acidcat). `moon run web:catalog` rewrites it, and `moon run app:verify` fails when the committed file is stale or when `acid-cat check --strict` refuses it.
+
 - A domain package owns its namespace and exports only its definitions. Only `packages/acidcat` imports it; `anti-slop-effect/no-application-bypass` fails the lint if anything else does. The domains are declared once, in `settings.acidcat` of `oxlint.config.ts`.
 - A capability reaches a surface only when its own `audience` names it.
 - Each host supplies Layers and nothing else: the browser, Node and the Worker each provide `PrimeMath`, and `CheckHistory` where they keep one.
@@ -170,6 +172,7 @@ Every dependency is pinned exactly, once, in the catalog in `pnpm-workspace.yaml
 | `moon run e2e:test` | The browser scenarios against `alchemy dev` |
 | `moon run primes-wasm:test` | The crate's tests |
 | `moon run cli:install` | Build the CLI and write `.artifacts/bin/cli` |
+| `moon run web:catalog` | Rewrite `acidcat.catalog.json` from the capability definitions |
 | `moon run api:deploy -- --stage <name>` | Deploy a stage as its own `heb-stack-<stage>` Worker |
 | `moon run app:authorship-fix -- <range>` | Strip AI attribution from the commits in a range |
 

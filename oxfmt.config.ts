@@ -2,8 +2,8 @@ import { defineConfig } from "oxfmt";
 import ultracite from "ultracite/oxfmt";
 
 /**
- * Ultracite's formatter settings. vize formats the Vue files, so oxfmt leaves them alone, as it leaves the task
- * worktrees and the vendored gh-stack skill.
+ * Ultracite's formatter settings. vize formats the Vue files and `acid-cat format` writes the catalog in its canonical
+ * form, so oxfmt leaves them alone, as it leaves the task worktrees and the vendored gh-stack skill.
  */
 export default defineConfig({
   ...ultracite,
@@ -21,6 +21,7 @@ export default defineConfig({
     "apps/web/public/**",
     "apps/web/src/**/*.vue",
     "pnpm-lock.yaml",
+    "acidcat.catalog.json",
     ".worktrees/**",
     ".agents/skills/gh-stack/**",
   ],
