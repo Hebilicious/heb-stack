@@ -1,8 +1,8 @@
-import { defineCapability } from "@heb-stack/acidcat-kernel";
-import { Effect, Option } from "effect";
+import { Capability } from "@acid-cat/core-effect";
+import { Effect, Option, Stream } from "effect";
 
 import { CheckHistory } from "./check-history.ts";
-import { PrimeChecker } from "./checker.ts";
+import { CheckSnapshotSchema, PrimeChecker } from "./checker.ts";
 import { nextPrime } from "./computation.ts";
 import {
   CheckInputSchema,
@@ -13,7 +13,6 @@ import {
   HistoryListOutputSchema,
   NextInputSchema,
   NextOutputSchema,
-  NoFailureSchema,
   OutOfRangeSchema,
   StorageUnavailableSchema,
 } from "./contracts.ts";
@@ -28,73 +27,69 @@ const sessionHistory = Effect.serviceOption(CheckHistory).pipe(
   )
 );
 
-export const checkDefinition = defineCapability({
+export const checkCapability = Capability.make({
   audience: ["web", "cli", "mcp", "rpc"],
   description:
     "Check whether an integer is prime, answering its smallest factor. A session that keeps a history records the check.",
+  failures: [OutOfRangeSchema],
   id: "primes.check",
-  load: Effect.succeed({
-    error: OutOfRangeSchema,
-    input: CheckInputSchema,
-    output: CheckOutputSchema,
-    run: (input: typeof CheckInputSchema.Type) =>
-      PrimeChecker.use((checker) => checker.check(input.n)),
-  }),
+  input: CheckInputSchema,
+  output: CheckOutputSchema,
   readOnly: true,
+  run: (input) => PrimeChecker.use((checker) => checker.check(input.n)),
+  // The check lifecycle, which the page renders: the check in flight, its answer, or why it failed.
+  state: {
+    changes: Stream.unwrap(
+      PrimeChecker.use((checker) => Effect.succeed(checker.changes))
+    ),
+    schema: CheckSnapshotSchema,
+  },
 });
 
-export const nextDefinition = defineCapability({
+export const nextCapability = Capability.make({
   audience: ["web", "cli", "mcp", "rpc"],
   description: "Find the smallest prime greater than an integer.",
+  failures: [OutOfRangeSchema],
   id: "primes.next",
-  load: Effect.succeed({
-    error: OutOfRangeSchema,
-    input: NextInputSchema,
-    output: NextOutputSchema,
-    run: (input: typeof NextInputSchema.Type) => nextPrime(input.after),
-  }),
+  input: NextInputSchema,
+  output: NextOutputSchema,
   readOnly: true,
+  run: (input) => nextPrime(input.after),
 });
 
-export const historyListDefinition = defineCapability({
+export const historyListCapability = Capability.make({
   audience: ["web", "cli"],
   description: `List the checks in the history, newest first. The history holds the ${String(HISTORY_LIMIT)} newest checks.`,
   id: "primes.history.list",
-  load: Effect.succeed({
-    error: NoFailureSchema,
-    input: EmptyInputSchema,
-    output: HistoryListOutputSchema,
-    run: () =>
-      sessionHistory.pipe(
-        Effect.flatMap((history) => history.list),
-        Effect.map((entries) => ({ entries }))
-      ),
-  }),
+  input: EmptyInputSchema,
+  output: HistoryListOutputSchema,
   readOnly: true,
+  run: () =>
+    sessionHistory.pipe(
+      Effect.flatMap((history) => history.list),
+      Effect.map((entries) => ({ entries }))
+    ),
 });
 
-export const historyClearDefinition = defineCapability({
+export const historyClearCapability = Capability.make({
   audience: ["web", "cli"],
   description:
     "Remove every check from the history, answering how many there were.",
+  failures: [StorageUnavailableSchema],
   id: "primes.history.clear",
-  load: Effect.succeed({
-    error: StorageUnavailableSchema,
-    input: EmptyInputSchema,
-    output: HistoryClearOutputSchema,
-    run: () =>
-      sessionHistory.pipe(
-        Effect.flatMap((history) => history.clear),
-        Effect.map((cleared) => ({ cleared }))
-      ),
-  }),
+  input: EmptyInputSchema,
+  output: HistoryClearOutputSchema,
+  run: () =>
+    sessionHistory.pipe(
+      Effect.flatMap((history) => history.clear),
+      Effect.map((cleared) => ({ cleared }))
+    ),
 });
 
 /** The `primes` namespace: the one namespace this catalog defines, which the root composes as it is. */
-export const primeDefinitions = {
-  primes: {
-    check: checkDefinition,
-    history: { clear: historyClearDefinition, list: historyListDefinition },
-    next: nextDefinition,
-  },
-};
+export const primeCapabilities = [
+  checkCapability,
+  nextCapability,
+  historyListCapability,
+  historyClearCapability,
+] as const;

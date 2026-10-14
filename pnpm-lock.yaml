@@ -170,6 +170,12 @@ catalogs:
     '@acid-cat/cli':
       specifier: 0.1.0
       version: 0.1.0
+    '@acid-cat/core-effect':
+      specifier: 0.1.0
+      version: 0.1.0
+    '@acid-cat/spec-ts':
+      specifier: 0.1.0
+      version: 0.1.0
     '@cloudflare/workers-types':
       specifier: 5.20261001.1
       version: 5.20261001.1
@@ -277,6 +283,12 @@ importers:
       '@acid-cat/cli':
         specifier: 'catalog:'
         version: 0.1.0(redis@6.3.0)
+      '@acid-cat/core-effect':
+        specifier: 'catalog:'
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+      '@acid-cat/spec-ts':
+        specifier: 'catalog:'
+        version: 0.1.0
       '@cucumber/cucumber-expressions':
         specifier: 'catalog:'
         version: 20.1.0
@@ -304,9 +316,6 @@ importers:
       '@heb-stack/acidcat':
         specifier: workspace:*
         version: link:packages/acidcat
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:packages/acidcat-kernel
       '@heb-stack/browser-runtime':
         specifier: workspace:*
         version: link:packages/browser-runtime
@@ -316,9 +325,6 @@ importers:
       '@heb-stack/edge-runtime':
         specifier: workspace:*
         version: link:packages/edge-runtime
-      '@heb-stack/mcp':
-        specifier: workspace:*
-        version: link:packages/mcp
       '@heb-stack/node-runtime':
         specifier: workspace:*
         version: link:packages/node-runtime
@@ -328,9 +334,6 @@ importers:
       '@heb-stack/web':
         specifier: workspace:*
         version: link:apps/web
-      '@heb-stack/webmcp-adapter':
-        specifier: workspace:*
-        version: link:packages/webmcp-adapter
       '@hebilicious/cssforge':
         specifier: 'catalog:'
         version: 0.9.0
@@ -425,21 +428,15 @@ importers:
 
   packages/acidcat:
     dependencies:
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
+      '@acid-cat/core-effect':
+        specifier: 'catalog:'
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+      '@acid-cat/spec-ts':
+        specifier: 'catalog:'
+        version: 0.1.0
       '@heb-stack/primes':
         specifier: workspace:*
         version: link:../primes
-      '@heb-stack/webmcp-adapter':
-        specifier: workspace:*
-        version: link:../webmcp-adapter
-      effect:
-        specifier: 'catalog:'
-        version: 4.0.0
-
-  packages/acidcat-kernel:
-    dependencies:
       effect:
         specifier: 'catalog:'
         version: 4.0.0
@@ -461,6 +458,12 @@ importers:
 
   packages/cli:
     dependencies:
+      '@acid-cat/core-effect':
+        specifier: 'catalog:'
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+      '@acid-cat/spec-ts':
+        specifier: 'catalog:'
+        version: 0.1.0
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.0.0(effect@4.0.0)(redis@6.3.0)
@@ -476,21 +479,15 @@ importers:
 
   packages/edge-runtime:
     dependencies:
-      '@heb-stack/acidcat':
-        specifier: workspace:*
-        version: link:../acidcat
-      effect:
+      '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 4.0.0
-
-  packages/mcp:
-    dependencies:
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@heb-stack/acidcat':
         specifier: workspace:*
         version: link:../acidcat
-      '@heb-stack/acidcat-kernel':
+      '@heb-stack/rpc':
         specifier: workspace:*
-        version: link:../acidcat-kernel
+        version: link:../rpc
       effect:
         specifier: 'catalog:'
         version: 4.0.0
@@ -500,18 +497,15 @@ importers:
       '@heb-stack/acidcat':
         specifier: workspace:*
         version: link:../acidcat
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
       effect:
         specifier: 'catalog:'
         version: 4.0.0
 
   packages/primes:
     dependencies:
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
+      '@acid-cat/core-effect':
+        specifier: 'catalog:'
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@xstate/effect':
         specifier: 'catalog:'
         version: 0.1.0-alpha.6(effect@4.0.0)(xstate@6.0.0-alpha.63)
@@ -524,39 +518,21 @@ importers:
 
   packages/rpc:
     dependencies:
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
+      '@acid-cat/core-effect':
+        specifier: 'catalog:'
+        version: 0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+      '@acid-cat/spec-ts':
+        specifier: 'catalog:'
+        version: 0.1.0
       capnweb:
         specifier: 'catalog:'
         version: 0.12.0
 
-  packages/webmcp-adapter:
-    dependencies:
-      '@heb-stack/acidcat-kernel':
-        specifier: workspace:*
-        version: link:../acidcat-kernel
-      '@xstate/effect':
-        specifier: 'catalog:'
-        version: 0.1.0-alpha.6(effect@4.0.0)(xstate@6.0.0-alpha.63)
-      effect:
-        specifier: 'catalog:'
-        version: 4.0.0
-      xstate:
-        specifier: 'catalog:'
-        version: 6.0.0-alpha.63
-
   workers/api:
     dependencies:
-      '@heb-stack/acidcat':
-        specifier: workspace:*
-        version: link:../../packages/acidcat
       '@heb-stack/edge-runtime':
         specifier: workspace:*
         version: link:../../packages/edge-runtime
-      '@heb-stack/mcp':
-        specifier: workspace:*
-        version: link:../../packages/mcp
       '@heb-stack/rpc':
         specifier: workspace:*
         version: link:../../packages/rpc
@@ -588,6 +564,16 @@ packages:
       playwright: ^1.64.0
     peerDependenciesMeta:
       playwright:
+        optional: true
+
+  '@acid-cat/core-effect@0.1.0':
+    resolution: {integrity: sha512-6OA+D9bv4UUUW7nNfldRNXhyTvKxYPaL/HkY854ZOdcUoVKYymwuyxlYktT9nfcUADdpqfGwCQHLFnVmy5V5jg==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      '@effect/platform-node': ^4.0.0
+      effect: ^4.0.0
+    peerDependenciesMeta:
+      '@effect/platform-node':
         optional: true
 
   '@acid-cat/spec-ts@0.1.0':
@@ -3637,6 +3623,14 @@ snapshots:
       - bufferutil
       - redis
       - utf-8-validate
+
+  '@acid-cat/core-effect@0.1.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)':
+    dependencies:
+      '@acid-cat/catalog': 0.1.0
+      '@acid-cat/spec-ts': 0.1.0
+      effect: 4.0.0
+    optionalDependencies:
+      '@effect/platform-node': 4.0.0(effect@4.0.0)(redis@6.3.0)
 
   '@acid-cat/spec-ts@0.1.0': {}
 

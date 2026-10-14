@@ -20,38 +20,17 @@ fileGroups:
     - "/packages/*/package.json"
 
 tasks:
-  manifest:
-    description: "Derive the WebMCP manifest from the capability definitions."
-    command: "node"
-    args: ["scripts/generate-manifest.ts", "manifest", "public/acidcat-manifest.generated.json"]
-    inputs: ["scripts/generate-manifest.ts", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
-    outputs: ["public/acidcat-manifest.generated.json"]
-
-  catalog:
-    description: "Write /acidcat.catalog.json from the capability definitions, format it canonically, and check it strictly."
-    script: "node scripts/generate-manifest.ts catalog ../../acidcat.catalog.json && acid-cat format --write ../../acidcat.catalog.json && acid-cat check --strict ../../acidcat.catalog.json"
-    options:
-      cache: false
-      runInCI: "skip"
-
-  catalog-check:
-    description: "Fail when the committed /acidcat.catalog.json is stale or does not conform strictly."
-    script: "node scripts/generate-manifest.ts catalog ../../acidcat.catalog.json --check && acid-cat check --strict ../../acidcat.catalog.json"
-    inputs: ["scripts/generate-manifest.ts", "/acidcat.catalog.json", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
-
   build:
     description: "Build the page into dist."
     command: "vite"
     args: ["build"]
-    deps: ["manifest"]
-    inputs: ["@group(sources)", "public/**/*"]
+    inputs: ["@group(sources)"]
     outputs: ["dist/**/*"]
 
   dev:
     description: "Rebuild the page into dist whenever a source changes."
     command: "vite"
     args: ["build", "--watch"]
-    deps: ["manifest"]
     preset: "server"
 
   typecheck:

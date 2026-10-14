@@ -1,30 +1,17 @@
-export type {
-  Availability,
-  AvailabilitySource,
-  CapabilityHandle,
-  Catalog,
-  ExecuteOptions,
-  ExternalCapability,
-  ReadonlySnapshotSource,
-  Result,
-  SessionTarget,
-  SnapshotSubscription,
-} from "@heb-stack/acidcat-kernel";
+export type { Handles, WebMcp } from "@acid-cat/core-effect";
+export type { Availability, Result } from "@acid-cat/spec-ts";
+export { app, capabilityIds, type SessionTarget } from "./catalog.ts";
 export {
-  servedCapabilities,
-  servesTarget,
-  walkCapabilities,
-  walkCatalogEntries,
-  type CatalogEntry,
-} from "@heb-stack/acidcat-kernel";
-export {
-  createAcidCat,
+  acidCatLayer,
+  openAcidCat,
   type AcidCat,
   type AcidCatOptions,
   type AcidCatServices,
+  type CapabilityHandle,
 } from "./root.ts";
-export type {
-  ModelContextPort,
-  ModelContextTool,
-  WebMcpStatus,
-} from "@heb-stack/webmcp-adapter";
+export {
+  openSession,
+  type OpenSession,
+  type SessionOptions,
+  type WebMcpRegistration,
+} from "./session.ts";

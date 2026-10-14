@@ -1,0 +1,22 @@
+language: "typescript"
+layer: "library"
+
+project:
+  title: "AcidCat"
+  description: "The root that composes the domains into the one application, and its catalog."
+
+toolchains:
+  default: ["javascript", "node", "pnpm"]
+
+tasks:
+  catalog:
+    description: "Write /acidcat.catalog.json from the application, format it canonically, and check it strictly."
+    script: "node scripts/generate-catalog.ts ../../acidcat.catalog.json && acid-cat format --write ../../acidcat.catalog.json && acid-cat check --strict ../../acidcat.catalog.json"
+    options:
+      cache: false
+      runInCI: "skip"
+
+  catalog-check:
+    description: "Fail when the committed /acidcat.catalog.json is stale or does not conform strictly."
+    script: "node scripts/generate-catalog.ts ../../acidcat.catalog.json --check && acid-cat check --strict ../../acidcat.catalog.json"
+    inputs: ["scripts/generate-catalog.ts", "/acidcat.catalog.json", "/packages/*/src/**/*.ts", "/packages/*/package.json"]

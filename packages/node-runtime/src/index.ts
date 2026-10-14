@@ -2,8 +2,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 
-import { createAcidCat } from "@heb-stack/acidcat";
-import type { AcidCat, SessionTarget } from "@heb-stack/acidcat";
+import type { AcidCatServices } from "@heb-stack/acidcat";
 import {
   StorageUnavailableSchema,
   checkHistoryLayer,
@@ -29,29 +28,28 @@ export function defaultHistoryFile(): string {
 }
 
 /**
- * One Node session, host-independent: a command line parses its argv into this, and any other Node adapter parses its
- * own options into the same shape.
+ * Where one Node session finds its crate and keeps its history: a command line parses its argv into this, and any
+ * other Node host parses its own options into the same shape.
  */
 export interface NodeSession {
-  readonly target: SessionTarget;
   /** The crate's release module, compiled once when the session opens. */
   readonly wasmPath: string;
   /** The JSON file holding the check history, or `null` for a session that keeps none. */
   readonly historyFile: string | null;
 }
 
-/** Open the canonical AcidCat session without a browser: the crate in this process, the history in a file. */
-export async function createNodeAcidCat(
-  session: NodeSession
-): Promise<AcidCat> {
-  const module = await WebAssembly.compile(await readFile(session.wasmPath));
-  const math = primeMathWasmLayer(module);
-  return await createAcidCat(
-    { target: session.target },
-    session.historyFile === null
-      ? math
-      : Layer.merge(math, checkHistoryLayer(fileText(session.historyFile)))
+/** The services of a session without a browser: the crate in this process, and the history in a file. */
+export function nodeServices(session: NodeSession): AcidCatServices {
+  const math = Layer.unwrap(
+    Effect.promise(async () =>
+      primeMathWasmLayer(
+        await WebAssembly.compile(await readFile(session.wasmPath))
+      )
+    )
   );
+  return session.historyFile === null
+    ? math
+    : Layer.merge(math, checkHistoryLayer(fileText(session.historyFile)));
 }
 
 /** The history document as one file, created with its directory on the first write. */

@@ -10,7 +10,7 @@
     "./runtime": "./src/runtime.ts"
   },
   "dependencies": {
-    "@heb-stack/acidcat-kernel": "workspace:*",
+    "@acid-cat/core-effect": "catalog:",
     "@xstate/effect": "catalog:",
     "effect": "catalog:",
     "xstate": "catalog:"

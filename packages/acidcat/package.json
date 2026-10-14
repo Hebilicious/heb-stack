@@ -10,9 +10,9 @@
     "./primes": "./src/primes.ts"
   },
   "dependencies": {
-    "@heb-stack/acidcat-kernel": "workspace:*",
+    "@acid-cat/core-effect": "catalog:",
+    "@acid-cat/spec-ts": "catalog:",
     "@heb-stack/primes": "workspace:*",
-    "@heb-stack/webmcp-adapter": "workspace:*",
     "effect": "catalog:"
   }
 }

@@ -1,4 +1,3 @@
-import type { CapabilityId } from "@heb-stack/acidcat/catalog";
 import { Effect, Scope } from "effect";
 
 export interface ExecutableNativeProperty {
@@ -53,8 +52,11 @@ export type StepArgumentsDecoder<Arguments extends readonly unknown[]> = (
 export interface ExecutableFeatureManifest<World> {
   readonly id: string;
   readonly uri: string;
-  /** Required on application Product Promise owners; omit for lower-seam evidence. */
-  readonly capabilityIds?: readonly [CapabilityId, ...CapabilityId[]];
+  /**
+   * Required on application Product Promise owners; omit for lower-seam evidence. Registering the feature fails when
+   * an id is not one the application declares.
+   */
+  readonly capabilityIds?: readonly [string, ...string[]];
   readonly createWorld: (scenario: ScenarioContext) => World;
   readonly steps: readonly StepDefinition<World>[];
 }

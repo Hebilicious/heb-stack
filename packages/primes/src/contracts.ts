@@ -81,9 +81,6 @@ export type HistoryClearOutput = typeof HistoryClearOutputSchema.Type;
 
 export const EmptyInputSchema = Schema.Struct({});
 
-/** A capability that declares no failure answers with this schema, which no value satisfies. */
-export const NoFailureSchema = Schema.Never;
-
 /** The history a new entry produces: newest first, and never longer than the limit. */
 export function withEntry(
   entries: readonly HistoryEntry[],

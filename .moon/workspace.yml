@@ -2,6 +2,7 @@ projects:
   app: "."
   web: "apps/web"
   api: "workers/api"
+  acidcat: "packages/acidcat"
   cli: "packages/cli"
   primes: "packages/primes"
   primes-wasm: "crates/primes"

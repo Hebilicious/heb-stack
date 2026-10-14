@@ -97,7 +97,123 @@
           "type": "object"
         }
       },
-      "readOnly": true
+      "readOnly": true,
+      "state": {
+        "additionalProperties": true,
+        "properties": {
+          "answer": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "properties": {
+                  "n": {
+                    "type": "integer"
+                  },
+                  "prime": {
+                    "type": "boolean"
+                  },
+                  "smallestFactor": {
+                    "description": "The smallest factor greater than one; n itself when n is prime.",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "n",
+                  "prime",
+                  "smallestFactor"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "properties": {
+                      "_tag": {
+                        "enum": [
+                          "OutOfRange"
+                        ],
+                        "type": "string"
+                      },
+                      "max": {
+                        "type": "integer"
+                      },
+                      "min": {
+                        "type": "integer"
+                      },
+                      "n": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "_tag",
+                      "max",
+                      "min",
+                      "n"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": true,
+                    "properties": {
+                      "_tag": {
+                        "enum": [
+                          "CheckUnanswered"
+                        ],
+                        "type": "string"
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "_tag",
+                      "reason"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "idle",
+              "checking",
+              "result",
+              "failed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "answer",
+          "failure",
+          "n",
+          "status"
+        ],
+        "type": "object"
+      }
     },
     "primes.history.clear": {
       "description": "Remove every check from the history, answering how many there were.",

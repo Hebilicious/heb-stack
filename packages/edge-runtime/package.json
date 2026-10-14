@@ -2,14 +2,16 @@
   "name": "@heb-stack/edge-runtime",
   "version": "0.1.0",
   "private": true,
-  "description": "Worker Layers for the AcidCat root: the compiled crate, and no caller state.",
+  "description": "The Worker host for the AcidCat root: the compiled crate, no caller state, and the MCP and capnweb answers it serves.",
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@acid-cat/core-effect": "catalog:",
     "@heb-stack/acidcat": "workspace:*",
+    "@heb-stack/rpc": "workspace:*",
     "effect": "catalog:"
   }
 }

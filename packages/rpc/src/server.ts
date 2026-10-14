@@ -1,21 +1,24 @@
-import { servedCapabilities } from "@heb-stack/acidcat-kernel";
-import type { Catalog, Result } from "@heb-stack/acidcat-kernel";
-import { readAtMost } from "@heb-stack/acidcat-kernel/bounded-body";
+import type { Handles } from "@acid-cat/core-effect";
+import { readBounded } from "@acid-cat/spec-ts";
+import type { Result } from "@acid-cat/spec-ts";
 import { RpcTarget, newHttpBatchRpcResponse } from "capnweb";
 
 import { PRIMES_RPC_LIMITS } from "./api.ts";
 import type { PrimesApi } from "./api.ts";
 
+/** The handles of one `rpc` session, by id: the capabilities this API may reach. */
+export type RpcHandles = ReadonlyMap<string, Handles.Handle>;
+
 /**
- * The API over one `rpc` session's catalog. A method names its capability, so a leaf this target does not serve is
- * refused by name exactly as every other adapter refuses it, and a capability's own failure answers as its `Result`.
+ * The API over one `rpc` session's handles. A method names its capability, so a leaf this target does not serve is
+ * refused by name exactly as every other binding refuses it, and a capability's own failure answers as its `Result`.
  */
 class PrimesRpcTarget extends RpcTarget implements PrimesApi {
-  readonly #catalog: Catalog;
+  readonly #handles: RpcHandles;
 
-  constructor(catalog: Catalog) {
+  constructor(handles: RpcHandles) {
     super();
-    this.#catalog = catalog;
+    this.#handles = handles;
   }
 
   // BOUNDARY: The caller's input is untrusted; the capability decodes it with its canonical schema.
@@ -29,18 +32,18 @@ class PrimesRpcTarget extends RpcTarget implements PrimesApi {
   }
 
   capabilities(): readonly string[] {
-    return servedCapabilities(this.#catalog, "rpc").map((leaf) => leaf.id);
+    return [...this.#handles.values()]
+      .filter((handle) => handle.availability.getSnapshot().available)
+      .map((handle) => handle.id);
   }
 
   // BOUNDARY: The caller's input is untrusted; the capability decodes it with its canonical schema.
   async #invoke(id: string, input: unknown): Promise<Result<unknown, unknown>> {
-    const leaf = servedCapabilities(this.#catalog, "rpc").find(
-      (candidate) => candidate.id === id
-    );
-    if (leaf === undefined) {
+    const handle = this.#handles.get(id);
+    if (handle === undefined) {
       throw new Error(`Unknown capability: ${id}`);
     }
-    return await leaf.invokeExternal(input);
+    return await handle.invokeExternal(input);
   }
 }
 
@@ -53,20 +56,17 @@ class PrimesRpcTarget extends RpcTarget implements PrimesApi {
 export async function primesRpcResponse(
   request: Request,
   expectedOrigin: string,
-  catalog: Catalog
+  handles: RpcHandles
 ): Promise<Response> {
   const rejection = rpcRequestRejection(request, expectedOrigin);
   if (rejection !== null) {
     return rejection;
   }
-  const bounded = await boundedRpcRequest(
-    request,
-    PRIMES_RPC_LIMITS.maxMessageSize
-  );
+  const bounded = await boundedRpcRequest(request);
   if (bounded instanceof Response) {
     return bounded;
   }
-  return await newHttpBatchRpcResponse(bounded, new PrimesRpcTarget(catalog), {
+  return await newHttpBatchRpcResponse(bounded, new PrimesRpcTarget(handles), {
     limits: PRIMES_RPC_LIMITS,
     onSendError: () => new Error("RPC request failed"),
   });
@@ -109,34 +109,27 @@ export function rpcRequestRejection(
 }
 
 /**
- * The request with its body read up to `maximumBytes`, or the refusal for a body that is larger or is not UTF-8.
+ * The request with its body read up to the batch limit, or the refusal for a body that is larger or is not UTF-8.
  * BOUNDARY: A client writes arbitrary bytes; they become the batch's text only when they decode as UTF-8.
  */
 async function boundedRpcRequest(
-  request: Request,
-  maximumBytes: number
+  request: Request
 ): Promise<Request | Response> {
-  const tooLarge = new Response("Request too large", { status: 413 });
   const declared = request.headers.get("Content-Length");
-  if (declared !== null && Number(declared) > maximumBytes) {
-    return tooLarge;
+  if (
+    declared !== null &&
+    Number(declared) > PRIMES_RPC_LIMITS.maxMessageSize
+  ) {
+    return new Response("Request too large", { status: 413 });
   }
-  if (request.body === null) {
-    return new Request(request.url, request);
-  }
-  const bytes = await readAtMost(request.body, maximumBytes);
-  if (bytes === undefined) {
-    return tooLarge;
-  }
-  const decoder = new TextDecoder("utf-8", { fatal: true });
-  let body: string;
-  try {
-    body = decoder.decode(bytes);
-  } catch {
-    return new Response("The request body is not UTF-8", { status: 400 });
+  const body = await readBounded(request, PRIMES_RPC_LIMITS.maxMessageSize);
+  if ("rejection" in body) {
+    return body.rejection === "too-large"
+      ? new Response("Request too large", { status: 413 })
+      : new Response("The request body is not UTF-8", { status: 400 });
   }
   return new Request(request.url, {
-    body,
+    body: body.text,
     headers: request.headers,
     method: "POST",
   });

@@ -1,22 +1,11 @@
-import type { AcidCat } from "@heb-stack/acidcat";
-import { createEdgeAcidCat } from "@heb-stack/edge-runtime";
 import {
   MCP_HTTP_PATH,
-  handleMcpHttpRequest,
-  screenMcpHttpRequest,
-} from "@heb-stack/mcp/http";
-import type { McpServerIdentity } from "@heb-stack/mcp/http";
+  edgeMcpResponse,
+  edgeRpcResponse,
+} from "@heb-stack/edge-runtime";
 import { PRIMES_RPC_PATH } from "@heb-stack/rpc";
-import { primesRpcResponse } from "@heb-stack/rpc/server";
 
 import primesModule from "../../../crates/primes/target/wasm32-unknown-unknown/release/primes.wasm";
-
-const MCP_IDENTITY: McpServerIdentity = {
-  instructions:
-    "These tools are the heb-stack prime checker served by a Worker session. The session keeps no caller state, so the check history is not available here; it belongs to the page and the command line.",
-  name: "heb-stack",
-  version: "0.1.0",
-};
 
 /** A binding the Worker reaches with an HTTP request, such as its assets. */
 export interface HttpBinding {
@@ -31,44 +20,16 @@ export async function serveRequest(
   request: Request,
   assets: HttpBinding
 ): Promise<Response> {
-  const url = new URL(request.url);
-  if (url.pathname === PRIMES_RPC_PATH) {
-    return await withSession(
-      "rpc",
-      async (root) => await primesRpcResponse(request, url.origin, root.catalog)
-    );
+  const { origin, pathname } = new URL(request.url);
+  if (pathname === PRIMES_RPC_PATH) {
+    return await edgeRpcResponse(request, { module: primesModule, origin });
   }
-  if (url.pathname === MCP_HTTP_PATH) {
-    // A refused method or origin never needed the tools, so it is answered before a session opens.
-    const refusal = screenMcpHttpRequest(request, [url.origin]);
-    if (refusal !== null) {
-      return refusal;
-    }
-    return await withSession(
-      "mcp",
-      async (root) =>
-        await handleMcpHttpRequest(request, {
-          allowedOrigins: [url.origin],
-          catalog: root.catalog,
-          identity: MCP_IDENTITY,
-        })
-    );
+  if (pathname === MCP_HTTP_PATH) {
+    return await edgeMcpResponse(request, {
+      identity: { name: "heb-stack", version: "0.1.0" },
+      module: primesModule,
+      origin,
+    });
   }
   return await assets.fetch(request);
-}
-
-/**
- * One session per request: an Effect runtime built while handling one request holds cancellation objects that belong
- * to it, so a later request may not reuse it. The answer is complete before the session is disposed.
- */
-async function withSession(
-  target: "mcp" | "rpc",
-  answer: (root: AcidCat) => Promise<Response>
-): Promise<Response> {
-  const root = await createEdgeAcidCat({ module: primesModule, target });
-  try {
-    return await answer(root);
-  } finally {
-    await root.dispose();
-  }
 }

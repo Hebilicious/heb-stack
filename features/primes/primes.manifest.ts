@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { createAcidCat } from "@heb-stack/acidcat";
+import { openAcidCat } from "@heb-stack/acidcat";
 import type { AcidCat, Result } from "@heb-stack/acidcat";
 import {
   CheckOutputSchema,
@@ -45,7 +45,7 @@ export const primesFeature: ExecutableFeatureManifest<World> = {
         const module = yield* compiledCrate;
         world.root = yield* scopedSession(
           async () =>
-            await createAcidCat({ target: "cli" }, primeMathWasmLayer(module))
+            await openAcidCat(primeMathWasmLayer(module), { target: "cli" })
         );
       })
     ),
