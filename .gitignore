@@ -1,3 +1,6 @@
+# Task worktrees, one for each branch.
+.worktrees/
+
 # Dependencies and toolchains
 node_modules/
 .pnpm-store/
