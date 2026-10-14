@@ -7,7 +7,6 @@ import { nextPrime } from "./computation.ts";
 import {
   CheckInputSchema,
   CheckOutputSchema,
-  EmptyInputSchema,
   HISTORY_LIMIT,
   HistoryClearOutputSchema,
   HistoryListOutputSchema,
@@ -61,7 +60,6 @@ export const historyListCapability = Capability.make({
   audience: ["web", "cli"],
   description: `List the checks in the history, newest first. The history holds the ${String(HISTORY_LIMIT)} newest checks.`,
   id: "primes.history.list",
-  input: EmptyInputSchema,
   output: HistoryListOutputSchema,
   readOnly: true,
   run: () =>
@@ -77,7 +75,6 @@ export const historyClearCapability = Capability.make({
     "Remove every check from the history, answering how many there were.",
   failures: [StorageUnavailableSchema],
   id: "primes.history.clear",
-  input: EmptyInputSchema,
   output: HistoryClearOutputSchema,
   run: () =>
     sessionHistory.pipe(

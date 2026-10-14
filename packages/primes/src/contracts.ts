@@ -79,8 +79,6 @@ export const HistoryClearOutputSchema = Schema.Struct({
 });
 export type HistoryClearOutput = typeof HistoryClearOutputSchema.Type;
 
-export const EmptyInputSchema = Schema.Struct({});
-
 /** The history a new entry produces: newest first, and never longer than the limit. */
 export function withEntry(
   entries: readonly HistoryEntry[],

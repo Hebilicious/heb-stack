@@ -221,9 +221,6 @@
         "web",
         "cli"
       ],
-      "input": {
-        "type": "object"
-      },
       "output": {
         "additionalProperties": true,
         "properties": {
@@ -265,9 +262,6 @@
         "web",
         "cli"
       ],
-      "input": {
-        "type": "object"
-      },
       "output": {
         "additionalProperties": true,
         "properties": {
