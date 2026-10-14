@@ -7,11 +7,11 @@
  * standard error, and the exit code tells the outcome apart.
  */
 import { Cli } from "@acid-cat/core-effect";
+import { NodeCli } from "@acid-cat/core-effect/node";
 import { app } from "@heb-stack/acidcat";
 import { Command } from "effect/cli";
 
 import packageJson from "../package.json" with { type: "json" };
-import { runCommandLine } from "./run.ts";
 import { cliServices, HistoryFile, Wasm } from "./session.ts";
 
 /** The binary's name, which every usage line starts with. */
@@ -44,4 +44,4 @@ const command = Cli.command(app, {
   ])
 );
 
-runCommandLine(command, packageJson.version);
+NodeCli.runCommand(command, { version: packageJson.version });

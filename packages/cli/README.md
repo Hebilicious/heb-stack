@@ -15,4 +15,4 @@ The commands come from the catalog: a capability's id becomes its path, so `prim
 
 A value or a capability's own failure is JSON on standard output, with exit code 0 or 1. A call that gives no result writes `{ kind, message }` on standard error, with exit code 2 (`unknown-capability`), 3 (`invalid-input`), 4 (`unavailable`), 5 (`internal`) or 130 (`cancelled`, after an interrupt).
 
-`--history-file <file>` and `--wasm <file>` are global flags: they say where the session keeps its history and finds the crate. `src/run.ts` runs any such command line as the process's main program; the conformance evidence runs the specification's fixture through it.
+`--history-file <file>` and `--wasm <file>` are global flags: they say where the session keeps its history and finds the crate. The command is `Cli.command` from `@acid-cat/core-effect` with these flags added, run by `NodeCli.runCommand`, which sets the exit codes of the binding.

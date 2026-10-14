@@ -147,7 +147,7 @@ Every package has a README that says what it does.
 ## What is in the stack?
 
 - **Moon `2.5.6` and proto `0.62.3`**: every operation is a Moon task in the project it belongs to; proto pins Node `26.10.0`, pnpm `12.8.1`, Rust `1.99.0` and Moon itself.
-- **AcidCat `0.1.0`**: `@acid-cat/core-effect` for the TypeScript, WebMCP, MCP and CLI bindings; `@acid-cat/cli` for `acid-cat check` and `acid-cat conform`.
+- **AcidCat `0.2.0`**: `@acid-cat/core-effect` for the TypeScript, WebMCP, MCP and CLI bindings; `@acid-cat/cli` for `acid-cat check` and `acid-cat conform`.
 - **Effect `4.0.0`**: services and Layers, typed failures, Schema for every contract; `@acid-cat/core-effect` builds its CLI on `effect/cli` and its MCP server on `effect/ai/McpServer`.
 - **XState `6.0.0-alpha.63` with `@xstate/effect` `0.1.0-alpha.6`**: the check lifecycle as a machine, with its work as an invoked Effect.
 - **Vue `3.6.0-rc.10` in Vapor mode** with **`@effect/atom-vue` `4.0.0`**: `<script setup vapor lang="ts">`, compiled by **vize `0.429.2`**, bundled by **Vite `8.3.2`**, styled with **cssforge `0.9.0`** tokens.

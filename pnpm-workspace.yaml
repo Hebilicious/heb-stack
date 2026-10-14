@@ -6,10 +6,10 @@ packages:
 
 # Every dependency is pinned exactly, once, here. Workspace packages name `catalog:` and never a version.
 catalog:
-  "@acid-cat/catalog": 0.1.0
-  "@acid-cat/cli": 0.1.0
-  "@acid-cat/core-effect": 0.1.0
-  "@acid-cat/spec-ts": 0.1.0
+  "@acid-cat/catalog": 0.2.0
+  "@acid-cat/cli": 0.2.0
+  "@acid-cat/core-effect": 0.2.0
+  "@acid-cat/spec-ts": 0.2.0
   "@cloudflare/workers-types": 5.20261001.1
   "@cucumber/cucumber-expressions": 20.1.0
   "@cucumber/gherkin": 42.0.1
@@ -17,6 +17,7 @@ catalog:
   "@cucumber/tag-expressions": 11.0.1
   "@effect/atom-vue": 4.0.0
   "@effect/platform-node": 4.0.0
+  "@effect/platform-node-shared": 4.0.0
   "@effect/tsgo": 0.47.2
   "@gommage/cli": 0.1.0
   "@hebilicious/cssforge": 0.9.0
@@ -45,6 +46,9 @@ catalog:
 overrides:
   # One XState core for every consumer, the one @xstate/effect pairs with.
   "xstate@*": "catalog:"
+  # The platform-node-shared of our platform-node, at the effect version we pin; otherwise it dedupes to the newer one
+  # @acid-cat/cli brings, which needs a newer effect.
+  "@effect/platform-node@4.0.0>@effect/platform-node-shared": "catalog:"
 
 allowBuilds:
   esbuild: true

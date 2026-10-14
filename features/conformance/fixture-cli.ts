@@ -1,13 +1,13 @@
-/** The conformance fixture as a command line, run by this repository's own CLI runner. */
+/** The conformance fixture as a command line, run the way `cli` runs: `Cli.command`, then `NodeCli.runCommand`. */
 import { Cli } from "@acid-cat/core-effect";
-import { runCommandLine } from "@heb-stack/cli/run";
+import { NodeCli } from "@acid-cat/core-effect/node";
 import { Command } from "effect/cli";
 
 import { fixture, switchLayer } from "./fixture.capabilities.ts";
 
-runCommandLine(
+NodeCli.runCommand(
   Cli.command(fixture, { name: "fixture", version: "0.0.0" }).pipe(
     Command.provide(switchLayer)
   ),
-  "0.0.0"
+  { version: "0.0.0" }
 );

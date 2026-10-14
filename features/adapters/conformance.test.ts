@@ -4,7 +4,6 @@ import path from "node:path";
 import { conform, serve } from "@acid-cat/cli";
 import { Mcp } from "@acid-cat/core-effect";
 import { openSession } from "@heb-stack/acidcat";
-import { answerWithRequestServices } from "@heb-stack/edge-runtime";
 import { Effect, Layer, SubscriptionRef } from "effect";
 
 import {
@@ -14,14 +13,14 @@ import {
 } from "../conformance/fixture.capabilities.ts";
 import { testEffect } from "../support/vitest-adapter.ts";
 
-/** The fixture as a command line, run by this repository's CLI runner. */
+/** The fixture as a command line, run the way `cli` runs. */
 const FIXTURE_CLI = path.resolve(
   import.meta.dirname,
   "../conformance/fixture-cli.ts"
 );
 
 testEffect(
-  "acid-cat conform passes against this repository's MCP, CLI and WebMCP hosting",
+  "acid-cat conform passes against the MCP, CLI and WebMCP bindings as this repository hosts them",
   () =>
     Effect.gen(function* () {
       // One switch across requests, as one Worker deployment keeps one; everything else is built per request.
@@ -31,17 +30,13 @@ testEffect(
         Effect.promise(
           async () =>
             await serve({
-              "/mcp": async (request) =>
-                await answerWithRequestServices(
-                  perRequest,
-                  (built) =>
-                    Mcp.toWebHandler(fixture, built, {
-                      allowedOrigins: [],
-                      name: "fixture",
-                      version: "0.0.0",
-                    }),
-                  request
-                ),
+              // Services built for each request, as the Worker builds them.
+              "/mcp": Mcp.toWebHandler(fixture, perRequest, {
+                allowedOrigins: [],
+                name: "fixture",
+                services: "per-request",
+                version: "0.0.0",
+              }),
             })
         ),
         (server) =>

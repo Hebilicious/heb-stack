@@ -7,12 +7,10 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/main.ts",
-    "./location": "./src/location.ts",
-    "./run": "./src/run.ts"
+    "./location": "./src/location.ts"
   },
   "dependencies": {
     "@acid-cat/core-effect": "catalog:",
-    "@acid-cat/spec-ts": "catalog:",
     "@effect/platform-node": "catalog:",
     "@heb-stack/acidcat": "workspace:*",
     "@heb-stack/node-runtime": "workspace:*",
