@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 
 import { AtomRegistry, registryKey } from "@effect/atom-vue";
-import { createAcidCat } from "@heb-stack/acidcat";
+import { openAcidCat } from "@heb-stack/acidcat";
 import { primeMathWasmLayer } from "@heb-stack/acidcat/primes";
 import { checkHistoryLocalLayer } from "@heb-stack/browser-runtime";
 import { Effect, Layer } from "effect";
@@ -42,13 +42,13 @@ export const checkPageFeature: ExecutableFeatureManifest<World> = {
           checkHistoryLocalLayer(memoryStorage())
         );
         const root = yield* scopedSession(
-          async () => await createAcidCat({ target: "web" }, services)
+          async () => await openAcidCat(services, { target: "web" })
         );
         const host = document.createElement("div");
         document.body.append(host);
         const app = createVaporApp(vaporComponent(App));
         app.provide(registryKey, AtomRegistry.make());
-        app.provide(acidCatKey, Object.freeze({ ...root, webmcp: null }));
+        app.provide(acidCatKey, root);
         yield* Effect.acquireRelease(
           Effect.sync(() => app.mount(host)),
           () =>

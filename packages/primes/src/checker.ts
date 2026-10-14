@@ -1,6 +1,13 @@
-import type { ReadonlySnapshotSource } from "@heb-stack/acidcat-kernel";
 import { createEffectActor, send, waitFor } from "@xstate/effect";
-import { Context, Effect, Layer, Predicate, Schema } from "effect";
+import {
+  Context,
+  Effect,
+  Layer,
+  Predicate,
+  Queue,
+  Schema,
+  Stream,
+} from "effect";
 import type { SnapshotFrom } from "xstate";
 
 import { CheckFailureSchema, checkMachine } from "./check-machine.ts";
@@ -17,11 +24,14 @@ export const CheckSnapshotSchema = Schema.Struct({
 /** What the page renders: the lifecycle's state and the number it concerns, detached from the actor. */
 export type CheckSnapshot = typeof CheckSnapshotSchema.Type;
 
-/** The owner of the check lifecycle: one actor per session, read through its snapshot and driven by `check`. */
+/** The owner of the check lifecycle: one actor per session, observed through its snapshots and driven by `check`. */
 export class PrimeChecker extends Context.Service<
   PrimeChecker,
   {
-    readonly snapshot: ReadonlySnapshotSource<CheckSnapshot>;
+    /** The lifecycle now. */
+    readonly current: Effect.Effect<CheckSnapshot>;
+    /** The lifecycle now, then every change to it. */
+    readonly changes: Stream.Stream<CheckSnapshot>;
     /**
      * Check `n` and await this call's own answer. A call made after a failure of the same number retries it. A newer
      * call replaces this one, which then ends interrupted rather than answering for a number nobody is waiting on.
@@ -76,15 +86,24 @@ export const primeCheckerLayer: Layer.Layer<PrimeChecker, never, PrimeMath> =
           failure?.reason ?? "The check settled without an answer"
         );
       });
+      const changes = Stream.callback<CheckSnapshot>((queue) =>
+        Effect.acquireRelease(
+          Effect.sync(() => {
+            Queue.offerUnsafe(queue, project(actor.getSnapshot()));
+            return actor.subscribe((snapshot) => {
+              Queue.offerUnsafe(queue, project(snapshot));
+            });
+          }),
+          (subscription) =>
+            Effect.sync(() => {
+              subscription.unsubscribe();
+            })
+        )
+      );
       return PrimeChecker.of({
+        changes,
         check,
-        snapshot: {
-          getSnapshot: () => project(actor.getSnapshot()),
-          subscribe: (listener) =>
-            actor.subscribe((snapshot) => {
-              listener(project(snapshot));
-            }),
-        },
+        current: Effect.sync(() => project(actor.getSnapshot())),
       });
     })
   );

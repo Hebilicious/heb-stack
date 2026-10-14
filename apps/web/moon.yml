@@ -20,26 +20,17 @@ fileGroups:
     - "/packages/*/package.json"
 
 tasks:
-  manifest:
-    description: "Derive the WebMCP manifest from the capability definitions."
-    command: "node"
-    args: ["scripts/generate-manifest.ts", "public/acidcat-manifest.generated.json"]
-    inputs: ["scripts/generate-manifest.ts", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
-    outputs: ["public/acidcat-manifest.generated.json"]
-
   build:
     description: "Build the page into dist."
     command: "vite"
     args: ["build"]
-    deps: ["manifest"]
-    inputs: ["@group(sources)", "public/**/*"]
+    inputs: ["@group(sources)"]
     outputs: ["dist/**/*"]
 
   dev:
     description: "Rebuild the page into dist whenever a source changes."
     command: "vite"
     args: ["build", "--watch"]
-    deps: ["manifest"]
     preset: "server"
 
   typecheck:

@@ -76,7 +76,7 @@ testEffect(
         Exit.hasInterrupts(yield* Fiber.await(first)),
         "The replaced caller ends interrupted, not answered"
       );
-      assert.equal(checker.snapshot.getSnapshot().status, "result");
+      assert.equal((yield* checker.current).status, "result");
     })
 );
 
@@ -87,15 +87,12 @@ testEffect("checking the number that just failed retries it", () =>
     );
     const checker = yield* checkerOver(math.layer);
     assert.ok(Exit.isFailure(yield* Effect.exit(checker.check(13))));
-    assert.equal(
-      checker.snapshot.getSnapshot().failure?._tag,
-      "CheckUnanswered"
-    );
+    assert.equal((yield* checker.current).failure?._tag, "CheckUnanswered");
     assert.deepEqual(yield* checker.check(13), {
       n: 13,
       prime: true,
       smallestFactor: 13,
     });
-    assert.equal(checker.snapshot.getSnapshot().status, "result");
+    assert.equal((yield* checker.current).status, "result");
   })
 );

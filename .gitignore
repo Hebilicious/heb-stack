@@ -9,7 +9,6 @@ node_modules/
 # Build output
 **/dist/
 crates/primes/target/
-apps/web/public/acidcat-manifest.generated.json
 
 # Tool state
 .moon/cache/

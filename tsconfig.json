@@ -7,7 +7,6 @@
     "packages/*/src/**/*.ts",
     "packages/*/*.ts",
     "packages/*/scripts/**/*.ts",
-    "apps/web/scripts/**/*.ts",
     "features/**/*.ts",
     "e2e/**/*.ts",
     "*.config.ts"

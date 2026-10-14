@@ -1,4 +1,4 @@
-import type { Result } from "@heb-stack/acidcat-kernel";
+import type { Result } from "@acid-cat/spec-ts";
 
 /** Where a client reaches the API. The Worker routes this path and the browser posts to it. */
 export const PRIMES_RPC_PATH = "/rpc";
@@ -14,8 +14,9 @@ export const PRIMES_RPC_LIMITS = {
 } as const;
 
 /**
- * The capnweb surface of the `rpc` target. Each method is one capability, invoked through the catalog with the
- * caller's input, so its answer is that capability's wire `Result`: a client decodes it with the capability's schema.
+ * The capnweb surface of the `rpc` target. Each method is one capability, invoked through its handle with the caller's
+ * input, so its answer is that capability's wire `Result`: a client decodes it with the capability's schema. A call
+ * that gives no result rejects with the AcidCat call failure, whose `kind` says why.
  */
 export interface PrimesApi {
   /** `primes.check`. BOUNDARY: The caller's input is untrusted until the capability decodes it. */

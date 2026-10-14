@@ -1,4 +1,5 @@
 import { TestStepResultStatus } from "@cucumber/messages";
+import { capabilityIds } from "@heb-stack/acidcat";
 import { test } from "vitest";
 
 import { effectTests } from "./effect-test.ts";
@@ -61,6 +62,14 @@ function registerFeatureScenarios<World>(
   selection: FeatureSelection,
   registerScenarioTest: ScenarioTestRegistrar
 ): void {
+  const unknown = (manifest.capabilityIds ?? []).filter(
+    (id) => !capabilityIds.has(id)
+  );
+  if (unknown.length > 0) {
+    throw new Error(
+      `${manifest.id} names capabilities the application does not declare: ${unknown.join(", ")}`
+    );
+  }
   const selectedScenarios = selectScenarios(manifest, scenarios, selection);
   for (const { id, pickle, astNodeLocations } of selectedScenarios) {
     registerScenarioTest(`${id}: ${pickle.name}`, { retry: 0 }, async () => {

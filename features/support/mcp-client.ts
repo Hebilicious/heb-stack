@@ -1,11 +1,13 @@
-import type { Catalog } from "@heb-stack/acidcat";
-import { handleMcpHttpRequest } from "@heb-stack/mcp/http";
+import { WORKER_MCP_IDENTITY, edgeMcpResponse } from "@heb-stack/edge-runtime";
 import { Schema } from "effect";
 
 import { decode } from "./sessions.ts";
 
 /** The origin evidence addresses an endpoint from. */
 export const ORIGIN = "https://heb-stack.example.test";
+
+/** An endpoint that answers one request: what the Worker routes `/mcp` to. */
+export type McpEndpoint = (request: Request) => Promise<Response>;
 
 /** The revision that carries everything a request needs, which is the one a stateless endpoint serves. */
 const PROTOCOL_VERSION = "2026-07-28";
@@ -32,12 +34,13 @@ export const CallToolResultSchema = Schema.Struct({
     Schema.Struct({ text: Schema.String, type: Schema.Literal("text") })
   ),
   isError: Schema.optionalKey(Schema.Boolean),
+  structuredContent: Schema.optionalKey(Schema.Json),
 });
 
-/** One stateless MCP request to the endpoint serving `catalog`, decoded as a JSON-RPC message. */
+/** One stateless MCP request to an endpoint, decoded as a JSON-RPC message. */
 export async function mcpRequest(
-  catalog: Catalog,
-  method: "tools/list" | "tools/call",
+  endpoint: McpEndpoint,
+  method: "server/discover" | "tools/list" | "tools/call",
   params: Readonly<Record<string, typeof Schema.Json.Type>>,
   name?: string
 ): Promise<typeof WireMessageSchema.Type> {
@@ -50,7 +53,7 @@ export async function mcpRequest(
   if (name !== undefined) {
     headers.set("mcp-name", name);
   }
-  const response = await handleMcpHttpRequest(
+  const response = await endpoint(
     new Request(`${ORIGIN}/mcp`, {
       body: JSON.stringify({
         id: 1,
@@ -60,16 +63,7 @@ export async function mcpRequest(
       }),
       headers,
       method: "POST",
-    }),
-    {
-      allowedOrigins: [ORIGIN],
-      catalog,
-      identity: {
-        instructions: "Evidence.",
-        name: "evidence",
-        version: "0.0.0",
-      },
-    }
+    })
   );
   if (response.status !== 200) {
     throw new Error(`The endpoint answered ${String(response.status)}`);
@@ -80,13 +74,23 @@ export async function mcpRequest(
 
 /** The tool names an MCP client sees, sorted. */
 export async function listedTools(
-  catalog: Catalog
+  endpoint: McpEndpoint
 ): Promise<readonly string[]> {
-  const message = await mcpRequest(catalog, "tools/list", {});
+  const message = await mcpRequest(endpoint, "tools/list", {});
   if (message.error !== undefined) {
     throw new Error(message.error.message);
   }
   return decode(ToolsResultSchema, message.result)
     .tools.map((tool) => tool.name)
     .toSorted((left, right) => left.localeCompare(right));
+}
+
+/** The Worker's own MCP endpoint over the compiled crate, as `/mcp` answers it. */
+export function workerMcpEndpoint(module: WebAssembly.Module): McpEndpoint {
+  return async (request) =>
+    await edgeMcpResponse(request, {
+      identity: WORKER_MCP_IDENTITY,
+      module,
+      origin: ORIGIN,
+    });
 }

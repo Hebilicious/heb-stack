@@ -4,9 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@heb-stack/acidcat": "workspace:*",
     "@heb-stack/edge-runtime": "workspace:*",
-    "@heb-stack/mcp": "workspace:*",
     "@heb-stack/rpc": "workspace:*",
     "alchemy": "catalog:",
     "effect": "catalog:"

@@ -1,43 +1,36 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-import { DEFAULT_WASM_PATH, defaultHistoryFile } from "@heb-stack/node-runtime";
-import type { NodeSession } from "@heb-stack/node-runtime";
-import { Option, Schema } from "effect";
-import { Flag } from "effect/cli";
+import { acidCatLayer } from "@heb-stack/acidcat";
+import {
+  DEFAULT_WASM_PATH,
+  defaultHistoryFile,
+  nodeServices,
+} from "@heb-stack/node-runtime";
+import { Effect, Layer, Option } from "effect";
+import { Flag, GlobalFlag } from "effect/cli";
 
 import { CLI_BUNDLE_DIRECTORY } from "./location.ts";
 
-/**
- * The flags every command shares: where the crate and the history live. Their names cannot be a capability input's,
- * so a derived command's flags and these never collide.
- */
-export const sessionFlags = {
-  historyFile: Flag.String("history-file").pipe(
+/** `--history-file`: where the session keeps its checks. */
+export const HistoryFile = GlobalFlag.Setting("history-file")({
+  flag: Flag.String("history-file").pipe(
     Flag.withDescription(
       "The JSON file holding the check history (default: $XDG_STATE_HOME/heb-stack/history.json)."
     ),
     Flag.optional
   ),
-  wasm: Flag.String("wasm").pipe(
+});
+
+/** `--wasm`: where the session finds the crate. */
+export const Wasm = GlobalFlag.Setting("wasm")({
+  flag: Flag.String("wasm").pipe(
     Flag.withDescription(
       `The crate's release module (default: ${DEFAULT_WASM_PATH} in this checkout).`
     ),
     Flag.optional
   ),
-};
-
-/** The session flags as a command received them. */
-const SessionFlagsSchema = Schema.Struct({
-  historyFile: Schema.Option(Schema.String),
-  wasm: Schema.Option(Schema.String),
 });
-export type SessionFlags = typeof SessionFlagsSchema.Type;
-
-/** BOUNDARY: A derived command's parsed flags are a dynamic record; the session's own two are read back typed. */
-export function sessionFlagsOf(parsed: unknown): SessionFlags {
-  return Schema.decodeUnknownSync(SessionFlagsSchema)(parsed);
-}
 
 /**
  * The checkout this binary was built from, or `null` when this module runs from source. A caller runs the binary from
@@ -56,14 +49,24 @@ function repositoryRoot(): string | null {
   return existsSync(path.resolve(root, "crates", "primes")) ? root : null;
 }
 
-/** The session this command line describes, in the one shape every Node host takes. */
-export function cliSession(flags: SessionFlags): NodeSession {
-  const root = repositoryRoot();
-  return {
-    historyFile: Option.getOrElse(flags.historyFile, defaultHistoryFile),
-    target: "cli",
-    wasmPath: Option.getOrElse(flags.wasm, () =>
-      root === null ? DEFAULT_WASM_PATH : path.resolve(root, DEFAULT_WASM_PATH)
-    ),
-  };
-}
+/**
+ * The services of the session one command runs in, from the session's flags. Their names cannot be a capability
+ * input's: `effect/cli` refuses a flag declared twice when the program starts.
+ */
+export const cliServices = Layer.unwrap(
+  Effect.gen(function* () {
+    const historyFile = yield* HistoryFile;
+    const wasm = yield* Wasm;
+    const root = repositoryRoot();
+    return acidCatLayer(
+      nodeServices({
+        historyFile: Option.getOrElse(historyFile, defaultHistoryFile),
+        wasmPath: Option.getOrElse(wasm, () =>
+          root === null
+            ? DEFAULT_WASM_PATH
+            : path.resolve(root, DEFAULT_WASM_PATH)
+        ),
+      })
+    );
+  })
+);

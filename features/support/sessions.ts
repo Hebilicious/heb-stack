@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { AcidCat } from "@heb-stack/acidcat";
 import { DEFAULT_WASM_PATH } from "@heb-stack/node-runtime";
 import { Effect, Schema } from "effect";
 import type { Scope } from "effect";
@@ -18,9 +17,9 @@ export const compiledCrate: Effect.Effect<WebAssembly.Module> = Effect.promise(
 );
 
 /** A session that belongs to the scope opening it, so a failing step still disposes it. */
-export function scopedSession(
-  open: () => Promise<AcidCat>
-): Effect.Effect<AcidCat, never, Scope.Scope> {
+export function scopedSession<
+  Session extends { readonly dispose: () => Promise<void> },
+>(open: () => Promise<Session>): Effect.Effect<Session, never, Scope.Scope> {
   return Effect.acquireRelease(Effect.promise(open), (root) =>
     Effect.promise(async () => {
       await root.dispose();

@@ -10,9 +10,9 @@ export const LARGEST_SAFE_PRIME = 2 ** 53 - 111;
 export const HISTORY_LIMIT = 20;
 
 export const OutOfRangeSchema = Schema.TaggedStruct("OutOfRange", {
-  max: Schema.Number,
-  min: Schema.Number,
-  n: Schema.Number,
+  max: Schema.Int,
+  min: Schema.Int,
+  n: Schema.Int,
 });
 export type OutOfRange = typeof OutOfRangeSchema.Type;
 
@@ -78,11 +78,6 @@ export const HistoryClearOutputSchema = Schema.Struct({
   }),
 });
 export type HistoryClearOutput = typeof HistoryClearOutputSchema.Type;
-
-export const EmptyInputSchema = Schema.Struct({});
-
-/** A capability that declares no failure answers with this schema, which no value satisfies. */
-export const NoFailureSchema = Schema.Never;
 
 /** The history a new entry produces: newest first, and never longer than the limit. */
 export function withEntry(

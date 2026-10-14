@@ -1,127 +1,138 @@
-import { constantSource } from "@heb-stack/acidcat-kernel";
-import type { Availability, SessionTarget } from "@heb-stack/acidcat-kernel";
+import type { Capability, Handles } from "@acid-cat/core-effect";
+import { CallFailureError, callFailure, unavailable } from "@acid-cat/spec-ts";
+import type { Result } from "@acid-cat/spec-ts";
 import {
-  checkDefinition,
-  historyClearDefinition,
-  historyListDefinition,
-  nextDefinition,
+  checkCapability,
+  historyClearCapability,
+  historyListCapability,
+  nextCapability,
 } from "@heb-stack/primes";
-import { PrimeChecker, primeCheckerLayer } from "@heb-stack/primes/runtime";
+import {
+  CheckSnapshotSchema,
+  primeCheckerLayer,
+} from "@heb-stack/primes/runtime";
 import type { CheckHistory, PrimeMath } from "@heb-stack/primes/runtime";
-import type { ModelContextPort } from "@heb-stack/webmcp-adapter";
-import { Effect, Exit, Layer, ManagedRuntime, Scope } from "effect";
+import { Layer, Schema } from "effect";
 
-import { bindCapability } from "./executor.ts";
-import type { CapabilitySession } from "./executor.ts";
-
-export interface AcidCatOptions {
-  /** The target this session serves; a capability outside its audience never registers. */
-  readonly target: SessionTarget;
-}
+import { app } from "./catalog.ts";
+import type { SessionTarget } from "./catalog.ts";
+import { openSession } from "./session.ts";
+import type { OpenSession, SessionOptions } from "./session.ts";
 
 /** What a host supplies: arithmetic always, and a history when the host keeps one. */
 export type AcidCatServices =
   | Layer.Layer<PrimeMath>
   | Layer.Layer<PrimeMath | CheckHistory>;
 
-const available: Availability = Object.freeze({ available: true as const });
-
-/** The only managed application runtime; each host supplies its service Layers and nothing else. */
-export async function createAcidCat(
-  options: AcidCatOptions,
-  services: AcidCatServices
-) {
-  const disposal = new AbortController();
-  const runtime = ManagedRuntime.make(
-    primeCheckerLayer.pipe(Layer.provideMerge(services))
-  );
-  try {
-    const checker = await runtime.runPromise(PrimeChecker);
-    const session: CapabilitySession = Object.freeze({
-      signal: disposal.signal,
-      target: options.target,
-    });
-    const always = constantSource(available);
-    // One namespace, `primes`: every leaf's id begins with it, and the tree mirrors the ids.
-    const catalog = {
-      primes: {
-        check: bindCapability(
-          checkDefinition,
-          runtime,
-          { availability: always, snapshot: checker.snapshot },
-          session
-        ),
-        history: {
-          clear: bindCapability(
-            historyClearDefinition,
-            runtime,
-            { availability: always },
-            session
-          ),
-          list: bindCapability(
-            historyListDefinition,
-            runtime,
-            { availability: always },
-            session
-          ),
-        },
-        next: bindCapability(
-          nextDefinition,
-          runtime,
-          { availability: always },
-          session
-        ),
-      },
-    };
-    const ensureOpen = () => {
-      if (disposal.signal.aborted) {
-        throw new Error("The AcidCat session is closed");
-      }
-    };
-    return Object.freeze({
-      catalog,
-      dispose: async () => {
-        disposal.abort();
-        await runtime.dispose();
-      },
-      // BOUNDARY: The adapter decodes fetched manifest data before registration.
-      installWebMcp: async (
-        port: ModelContextPort,
-        loadManifest: (signal: AbortSignal) => Promise<unknown>
-      ) => {
-        ensureOpen();
-        const { installWebMcpAdapter } =
-          await import("@heb-stack/webmcp-adapter");
-        ensureOpen();
-        const scope = await runtime.runPromise(Scope.make());
-        const adapter = await runtime.runPromise(
-          Scope.provide(
-            installWebMcpAdapter(
-              catalog,
-              port,
-              Effect.tryPromise({
-                catch: () => "Tool registration metadata could not be loaded",
-                try: async (signal) => await loadManifest(signal),
-              })
-            ),
-            scope
-          )
-        );
-        return Object.freeze({
-          dispose: async () => {
-            await runtime.runPromise(Scope.close(scope, Exit.void));
-          },
-          retry: async () => {
-            await runtime.runPromise(adapter.retry);
-          },
-          snapshot: adapter.snapshot,
-        });
-      },
-      target: options.target,
-    });
-  } catch (error) {
-    await runtime.dispose();
-    throw error;
-  }
+/** Every service the capabilities need, from the host's own: the domain's owners stay inside the root. */
+export function acidCatLayer(services: AcidCatServices) {
+  return primeCheckerLayer.pipe(Layer.provideMerge(services));
 }
-export type AcidCat = Awaited<ReturnType<typeof createAcidCat>>;
+
+/** A handle whose typed calls answer its capability's own value and failure types. */
+export interface CapabilityHandle<Input, Value, Failure> extends Omit<
+  Handles.Handle,
+  "execute" | "snapshot"
+> {
+  readonly execute: (
+    input: Input,
+    options?: Handles.CallOptions
+  ) => Promise<Result<Value, Failure>>;
+}
+
+type HandleOf<C> =
+  C extends Capability.Capability<
+    infer Input,
+    infer Output,
+    infer Failure,
+    infer _Services
+  >
+    ? CapabilityHandle<Input["Type"], Output["Type"], Failure["Type"]>
+    : never;
+
+/** A capability outside the session's view: always unavailable, and every call refused as an unknown id. */
+function outOfView(capability: Capability.Any, target: string): Handles.Handle {
+  const failure = callFailure(
+    "unknown-capability",
+    `${capability.id} is not served to the ${target} target.`
+  );
+  const availability = unavailable(failure.message);
+  const refuse = async () =>
+    await Promise.reject(new CallFailureError(failure));
+  return {
+    audience: capability.audience,
+    availability: {
+      getSnapshot: () => availability,
+      subscribe: () => ({
+        unsubscribe: () => {
+          // The availability never changes, so there is nothing to release.
+        },
+      }),
+    },
+    description: capability.description,
+    execute: refuse,
+    id: capability.id,
+    invokeExternal: refuse,
+  };
+}
+
+function handleOf<C extends Capability.Any>(
+  session: OpenSession,
+  capability: C
+): HandleOf<C> {
+  const handle =
+    session.handles.get(capability.id) ?? outOfView(capability, session.target);
+  // SAFETY: A handle's `execute` answers exactly what its capability's `run` answers, the types the capability declares;
+  // `@acid-cat/core-effect` erases them only because its handles are looked up by id.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the handle belongs to this capability, so its outcome has these types.
+  return handle as HandleOf<C>;
+}
+
+/** BOUNDARY: The state a session publishes is its JSON form; it is decoded with the schema that owns it. */
+function decodedSnapshot(
+  source: Handles.Observable<unknown> | undefined
+): Handles.Observable<typeof CheckSnapshotSchema.Type> | undefined {
+  if (source === undefined) {
+    return undefined;
+  }
+  const decode = Schema.decodeUnknownSync(CheckSnapshotSchema);
+  return {
+    getSnapshot: () => decode(source.getSnapshot()),
+    subscribe: (listener) =>
+      source.subscribe((value) => {
+        listener(decode(value));
+      }),
+  };
+}
+
+export interface AcidCatOptions extends SessionOptions {
+  readonly target: SessionTarget;
+}
+
+/**
+ * Open the application's one session for a host. Its catalog is a tree that mirrors the ids, with typed calls, and
+ * `primes.check` carries the check lifecycle the page renders.
+ */
+export async function openAcidCat(
+  services: AcidCatServices,
+  options: AcidCatOptions
+) {
+  const session = await openSession(app, acidCatLayer(services), options);
+  const check = handleOf(session, checkCapability);
+  const catalog = {
+    primes: {
+      check: Object.freeze({
+        ...check,
+        snapshot: decodedSnapshot(session.handles.get(check.id)?.snapshot),
+      }),
+      history: {
+        clear: handleOf(session, historyClearCapability),
+        list: handleOf(session, historyListCapability),
+      },
+      next: handleOf(session, nextCapability),
+    },
+  };
+  return Object.freeze({ ...session, catalog });
+}
+
+export type AcidCat = Awaited<ReturnType<typeof openAcidCat>>;

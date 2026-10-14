@@ -10,7 +10,8 @@
     "./server": "./src/server.ts"
   },
   "dependencies": {
-    "@heb-stack/acidcat-kernel": "workspace:*",
+    "@acid-cat/core-effect": "catalog:",
+    "@acid-cat/spec-ts": "catalog:",
     "capnweb": "catalog:"
   }
 }

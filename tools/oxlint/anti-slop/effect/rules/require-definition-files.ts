@@ -125,7 +125,7 @@ export const requireCapabilityFilesRule = defineRule({
       CallExpression(node) {
         if (
           reference(context, node.callee) ===
-          "@heb-stack/acidcat-kernel.defineCapability"
+          "@acid-cat/core-effect.Capability.make"
         )
           context.report({ node, messageId: "placement" });
       },
