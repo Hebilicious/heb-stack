@@ -1,18 +1,76 @@
-# heb-stack
+<div align="center">
 
-_One capability catalog, five surfaces, and a fence that makes the shortcut the wrong path._
+# 🐱 heb-stack
 
-A starter for an Effect application on Cloudflare. It ships as a **pnpm + Moon workspace** with a Vue Vapor page, in-page WebMCP tools, a command line, an MCP endpoint, a capnweb API, and a Rust crate compiled to WebAssembly. The demo is a prime checker, kept as small as the wiring allows.
+**One [AcidCat](https://github.com/Hebilicious/acidcat) capability catalog. Five surfaces. Zero duplicated wiring.**
 
-The shape it teaches: define a **capability** once (Effect Schema input, output and failure, plus one Effect computation), let its owner run the lifecycle in an XState machine, and serve it to every surface from one catalog.
+_A fence that makes the shortcut the wrong path._
 
-A preview runs at <https://heb-stack-preview.hebilicious.workers.dev>: the page, with `/mcp` and `/rpc` beside it.
+[![AcidCat](https://img.shields.io/npm/v/@acid-cat/core-effect?label=%F0%9F%90%B1%20acidcat&color=8b5cf6)](https://github.com/Hebilicious/acidcat) [![Effect](https://img.shields.io/badge/Effect-4.0-000000?logo=typescript&logoColor=white)](https://effect.website) [![XState](https://img.shields.io/badge/XState-6%20alpha-2c3e50?logo=xstate&logoColor=white)](https://stately.ai/docs/xstate) [![Vue Vapor](https://img.shields.io/badge/Vue-3.6%20Vapor-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org) [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-f38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com) [![Rust → Wasm](https://img.shields.io/badge/Rust-WebAssembly-dea584?logo=rust&logoColor=white)](crates/primes) [![MCP](https://img.shields.io/badge/MCP-2026--07--28-black?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io) [![Moon](https://img.shields.io/badge/moon-2.5-6f53f3)](https://moonrepo.dev) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## One capability, every surface
+[🌐 Live preview](https://heb-stack-preview.hebilicious.workers.dev) · [🐱 AcidCat](#-built-on-acidcat) · [🧰 Why these libraries](#-why-these-libraries) · [🚀 Start](#-start-a-project)
+
+</div>
+
+---
+
+heb-stack is a starter for an **Effect** application on **Cloudflare**, built on **[AcidCat](https://github.com/Hebilicious/acidcat)**. You define a **capability** once (Effect Schema input, output and failure, plus one Effect computation), its owner runs the lifecycle in an XState machine, and AcidCat serves it to every surface from one catalog:
+
+|  | Surface | How it gets there |
+| --- | --- | --- |
+| 🖥️ | **A Vue Vapor page** | over capnweb to the Worker |
+| 🤖 | **An agent in the page** | WebMCP tools on `document.modelContext` |
+| ⌨️ | **A terminal** | `cli`, every command derived from the catalog |
+| 🔌 | **An MCP client** | `/mcp`, stateless revision `2026-07-28` |
+| 📡 | **Code** | a typed capnweb API at `/rpc` |
+
+The demo is a prime checker, kept as small as the wiring allows. A preview runs at <https://heb-stack-preview.hebilicious.workers.dev>: the page, with `/mcp` and `/rpc` beside it.
+
+## 🐱 Built on AcidCat
+
+**AcidCat** (**A**pplication **C**apability **ID**entification **Cat**egory) is the application interface of this stack. It is one typed catalog of capabilities, each with a stable identifier inside a category, and every surface reaches the application through it, and only through it.
+
+heb-stack follows [the AcidCat specification](https://github.com/Hebilicious/acidcat) and is built on its published packages:
+
+| Package | What it does here |
+| --- | --- |
+| [`@acid-cat/core-effect`](https://www.npmjs.com/package/@acid-cat/core-effect) | Serves the capabilities, and provides the CLI, MCP and WebMCP bindings |
+| [`@acid-cat/cli`](https://www.npmjs.com/package/@acid-cat/cli) | `acid-cat check --strict` on the catalog, and `acid-cat conform` on the bindings |
+| [`@acid-cat/catalog`](https://www.npmjs.com/package/@acid-cat/catalog) · [`@acid-cat/spec-ts`](https://www.npmjs.com/package/@acid-cat/spec-ts) | The catalog document and the specification's types |
+
+### 🗂️ The catalog
+
+The category is the **namespace**. This catalog defines exactly one, `primes`, owned by `packages/primes`. Every id begins with it, and the catalog tree mirrors the ids:
+
+| Capability | Read-only | Answers | Fails with | Served to |
+| --- | --- | --- | --- | --- |
+| `primes.check` | ✅ | `{ n, prime, smallestFactor }` | `OutOfRange { n, min, max }` | web, cli, mcp, rpc |
+| `primes.next` | ✅ | `{ after, prime }` | `OutOfRange` | web, cli, mcp, rpc |
+| `primes.history.list` | ✅ | `{ entries }`, the 20 newest checks, newest first | — | web, cli |
+| `primes.history.clear` | ❌ | `{ cleared }` | `StorageUnavailable { reason }` | web, cli |
+
+A second domain would add its own namespace beside `primes`, in its own package.
+
+The catalog is also a document: [`acidcat.catalog.json`](acidcat.catalog.json), which `App.render` writes from the application in canonical form. `moon run acidcat:catalog` rewrites it, and `moon run app:verify` fails when the committed file is stale or when `acid-cat check --strict` refuses it.
+
+### 🧱 The rules AcidCat enforces here
+
+- 🏠 **A domain owns its namespace** and exports only its definitions. Only `packages/acidcat` imports it; `anti-slop-effect/no-application-bypass` fails the lint if anything else does. The domains are declared once, in `settings.acidcat` of `oxlint.config.ts`.
+- 🎯 **A capability reaches a surface only when its own `audience` names it.** Widen a surface by editing that one list.
+- 🔌 **Each host supplies Layers and nothing else**: the browser, Node and the Worker each provide `PrimeMath`, and `CheckHistory` where they keep one.
+- 🪄 **Bindings hold no capability map.** They come from `@acid-cat/core-effect`: the CLI's commands and flags, the MCP tools and the WebMCP tools are all derived from the capabilities and their schemas. `hs:capnweb`, the capnweb API, is this application's own binding, over the `rpc` session's handles.
+- 🧾 **Every external call has one outcome.** Its input is decoded with the capability's schema, and it ends with a value, a failure such as `OutOfRange` (which travels as data), or a call failure (`unknown-capability`, `unavailable`, `invalid-input`, `cancelled`, `internal`) that each binding reports in its own form.
+- ✅ **Conformance is proven, not claimed.** `features/adapters/conformance.test.ts` runs `acid-cat conform` against this repository's own MCP, CLI and WebMCP hosting, serving the specification's conformance fixture.
+
+The check lifecycle is `idle → checking → result | failed`. A new number interrupts the check in flight, and checking the number that just failed retries it. The owner runs the machine, `primes.check` publishes its snapshots as its `state`, and the page reads them through an atom.
+
+## 🌈 One capability, every surface
 
 `primes.check` is defined once, in `packages/primes/src/capabilities.ts`. Here it is on each surface, against `moon run app:dev`. Each example is condensed from a test in this repository, or was run as written.
 
-**The page**, driven by Playwright (`e2e/check.e2e.ts`). The check travels to the Worker over capnweb:
+### 🖥️ The page
+
+Driven by Playwright (`e2e/check.e2e.ts`). The check travels to the Worker over capnweb:
 
 ```ts
 await page.goto("/");
@@ -20,7 +78,9 @@ await page.getByLabel("Number").fill("91");
 await expect(page.getByRole("status")).toHaveText("91 = 7 × 13");
 ```
 
-**An agent in the page**, through WebMCP (`e2e/webmcp.e2e.ts`, Chromium with `--enable-features=WebMCP`). The catalog is registered as tools on `document.modelContext`:
+### 🤖 An agent in the page
+
+Through WebMCP (`e2e/webmcp.e2e.ts`, Chromium with `--enable-features=WebMCP`). The catalog is registered as tools on `document.modelContext`:
 
 ```ts
 const answer = await page.evaluate(async () => {
@@ -31,7 +91,9 @@ const answer = await page.evaluate(async () => {
 // '{"ok":true,"value":{"after":97,"prime":101}}'
 ```
 
-**A terminal**, with `cli`. Every leaf is a command derived from the catalog, and every answer is JSON (indented in the terminal, one line each here):
+### ⌨️ A terminal
+
+With `cli`. Every leaf is a command derived from the catalog, and every answer is JSON (indented in the terminal, one line each here):
 
 ```sh
 $ moon run cli:install
@@ -51,7 +113,9 @@ exit 3
 $ cli list   # every capability with its availability and usage, as JSON
 ```
 
-**An MCP client**, at `/mcp` (stateless revision `2026-07-28`):
+### 🔌 An MCP client
+
+At `/mcp` (stateless revision `2026-07-28`):
 
 ```sh
 curl -s http://localhost:1337/mcp \
@@ -64,7 +128,9 @@ curl -s http://localhost:1337/mcp \
 # result.structuredContent: {"n":91,"prime":false,"smallestFactor":7}
 ```
 
-**Code**, over capnweb at `/rpc`:
+### 📡 Code
+
+Over capnweb at `/rpc`:
 
 ```ts
 import type { PrimesApi } from "@heb-stack/rpc";
@@ -80,9 +146,31 @@ await api.check({ n: 91 });
 // { ok: true, value: { n: 91, prime: false, smallestFactor: 7 } }
 ```
 
-The MCP endpoint and the API run in a shared Worker that keeps no caller state, so they never list `primes.history.*`, and a call by name is refused: `Tool 'primes.history.clear' not found`.
+> [!NOTE] The MCP endpoint and the API run in a shared Worker that keeps no caller state, so they never list `primes.history.*`, and a call by name is refused: `Tool 'primes.history.clear' not found`.
 
-## Start a project
+## 🧰 Why these libraries
+
+Each library has one job, and the boundaries between them are rules of the repository, not suggestions.
+
+|  | Choice | Why it is here |
+| --- | --- | --- |
+| 🐱 | **AcidCat `0.3.0`** | The application interface. One catalog replaces a hand-written route table, CLI parser, MCP tool list and WebMCP registration: the bindings are derived from the capabilities' schemas, so adding a capability adds it everywhere its `audience` allows, and `acid-cat conform` proves each binding behaves. |
+| ⚡ | **Effect `4.0.0`** | Computations, expected failures, services and resources. Failures are typed values in the error channel, Schema decodes every contract and every untrusted input, and Layers let the browser, Node and the Worker each supply their own `PrimeMath` and `CheckHistory` behind the same service. `@acid-cat/core-effect` builds its CLI on `effect/cli` and its MCP server on `effect/ai/McpServer`, so there is no second framework underneath. |
+| 🚦 | **XState `6.0.0-alpha.63`** + **`@xstate/effect` `0.1.0-alpha.6`** | Lifecycle, concurrency, replacement, retry and cancellation. These are state, not computation, so they live in a machine whose work is an invoked Effect. Interrupting the check in flight and retrying the one that failed are transitions, tested as such. |
+| 💚 | **Vue `3.6.0-rc.10` in Vapor mode** + **`@effect/atom-vue` `4.0.0`** | Presentation only. Vapor compiles `<script setup vapor lang="ts">` to direct DOM updates with no virtual DOM, and the page observes the owner's snapshots through an atom instead of keeping its own copy of application state. |
+| 🧩 | **vize `0.429.2`** | Formats, lints and type-checks Vue in one tool, and compiles it for **Vite `8.3.2`**. Styles come from **cssforge `0.9.0`** tokens. |
+| 📡 | **capnweb `0.12.0`** | A typed object-capability RPC between the page and the Worker, with HTTP batching, and no schema or code generation step. |
+| ☁️ | **Alchemy `2.0.0-beta.81`** | Infrastructure as an Effect program: one Worker serves the page, `/rpc` and `/mcp`, and `alchemy dev` runs it in workerd locally with no Cloudflare account. |
+| 🦀 | **Rust → WebAssembly** | Rust earns its place where it is faster or better suited. One crate, `smallest_factor(u64) -> u64`, compiled to `wasm32-unknown-unknown` and exposed to TypeScript through one small typed port. |
+| 🥒 | **Vitest `5.0.3`**, **Gherkin** (`@cucumber/gherkin` `42.0.1`), **Playwright `1.63.0`** | Behaviour is stated in Gherkin, and each step returns its Effect to a manifest runner on Vitest, which runs it in the scenario's Scope. Playwright drives the page and the WebMCP scenario. |
+| 🔷 | **TypeScript `7.0.2`** + **`@effect/tsgo` `0.47.2`** | The native TypeScript compiler, with Effect's language-service diagnostics as a gate rather than a hint. |
+| 🧹 | **Ultracite `7.12.2`** on **Oxlint `1.86.0`** and **Oxfmt `0.71.0`** | Fast, type-aware linting and formatting, with vendored anti-slop rules and this repository's Effect rules on top. These rules are what make bypassing AcidCat a lint error. No ESLint, no Prettier. |
+| 🌙 | **Moon `2.5.6`** + **proto `0.62.3`** | Every operation is a Moon task in the project it belongs to, cached and ordered by the project graph. proto pins Node `26.10.0`, pnpm `12.8.1`, Rust `1.99.0` and Moon itself. |
+| 🪝 | **gommage `0.1.0`** + **lefthook `2.1.15`** | No AI attribution in commit history; format on commit, lint and types on push. |
+
+Every dependency is pinned exactly, once, in the catalog in `pnpm-workspace.yaml`.
+
+## 🚀 Start a project
 
 ```sh
 gh repo clone Hebilicious/heb-stack <name>
@@ -98,70 +186,27 @@ moon run app:hooks-install   # gommage on commit messages, formatting on commit,
 moon run app:dev             # the page, /rpc and /mcp on http://localhost:1337, with no Cloudflare account
 ```
 
-## AcidCat
-
-**AcidCat** stands for **Application Capability IDentification Category**. It is the application interface: one typed catalog of capabilities, each with a stable identifier inside a category, which every surface reaches. heb-stack follows [the AcidCat specification](https://github.com/Hebilicious/acidcat) and is built on its published packages: [`@acid-cat/core-effect`](https://www.npmjs.com/package/@acid-cat/core-effect) serves the capabilities, and [`@acid-cat/cli`](https://www.npmjs.com/package/@acid-cat/cli) checks the catalog and tests the bindings.
-
-The category is the **namespace**. This catalog defines exactly one, `primes`, owned by `packages/primes`. Every id begins with it, and the catalog tree mirrors the ids:
-
-| Capability | Read-only | Answers | Fails with | Served to |
-| --- | --- | --- | --- | --- |
-| `primes.check` | yes | `{ n, prime, smallestFactor }` | `OutOfRange { n, min, max }` | web, cli, mcp, rpc |
-| `primes.next` | yes | `{ after, prime }` | `OutOfRange` | web, cli, mcp, rpc |
-| `primes.history.list` | yes | `{ entries }`, the 20 newest checks, newest first | — | web, cli |
-| `primes.history.clear` | no | `{ cleared }` | `StorageUnavailable { reason }` | web, cli |
-
-A second domain would add its own namespace beside `primes`, in its own package.
-
-The catalog is also a document: [`acidcat.catalog.json`](acidcat.catalog.json), which `App.render` writes from the application in canonical form. `moon run acidcat:catalog` rewrites it, and `moon run app:verify` fails when the committed file is stale or when `acid-cat check --strict` refuses it.
-
-- A domain package owns its namespace and exports only its definitions. Only `packages/acidcat` imports it; `anti-slop-effect/no-application-bypass` fails the lint if anything else does. The domains are declared once, in `settings.acidcat` of `oxlint.config.ts`.
-- A capability reaches a surface only when its own `audience` names it.
-- Each host supplies Layers and nothing else: the browser, Node and the Worker each provide `PrimeMath`, and `CheckHistory` where they keep one.
-- The bindings come from `@acid-cat/core-effect` and hold no capability map: the CLI's commands and flags, the MCP tools and the WebMCP tools are all derived from the capabilities and their schemas. `hs:capnweb`, the capnweb API, is this application's own binding, over the `rpc` session's handles.
-- An external call decodes its input with the capability's schema and ends with one outcome: a value, a failure such as `OutOfRange`, which travels as data, or a call failure (`unknown-capability`, `unavailable`, `invalid-input`, `cancelled`, `internal`), which each binding reports in its own form.
-- `features/adapters/conformance.test.ts` runs `acid-cat conform` against this repository's own MCP, CLI and WebMCP hosting, serving the specification's conformance fixture.
-
-The check lifecycle is `idle → checking → result | failed`. A new number interrupts the check in flight, and checking the number that just failed retries it. The owner runs the machine, `primes.check` publishes its snapshots as its `state`, and the page reads them through an atom.
-
-## Workspace layout
+## 🗺️ Workspace layout
 
 | Path | Moon project | Role |
 | --- | --- | --- |
-| `packages/primes` | `primes` | The `primes` namespace: capabilities, the check machine, the services |
-| `packages/acidcat` | `acidcat` | The root that composes namespaces into the one application, its sessions and its catalog |
-| `apps/web` | `web` | The Vapor page, built by Vite and vize, styled with cssforge tokens |
-| `packages/cli` | `cli` | `cli`, the CLI binding of `@acid-cat/core-effect`, with the session's flags |
-| `packages/rpc` |  | The capnweb `PrimesApi` |
-| `packages/browser-runtime` |  | The page's Layers: math over capnweb, history in browser storage, WebMCP discovery |
-| `packages/node-runtime` |  | The Node host: the crate in-process, history in a JSON file |
-| `packages/edge-runtime` |  | The Worker host: the crate compiled once per isolate, no history, a session per request for `/mcp` and `/rpc` |
-| `workers/api` | `api` | The Alchemy stack: one Worker serving the page, `/rpc` and `/mcp` |
-| `crates/primes` | `primes-wasm` | `smallest_factor(u64) -> u64`, compiled to WebAssembly |
-| `features` | `features` | Gherkin features and adapter proofs |
-| `e2e` | `e2e` | The Playwright scenarios: the page, and WebMCP |
-| `tools/oxlint/anti-slop` |  | Vendored anti-slop rules and this repository's Effect rules |
+| `packages/primes` | `primes` | 🔢 The `primes` namespace: capabilities, the check machine, the services |
+| `packages/acidcat` | `acidcat` | 🐱 The root that composes namespaces into the one application, its sessions and its catalog |
+| `apps/web` | `web` | 🖥️ The Vapor page, built by Vite and vize, styled with cssforge tokens |
+| `packages/cli` | `cli` | ⌨️ `cli`, the CLI binding of `@acid-cat/core-effect`, with the session's flags |
+| `packages/rpc` |  | 📡 The capnweb `PrimesApi` |
+| `packages/browser-runtime` |  | 🌐 The page's Layers: math over capnweb, history in browser storage, WebMCP discovery |
+| `packages/node-runtime` |  | 🟢 The Node host: the crate in-process, history in a JSON file |
+| `packages/edge-runtime` |  | ☁️ The Worker host: the crate compiled once per isolate, no history, a session per request for `/mcp` and `/rpc` |
+| `workers/api` | `api` | 🏗️ The Alchemy stack: one Worker serving the page, `/rpc` and `/mcp` |
+| `crates/primes` | `primes-wasm` | 🦀 `smallest_factor(u64) -> u64`, compiled to WebAssembly |
+| `features` | `features` | 🥒 Gherkin features and adapter proofs |
+| `e2e` | `e2e` | 🎭 The Playwright scenarios: the page, and WebMCP |
+| `tools/oxlint/anti-slop` |  | 🧹 Vendored anti-slop rules and this repository's Effect rules |
 
 Every package has a README that says what it does.
 
-## What is in the stack?
-
-- **Moon `2.5.6` and proto `0.62.3`**: every operation is a Moon task in the project it belongs to; proto pins Node `26.10.0`, pnpm `12.8.1`, Rust `1.99.0` and Moon itself.
-- **AcidCat `0.3.0`**: `@acid-cat/core-effect` for the TypeScript, WebMCP, MCP and CLI bindings; `@acid-cat/cli` for `acid-cat check` and `acid-cat conform`.
-- **Effect `4.0.0`**: services and Layers, typed failures, Schema for every contract; `@acid-cat/core-effect` builds its CLI on `effect/cli` and its MCP server on `effect/ai/McpServer`.
-- **XState `6.0.0-alpha.63` with `@xstate/effect` `0.1.0-alpha.6`**: the check lifecycle as a machine, with its work as an invoked Effect.
-- **Vue `3.6.0-rc.10` in Vapor mode** with **`@effect/atom-vue` `4.0.0`**: `<script setup vapor lang="ts">`, compiled by **vize `0.429.2`**, bundled by **Vite `8.3.2`**, styled with **cssforge `0.9.0`** tokens.
-- **capnweb `0.12.0`**: the API at `/rpc`, called by the page over HTTP batches.
-- **Alchemy `2.0.0-beta.81`**: the Worker declared as an Effect program; `alchemy dev` runs it in workerd locally.
-- **Rust**: one crate compiled to `wasm32-unknown-unknown`, behind one typed port.
-- **Vitest `5.0.3`, Gherkin (`@cucumber/gherkin` `42.0.1`) and Playwright `1.63.0`**: features whose steps return Effects, run by a manifest runner on Vitest, and two browser scenarios.
-- **TypeScript `7.0.2` and `@effect/tsgo` `0.47.2`**: strict types, and Effect language-service diagnostics as a gate.
-- **Ultracite `7.12.2` on Oxlint `1.86.0` and Oxfmt `0.71.0`**: Ultracite's presets, with the vendored anti-slop rules and this repository's Effect rules on top, type-aware.
-- **gommage `0.1.0` and lefthook `2.1.15`**: no AI attribution in commit history; format on commit, lint and types on push.
-
-Every dependency is pinned exactly, once, in the catalog in `pnpm-workspace.yaml`.
-
-## Commands
+## 🛠️ Commands
 
 | Command | Purpose |
 | --- | --- |
@@ -178,9 +223,9 @@ Every dependency is pinned exactly, once, in the catalog in `pnpm-workspace.yaml
 | `moon run api:deploy -- --stage <name>` | Deploy a stage as its own `heb-stack-<stage>` Worker |
 | `moon run app:authorship-fix -- <range>` | Strip AI attribution from the commits in a range |
 
-Deploying needs an Alchemy profile: run `pnpm exec alchemy profile edit --add Cloudflare` once in `workers/api`. No account, zone or route lives in the repository.
+> [!TIP] Deploying needs an Alchemy profile: run `pnpm exec alchemy profile edit --add Cloudflare` once in `workers/api`. No account, zone or route lives in the repository.
 
-## Evidence
+## 🔬 Evidence
 
 | Seam | Proof |
 | --- | --- |
@@ -195,14 +240,25 @@ Deploying needs an Alchemy profile: run `pnpm exec alchemy profile edit --add Cl
 
 Deadlines are hang guards, never paces, and nothing retries.
 
-## Make it yours
+## 🎨 Make it yours
 
-Rename the `@heb-stack/*` packages, then replace `packages/primes` with your own namespace: define its capabilities in `capabilities.ts` with ids that begin with the namespace, its lifecycle in a `*-machine.ts`, and its services as Effect `Context.Service`s. Compose it in `packages/acidcat`, list it in `settings.acidcat.domains`, give each host its Layers, and every surface serves it, `cli <namespace> …` included.
+Rename the `@heb-stack/*` packages, then replace `packages/primes` with your own namespace:
 
-## License
+1. Define its capabilities in `capabilities.ts`, with ids that begin with the namespace.
+2. Put its lifecycle in a `*-machine.ts`, and its services in Effect `Context.Service`s.
+3. Compose it in `packages/acidcat` and list it in `settings.acidcat.domains`.
+4. Give each host its Layers.
+
+Every surface then serves it, `cli <namespace> …` included. 🎉
+
+## 📄 License
 
 [MIT](LICENSE).
 
 ---
 
-Inspired by [rat-stack](https://github.com/joelhooks/rat-stack).
+<div align="center">
+
+Inspired by [rat-stack](https://github.com/joelhooks/rat-stack) · Powered by 🐱 [AcidCat](https://github.com/Hebilicious/acidcat)
+
+</div>
