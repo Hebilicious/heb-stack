@@ -1,5 +1,5 @@
 import { Capability } from "@acid-cat/core-effect";
-import { Effect, Option, Stream } from "effect";
+import { Effect, Option } from "effect";
 
 import { CheckHistory } from "./check-history.ts";
 import { CheckSnapshotSchema, PrimeChecker } from "./checker.ts";
@@ -38,10 +38,8 @@ export const checkCapability = Capability.make({
   run: (input) => PrimeChecker.use((checker) => checker.check(input.n)),
   // The check lifecycle, which the page renders: the check in flight, its answer, or why it failed.
   state: {
-    changes: Stream.unwrap(
-      PrimeChecker.use((checker) => Effect.succeed(checker.changes))
-    ),
     schema: CheckSnapshotSchema,
+    value: PrimeChecker.use((checker) => Effect.succeed(checker.state)),
   },
 });
 
