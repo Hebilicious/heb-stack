@@ -2,9 +2,8 @@ import assert from "node:assert/strict";
 import path from "node:path";
 
 import { conform, serve } from "@acid-cat/cli";
-import { Mcp } from "@acid-cat/core-effect";
+import { Handles, Mcp } from "@acid-cat/core-effect";
 import { AVAILABLE } from "@acid-cat/spec-ts";
-import { openSession } from "@heb-stack/acidcat";
 import { Effect, Layer, SubscriptionRef } from "effect";
 
 import {
@@ -57,11 +56,13 @@ testEffect(
             cli: [process.execPath, FIXTURE_CLI],
             mcp: `${served.url}/mcp`,
             webmcp: async (modelContext) => {
-              const session = await openSession(fixture, fixtureLayer(), {
+              const session = await Handles.open(fixture, fixtureLayer(), {
                 target: "app",
                 webmcp: modelContext,
               });
-              return session.dispose;
+              return async () => {
+                await session.dispose();
+              };
             },
           })
       );

@@ -116,7 +116,7 @@ export const targetsFeature: ExecutableFeatureManifest<World> = {
           async () =>
             await openAcidCat(services, { target: "web", webmcp: host })
         );
-        const webmcp = required(root.webmcp ?? undefined, "WebMCP");
+        const webmcp = required(root.webmcp, "WebMCP");
         yield* Effect.promise(async () => {
           await eventually(() => {
             const status = webmcp.status.getSnapshot();

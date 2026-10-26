@@ -1,3 +1,4 @@
+import { Handles } from "@acid-cat/core-effect";
 import {
   checkCapability,
   historyClearCapability,
@@ -10,8 +11,6 @@ import { Layer } from "effect";
 
 import { app } from "./catalog.ts";
 import type { SessionTarget } from "./catalog.ts";
-import { openSession } from "./session.ts";
-import type { SessionOptions } from "./session.ts";
 
 /** What a host supplies: arithmetic always, and a history when the host keeps one. */
 export type AcidCatServices =
@@ -23,19 +22,20 @@ export function acidCatLayer(services: AcidCatServices) {
   return primeCheckerLayer.pipe(Layer.provideMerge(services));
 }
 
-export interface AcidCatOptions extends SessionOptions {
+export interface AcidCatOptions extends Handles.OpenOptions {
   readonly target: SessionTarget;
 }
 
 /**
- * Open the application's one session for a host. Its catalog is a tree that mirrors the ids, with typed calls, and
- * `primes.check` carries the check lifecycle the page renders.
+ * Open the application's one session for a host. Its services, handles and, given a host, WebMCP tools close together
+ * with `dispose`. Its catalog is a tree that mirrors the ids, with typed calls, and `primes.check` carries the check
+ * lifecycle the page renders.
  */
 export async function openAcidCat(
   services: AcidCatServices,
   options: AcidCatOptions
 ) {
-  const session = await openSession(app, acidCatLayer(services), options);
+  const session = await Handles.open(app, acidCatLayer(services), options);
   const catalog = {
     primes: {
       check: session.handle(checkCapability),
@@ -46,7 +46,18 @@ export async function openAcidCat(
       next: session.handle(nextCapability),
     },
   };
-  return Object.freeze({ ...session, catalog });
+  const dispose = async () => {
+    await session.dispose();
+  };
+  return Object.freeze({
+    catalog,
+    dispose,
+    /** The handles by id, without their types, for bindings such as the capnweb API. */
+    handles: session.handles,
+    [Symbol.asyncDispose]: dispose,
+    target: session.target,
+    webmcp: session.webmcp,
+  });
 }
 
 export type AcidCat = Awaited<ReturnType<typeof openAcidCat>>;
