@@ -7,6 +7,7 @@ import {
   Queue,
   Schema,
   Stream,
+  SubscriptionRef,
 } from "effect";
 import type { SnapshotFrom } from "xstate";
 
@@ -30,8 +31,8 @@ export class PrimeChecker extends Context.Service<
   {
     /** The lifecycle now. */
     readonly current: Effect.Effect<CheckSnapshot>;
-    /** The lifecycle now, then every change to it. */
-    readonly changes: Stream.Stream<CheckSnapshot>;
+    /** The lifecycle, which follows the actor for as long as the layer lives. */
+    readonly state: SubscriptionRef.SubscriptionRef<CheckSnapshot>;
     /**
      * Check `n` and await this call's own answer. A call made after a failure of the same number retries it. A newer
      * call replaces this one, which then ends interrupted rather than answering for a number nobody is waiting on.
@@ -86,24 +87,29 @@ export const primeCheckerLayer: Layer.Layer<PrimeChecker, never, PrimeMath> =
           failure?.reason ?? "The check settled without an answer"
         );
       });
-      const changes = Stream.callback<CheckSnapshot>((queue) =>
-        Effect.acquireRelease(
+      // The actor is followed from the moment the layer builds, so the ref sees every snapshot the actor takes; the
+      // queue holds them until the follower writes them in order.
+      const state = yield* SubscriptionRef.make(project(actor.getSnapshot()));
+      const snapshots = yield* Queue.unbounded<CheckSnapshot>();
+      yield* Effect.acquireRelease(
+        Effect.sync(() =>
+          actor.subscribe((snapshot) => {
+            Queue.offerUnsafe(snapshots, project(snapshot));
+          })
+        ),
+        (subscription) =>
           Effect.sync(() => {
-            Queue.offerUnsafe(queue, project(actor.getSnapshot()));
-            return actor.subscribe((snapshot) => {
-              Queue.offerUnsafe(queue, project(snapshot));
-            });
-          }),
-          (subscription) =>
-            Effect.sync(() => {
-              subscription.unsubscribe();
-            })
-        )
+            subscription.unsubscribe();
+          })
+      );
+      yield* Stream.fromQueue(snapshots).pipe(
+        Stream.runForEach((snapshot) => SubscriptionRef.set(state, snapshot)),
+        Effect.forkScoped
       );
       return PrimeChecker.of({
-        changes,
         check,
         current: Effect.sync(() => project(actor.getSnapshot())),
+        state,
       });
     })
   );

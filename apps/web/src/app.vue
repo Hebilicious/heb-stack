@@ -13,7 +13,8 @@ if (check.snapshot === undefined) {
   throw new Error("primes.check publishes no lifecycle snapshot");
 }
 const lifecycle = useSnapshot(check.snapshot);
-const webmcp = root.webmcp === null ? null : useSnapshot(root.webmcp.status);
+const webmcp =
+  root.webmcp === undefined ? null : useSnapshot(root.webmcp.status);
 
 const draft = shallowRef("");
 const notice = shallowRef<string | null>(null);

@@ -2,15 +2,16 @@ import assert from "node:assert/strict";
 import path from "node:path";
 
 import { conform, serve } from "@acid-cat/cli";
-import { Mcp } from "@acid-cat/core-effect";
-import { openSession } from "@heb-stack/acidcat";
+import { Handles, Mcp } from "@acid-cat/core-effect";
+import { AVAILABLE } from "@acid-cat/spec-ts";
 import { Effect, Layer, SubscriptionRef } from "effect";
 
 import {
   fixture,
-  switchLayer,
+  fixtureLayer,
   Switch,
 } from "../conformance/fixture.capabilities.ts";
+import { Holds, makeHolds } from "../conformance/holds.ts";
 import { testEffect } from "../support/vitest-adapter.ts";
 
 /** The fixture as a command line, run the way `cli` runs. */
@@ -23,9 +24,14 @@ testEffect(
   "acid-cat conform passes against the MCP, CLI and WebMCP bindings as this repository hosts them",
   () =>
     Effect.gen(function* () {
-      // One switch across requests, as one Worker deployment keeps one; everything else is built per request.
-      const on = yield* SubscriptionRef.make(true);
-      const perRequest = Layer.succeed(Switch, on);
+      // One switch and one set of holds across requests, as one Worker deployment keeps them; everything else is built
+      // per request.
+      const on = yield* SubscriptionRef.make(AVAILABLE);
+      const holds = yield* makeHolds();
+      const perRequest = Layer.merge(
+        Layer.succeed(Switch, on),
+        Layer.succeed(Holds, holds)
+      );
       const served = yield* Effect.acquireRelease(
         Effect.promise(
           async () =>
@@ -50,7 +56,7 @@ testEffect(
             cli: [process.execPath, FIXTURE_CLI],
             mcp: `${served.url}/mcp`,
             webmcp: async (modelContext) => {
-              const session = await openSession(fixture, switchLayer, {
+              const session = await Handles.open(fixture, fixtureLayer(), {
                 target: "app",
                 webmcp: modelContext,
               });

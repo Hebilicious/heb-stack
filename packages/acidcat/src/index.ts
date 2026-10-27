@@ -7,11 +7,4 @@ export {
   type AcidCat,
   type AcidCatOptions,
   type AcidCatServices,
-  type CapabilityHandle,
 } from "./root.ts";
-export {
-  openSession,
-  type OpenSession,
-  type SessionOptions,
-  type WebMcpRegistration,
-} from "./session.ts";
