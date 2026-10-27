@@ -46,15 +46,12 @@ export async function openAcidCat(
       next: session.handle(nextCapability),
     },
   };
-  const dispose = async () => {
-    await session.dispose();
-  };
   return Object.freeze({
     catalog,
-    dispose,
+    dispose: session.dispose,
     /** The handles by id, without their types, for bindings such as the capnweb API. */
     handles: session.handles,
-    [Symbol.asyncDispose]: dispose,
+    [Symbol.asyncDispose]: session.dispose,
     target: session.target,
     webmcp: session.webmcp,
   });

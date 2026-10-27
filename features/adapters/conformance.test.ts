@@ -60,9 +60,7 @@ testEffect(
                 target: "app",
                 webmcp: modelContext,
               });
-              return async () => {
-                await session.dispose();
-              };
+              return session.dispose;
             },
           })
       );

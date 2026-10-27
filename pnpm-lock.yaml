@@ -165,17 +165,17 @@ settings:
 catalogs:
   default:
     '@acid-cat/catalog':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@acid-cat/cli':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@acid-cat/core-effect':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@acid-cat/spec-ts':
-      specifier: 0.6.0
-      version: 0.6.0
+      specifier: 0.6.1
+      version: 0.6.1
     '@cloudflare/workers-types':
       specifier: 5.20261001.1
       version: 5.20261001.1
@@ -280,16 +280,16 @@ importers:
     devDependencies:
       '@acid-cat/catalog':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@acid-cat/cli':
         specifier: 'catalog:'
-        version: 0.6.0(redis@6.3.0)
+        version: 0.6.1(redis@6.3.0)
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@acid-cat/spec-ts':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@cucumber/cucumber-expressions':
         specifier: 'catalog:'
         version: 20.1.0
@@ -431,10 +431,10 @@ importers:
     dependencies:
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@acid-cat/spec-ts':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       '@heb-stack/primes':
         specifier: workspace:*
         version: link:../primes
@@ -461,7 +461,7 @@ importers:
     dependencies:
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.0.0(effect@4.0.0)(redis@6.3.0)
@@ -479,7 +479,7 @@ importers:
     dependencies:
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@heb-stack/acidcat':
         specifier: workspace:*
         version: link:../acidcat
@@ -503,7 +503,7 @@ importers:
     dependencies:
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@xstate/effect':
         specifier: 'catalog:'
         version: 0.1.0-alpha.6(effect@4.0.0)(xstate@6.0.0-alpha.63)
@@ -518,10 +518,10 @@ importers:
     dependencies:
       '@acid-cat/core-effect':
         specifier: 'catalog:'
-        version: 0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
+        version: 0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)
       '@acid-cat/spec-ts':
         specifier: 'catalog:'
-        version: 0.6.0
+        version: 0.6.1
       capnweb:
         specifier: 'catalog:'
         version: 0.12.0
@@ -550,12 +550,12 @@ importers:
 
 packages:
 
-  '@acid-cat/catalog@0.6.0':
-    resolution: {integrity: sha512-vzsPzd07HoeBGCiXyardH14plhg4By8JgfWT+5epsirs45LeWe7BsbKBQzSWDU0ZDWF28SHm8FAWIvBR5I6J9A==}
+  '@acid-cat/catalog@0.6.1':
+    resolution: {integrity: sha512-SqEIqKvrFviw4n7eR2rC0pAaeaPog8kXcmOuNEas+N3w49qI0n2bmFCVI+HsIhGD4sbOFP/grKfN14CL0FZrbg==}
     engines: {node: '>=24'}
 
-  '@acid-cat/cli@0.6.0':
-    resolution: {integrity: sha512-VucortvS4XmFKM2uwIVzZz9N5fMB328vbaP9V7AhfUJO2PKvQKXfIldCgOGyS1y2vJCdA0fwaiTi30mHTm7umw==}
+  '@acid-cat/cli@0.6.1':
+    resolution: {integrity: sha512-Jh/tMESf2iO9GUzCpRUguL6SAnRoSYZscYiLZq5Vzi/t6nGhP6SSsQHkziJ8RcxpW3l14Zqf1VCFZn/8yu+omg==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
@@ -564,8 +564,8 @@ packages:
       playwright:
         optional: true
 
-  '@acid-cat/core-effect@0.6.0':
-    resolution: {integrity: sha512-86sWg3Dt7xSQ9WOPbFa2ZdgGDPYbcGjmYlU0JK5VwsXinObQqt5fo0xYdIOdiTQ5bGBNcUilcyc1L+xoU9yHGA==}
+  '@acid-cat/core-effect@0.6.1':
+    resolution: {integrity: sha512-GD/olM1R/624VE/gv8DWLijy3RkjB6hhD2ekJ1BUVr28nEsLnYAM3xFIh4ZfFN6nNVQZJPQUctCI3tdQxJvhNQ==}
     engines: {node: '>=24'}
     peerDependencies:
       '@effect/platform-node': ^4.0.0
@@ -574,8 +574,8 @@ packages:
       '@effect/platform-node':
         optional: true
 
-  '@acid-cat/spec-ts@0.6.0':
-    resolution: {integrity: sha512-CGpZkdJjYVXWiUOkvOOVIHuh6+gf+8IwQXkNt9t//Nrb7OPq83HHzO1hMDeEWfz5DP66/x3mnD4T/VdOQB3tHQ==}
+  '@acid-cat/spec-ts@0.6.1':
+    resolution: {integrity: sha512-8lt6pZdu3c2m+QLt3/5/T5NbHSRsZ8aeNPf3B5gMNZW9yjDZS3YgD4l4jrPyB1vxWZf/AC9PC4OJJ2iYZMWMsA==}
     engines: {node: '>=24'}
 
   '@alchemy.run/cloudflare-runtime@2.0.0-beta.81':
@@ -3613,12 +3613,12 @@ packages:
 
 snapshots:
 
-  '@acid-cat/catalog@0.6.0': {}
+  '@acid-cat/catalog@0.6.1': {}
 
-  '@acid-cat/cli@0.6.0(redis@6.3.0)':
+  '@acid-cat/cli@0.6.1(redis@6.3.0)':
     dependencies:
-      '@acid-cat/catalog': 0.6.0
-      '@acid-cat/spec-ts': 0.6.0
+      '@acid-cat/catalog': 0.6.1
+      '@acid-cat/spec-ts': 0.6.1
       '@effect/platform-node': 4.0.6(effect@4.0.6)(redis@6.3.0)
       '@effect/platform-node-shared': 4.0.6(effect@4.0.6)
       '@modelcontextprotocol/client': 2.3.1
@@ -3629,15 +3629,15 @@ snapshots:
       - redis
       - utf-8-validate
 
-  '@acid-cat/core-effect@0.6.0(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)':
+  '@acid-cat/core-effect@0.6.1(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(effect@4.0.0)':
     dependencies:
-      '@acid-cat/catalog': 0.6.0
-      '@acid-cat/spec-ts': 0.6.0
+      '@acid-cat/catalog': 0.6.1
+      '@acid-cat/spec-ts': 0.6.1
       effect: 4.0.0
     optionalDependencies:
       '@effect/platform-node': 4.0.0(effect@4.0.0)(redis@6.3.0)
 
-  '@acid-cat/spec-ts@0.6.0': {}
+  '@acid-cat/spec-ts@0.6.1': {}
 
   '@alchemy.run/cloudflare-runtime@2.0.0-beta.81(@distilled.cloud/cloudflare@1.0.0-rc.13(effect@4.0.0))(@effect/platform-node@4.0.0(effect@4.0.0)(redis@6.3.0))(@types/node@26.6.3)(effect@4.0.0)(rolldown@1.2.5)(typescript@7.0.2)(vite@8.3.2(@types/node@26.6.3)(esbuild@0.28.1)(yaml@2.9.1))':
     dependencies:
