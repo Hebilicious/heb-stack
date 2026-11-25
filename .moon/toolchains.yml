@@ -14,4 +14,4 @@ rust:
   targets: ["wasm32-unknown-unknown"]
 
 proto:
-  version: "0.62.3"
+  version: "0.64.1"

@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 
 import { vize } from "@vizejs/vite-plugin";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus/test/config";
 
 /** A path in the checkout this project sits in. */
 const repository = (relative: string) =>
@@ -60,7 +60,7 @@ export default defineConfig({
       {
         plugins: [
           vize({
-            configFile: repository("apps/web/vize.config.ts"),
+            configMode: false,
             root: repository("apps/web"),
             vapor: true,
           }),

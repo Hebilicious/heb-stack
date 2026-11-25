@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 
 export interface AdapterBundleOptions {
   /** The adapter's own entry point, relative to the repository root. */

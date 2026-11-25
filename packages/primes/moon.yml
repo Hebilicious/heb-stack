@@ -11,6 +11,6 @@ toolchains:
 tasks:
   test:
     description: "Prove the lifecycle below AcidCat: replacement interrupts the check in flight, and a failed check retries."
-    command: "vitest"
-    args: ["run"]
+    command: "vp"
+    args: ["test", "run"]
     inputs: ["src/**/*.ts", "vitest.config.ts", "/features/support/**/*.ts"]

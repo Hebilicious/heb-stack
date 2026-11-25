@@ -157,7 +157,8 @@ function entryLine(entry: HistoryEntry): string {
         :disabled="draftValue === null"
         @click="askNext"
       >Next prime</button>
-      <button v-if="retryable" class="button" type="button" @click="retry">Retry</button>
+      <button v-if="retryable" class="button" type="button" @click="retry"
+      >Retry</button>
     </div>
     <p v-if="notice !== null" class="notice" role="alert">{{ notice }}</p>
     <section aria-labelledby="history-title" class="history">
@@ -178,7 +179,9 @@ function entryLine(entry: HistoryEntry): string {
           :data-prime="entry.prime"
         >
           <span>{{ entryLine(entry) }}</span>
-          <time class="time" :datetime="entry.checkedAt">{{ checkedAtLabel(entry.checkedAt) }}</time>
+          <time class="time" :datetime="entry.checkedAt">{{
+            checkedAtLabel(entry.checkedAt)
+          }}</time>
         </li>
       </ol>
       <p v-else class="empty">No checks yet.</p>

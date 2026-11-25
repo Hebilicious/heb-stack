@@ -40,11 +40,10 @@
     "oxlint-tsgolint": "catalog:",
     "typescript": "catalog:",
     "ultracite": "catalog:",
-    "vite": "catalog:",
-    "vitest": "catalog:",
+    "vite-plus": "catalog:",
     "vize": "catalog:",
     "vue": "catalog:",
     "xstate": "catalog:"
   },
-  "packageManager": "pnpm@12.8.1"
+  "packageManager": "pnpm@12.23.0"
 }

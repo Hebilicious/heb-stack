@@ -10,7 +10,7 @@ import { PRIMES_RPC_PATH } from "@heb-stack/rpc";
 import type { PrimesApi } from "@heb-stack/rpc";
 import { newHttpBatchRpcSession } from "capnweb";
 import { Effect, Layer, Schema } from "effect";
-import { vi } from "vitest";
+import { vi } from "vite-plus/test";
 
 import {
   decodeAdapterAnswer,

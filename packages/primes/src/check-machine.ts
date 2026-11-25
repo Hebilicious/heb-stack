@@ -1,5 +1,5 @@
-import { fromEffect, setupEffect } from "@xstate/effect";
-import { Option, Schema } from "effect";
+import { causeFromError, createEffectLogic, setupEffect } from "@xstate/effect";
+import { Cause, Option, Schema } from "effect";
 import { standardSchemaValidator } from "xstate/validation";
 
 import { checkNumber } from "./computation.ts";
@@ -27,14 +27,20 @@ const CheckContextSchema = Schema.Struct({
   ticket: Schema.Int,
 });
 
-/** BOUNDARY: An invoked Effect actor fails with its typed failure or a squashed defect, which arrive as `unknown`. */
+/**
+ * BOUNDARY: An invoked Effect actor fails with an `EffectFailure` that carries the Effect's Cause, which arrives as
+ * `unknown`. Its typed failure, or else its defect, is decoded.
+ */
 function checkFailure(error: unknown): CheckFailure {
+  const failure = Cause.squash(causeFromError(error));
   return Option.getOrElse(
-    Schema.decodeUnknownOption(OutOfRangeSchema)(error),
+    Schema.decodeUnknownOption(OutOfRangeSchema)(failure),
     () =>
       CheckUnansweredSchema.make({
         reason:
-          error instanceof Error ? error.message : "The check did not answer.",
+          failure instanceof Error
+            ? failure.message
+            : "The check did not answer.",
       })
   );
 }
@@ -45,7 +51,7 @@ function checkFailure(error: unknown): CheckFailure {
  */
 export const checkMachine = setupEffect({
   actors: {
-    check: fromEffect({
+    check: createEffectLogic({
       effect: ({ input }) => checkNumber(input.n),
       schemas: {
         input: Schema.Struct({ n: Schema.Int }),

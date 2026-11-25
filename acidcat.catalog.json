@@ -4,22 +4,22 @@
   "description": "A prime checker: check a number, find the next prime, and keep a history of checks.",
   "targets": {
     "cli": {
-      "bindings": [
+      "surfaces": [
         "cli"
       ]
     },
     "mcp": {
-      "bindings": [
+      "surfaces": [
         "mcp"
       ]
     },
     "rpc": {
-      "bindings": [
+      "surfaces": [
         "hs:capnweb"
       ]
     },
     "web": {
-      "bindings": [
+      "surfaces": [
         "typescript",
         "webmcp"
       ]
@@ -39,6 +39,8 @@
         "properties": {
           "n": {
             "description": "The integer to check, from 2 to 2^53 − 1.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           }
         },
@@ -51,6 +53,8 @@
         "additionalProperties": true,
         "properties": {
           "n": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           },
           "prime": {
@@ -58,6 +62,8 @@
           },
           "smallestFactor": {
             "description": "The smallest factor greater than one; n itself when n is prime.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           }
         },
@@ -79,12 +85,18 @@
               "type": "string"
             },
             "max": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             },
             "min": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             },
             "n": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             }
           },
@@ -107,6 +119,8 @@
                 "additionalProperties": true,
                 "properties": {
                   "n": {
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
                     "type": "integer"
                   },
                   "prime": {
@@ -114,6 +128,8 @@
                   },
                   "smallestFactor": {
                     "description": "The smallest factor greater than one; n itself when n is prime.",
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
                     "type": "integer"
                   }
                 },
@@ -132,54 +148,56 @@
           "failure": {
             "anyOf": [
               {
-                "anyOf": [
-                  {
-                    "additionalProperties": true,
-                    "properties": {
-                      "_tag": {
-                        "enum": [
-                          "OutOfRange"
-                        ],
-                        "type": "string"
-                      },
-                      "max": {
-                        "type": "integer"
-                      },
-                      "min": {
-                        "type": "integer"
-                      },
-                      "n": {
-                        "type": "integer"
-                      }
-                    },
-                    "required": [
-                      "_tag",
-                      "max",
-                      "min",
-                      "n"
+                "additionalProperties": true,
+                "properties": {
+                  "_tag": {
+                    "enum": [
+                      "OutOfRange"
                     ],
-                    "type": "object"
+                    "type": "string"
                   },
-                  {
-                    "additionalProperties": true,
-                    "properties": {
-                      "_tag": {
-                        "enum": [
-                          "CheckUnanswered"
-                        ],
-                        "type": "string"
-                      },
-                      "reason": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "_tag",
-                      "reason"
-                    ],
-                    "type": "object"
+                  "max": {
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
+                    "type": "integer"
+                  },
+                  "min": {
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
+                    "type": "integer"
+                  },
+                  "n": {
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
+                    "type": "integer"
                   }
-                ]
+                },
+                "required": [
+                  "_tag",
+                  "max",
+                  "min",
+                  "n"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": true,
+                "properties": {
+                  "_tag": {
+                    "enum": [
+                      "CheckUnanswered"
+                    ],
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "_tag",
+                  "reason"
+                ],
+                "type": "object"
               },
               {
                 "type": "null"
@@ -189,6 +207,8 @@
           "n": {
             "anyOf": [
               {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
                 "type": "integer"
               },
               {
@@ -226,6 +246,8 @@
         "properties": {
           "cleared": {
             "description": "How many entries the clear removed.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           }
         },
@@ -274,6 +296,8 @@
                   "type": "string"
                 },
                 "n": {
+                  "maximum": 9007199254740991,
+                  "minimum": -9007199254740991,
                   "type": "integer"
                 },
                 "prime": {
@@ -311,6 +335,8 @@
         "properties": {
           "after": {
             "description": "The integer to search above, from 1 to 2^53 − 2.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           }
         },
@@ -323,10 +349,14 @@
         "additionalProperties": true,
         "properties": {
           "after": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           },
           "prime": {
             "description": "The smallest prime greater than after.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
             "type": "integer"
           }
         },
@@ -347,12 +377,18 @@
               "type": "string"
             },
             "max": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             },
             "min": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             },
             "n": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
               "type": "integer"
             }
           },

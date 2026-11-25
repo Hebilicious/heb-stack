@@ -19,7 +19,7 @@ test("an agent in the page calls primes.next through WebMCP", async ({
       throw new Error("primes.next is not registered");
     }
     return {
-      answer: await context.executeTool(next, JSON.stringify({ after: 97 })),
+      answer: await context.executeTool(next, { after: 97 }),
       names: tools.map((tool) => tool.name).toSorted(),
     };
   });

@@ -1,12 +1,14 @@
 /** The holds of the conformance fixture: calls to `fixture.hold` that wait until `fixture.release` lets them go. */
 import { Context, Deferred, Effect } from "effect";
 
+import type { Marker } from "./marker.ts";
+
 /** The calls to `fixture.hold` that hold now, shared by every session of one host. */
 export class Holds extends Context.Service<
   Holds,
   {
-    /** Hold until `release` releases the key; with a marker, mark that the hold began. An interruption ends it. */
     readonly held: Effect.Effect<readonly string[]>;
+    /** Hold until `release` releases the key; with a marker, mark the hold while it lasts. An interruption ends it. */
     readonly hold: (
       key: string,
       marker: string | undefined
@@ -20,16 +22,13 @@ interface Hold {
   readonly released: Deferred.Deferred<null>;
 }
 
-/**
- * The holds of one host. `mark` writes a marker file, which only the command line gives: each of its calls is its own
- * process, so the checks learn that a hold began from the file rather than from `fixture.held`.
- */
-export const makeHolds = (mark?: (path: string) => Effect.Effect<void>) =>
+/** The holds of one host. With a marker, a hold writes its marker file when it begins and removes it when it ends. */
+export const makeHolds = (marker?: Marker) =>
   Effect.sync(() => {
     const holding = new Set<Hold>();
     return Holds.of({
       held: Effect.sync(() => [...holding].map((entry) => entry.key)),
-      hold: (key, marker) =>
+      hold: (key, path) =>
         Effect.acquireUseRelease(
           Effect.map(Deferred.make<null>(), (released) => {
             const entry = { key, released };
@@ -38,15 +37,20 @@ export const makeHolds = (mark?: (path: string) => Effect.Effect<void>) =>
           }),
           (entry) =>
             Effect.andThen(
-              marker === undefined || mark === undefined
+              path === undefined || marker === undefined
                 ? Effect.void
-                : mark(marker),
+                : marker.write(path),
               Deferred.await(entry.released)
             ),
           (entry) =>
-            Effect.sync(() => {
-              holding.delete(entry);
-            })
+            Effect.andThen(
+              Effect.sync(() => {
+                holding.delete(entry);
+              }),
+              path === undefined || marker === undefined
+                ? Effect.void
+                : marker.remove(path)
+            )
         ),
       release: (key) =>
         Effect.forEach(

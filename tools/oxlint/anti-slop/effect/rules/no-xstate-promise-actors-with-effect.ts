@@ -10,7 +10,7 @@ export const noXstatePromiseActorsWithEffectRule = defineRule({
     },
     messages: {
       mixedOwnership:
-        "Use an invoked fromEffect actor from @xstate/effect to preserve typed errors, requirements, and state-owned interruption. Provide its services through the owning Layer.",
+        "Use an invoked createEffectLogic actor from @xstate/effect to preserve typed errors, requirements, and state-owned interruption. Provide its services through the owning Layer.",
     },
   },
   create(context) {

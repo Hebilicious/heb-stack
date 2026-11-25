@@ -1,22 +1,15 @@
 /** The conformance fixture as a command line, run the way `cli` runs: `Cli.command`, then `NodeCli.runCommand`. */
-import { writeFile } from "node:fs/promises";
-
 import { Cli } from "@acid-cat/core-effect";
 import { NodeCli } from "@acid-cat/core-effect/node";
-import { Effect } from "effect";
 import { Command } from "effect/cli";
 
 import { fixture, fixtureLayer } from "./fixture.capabilities.ts";
+import { fileMarker } from "./marker.ts";
 
-/** Each call is its own process, so a hold tells the checks it began by writing its marker file. */
-const writeMarker = (file: string) =>
-  Effect.promise(async () => {
-    await writeFile(file, "");
-  });
-
+// Each call is its own process, so holds and subscriptions tell the checks they began and ended through marker files.
 NodeCli.runCommand(
   Cli.command(fixture, { name: "fixture", version: "0.0.0" }).pipe(
-    Command.provide(fixtureLayer(writeMarker))
+    Command.provide(fixtureLayer(fileMarker))
   ),
   { version: "0.0.0" }
 );
