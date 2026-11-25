@@ -22,21 +22,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # rustup installs the toolchain rust-toolchain.toml names, with its profile, components and target. proto then
+      # finds it installed. When proto installed it, the runner's toolchain had no rustc and no cargo.
+      - run: |
+          rustup toolchain install
+          ls "$(rustc --print sysroot)/bin"
+
       # proto installs the Node, pnpm and moon that .prototools pins.
       - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
-        env:
-          PROTO_LOG: debug
         with:
           auto-install: true
-          cache-version: diag2
-
-      - run: |
-          rustup toolchain list -v; ls -la ~/.rustup/toolchains; ls ~/.rustup/toolchains/1.99*/bin || true
-          ls ~/.rustup/toolchains/1.99*/lib/rustlib || true; cat ~/.rustup/toolchains/1.99*/lib/rustlib/components || true
-          cat ~/.rustup/settings.toml; env | grep -i -E "rust|cargo|proto" | sort
-        continue-on-error: true
-        env:
-          RUSTUP_AUTO_INSTALL: "0"
 
       - run: pnpm install --frozen-lockfile
 
