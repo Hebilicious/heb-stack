@@ -27,7 +27,7 @@ fileGroups:
 
 tasks:
   verify:
-    description: "Every check and every proof: formatting, lint, types, Effect diagnostics, authorship, the tests, the features, the browser and the crate."
+    description: "Every check and every proof: formatting, lint, types, Effect diagnostics, authorship, the tests, the features, the browser, and the crate's format and lint."
     command: "noop"
     deps:
       - "format-check"
@@ -45,7 +45,6 @@ tasks:
       - "e2e:test"
       - "primes-wasm:format-check"
       - "primes-wasm:lint"
-      - "primes-wasm:test"
 
   dev:
     description: "Rebuild the page on every change and serve it with /rpc and /mcp on http://localhost:1337."

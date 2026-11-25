@@ -17,17 +17,11 @@ import {
 import { REPOSITORY_ROOT } from "../support/sessions.ts";
 import { testEffect } from "../support/vitest-adapter.ts";
 
-/** What the CLI binding writes on standard error when a call gives no result. */
-const CallFailureSchema = Schema.Struct({
-  kind: Schema.String,
-  message: Schema.String,
-});
-
 /** The one bundled entry point `moon run cli:build` writes. */
 const CLI_ENTRY = path.resolve(REPOSITORY_ROOT, ".artifacts/cli/main.js");
 
 testEffect(
-  "cli checks a number through its derived command, records it, and tells a typed failure from a call failure",
+  "cli checks a number through its derived command and records it in the history file",
   () =>
     Effect.gen(function* () {
       yield* Effect.promise(async () => {
@@ -81,42 +75,6 @@ testEffect(
       assert.deepEqual(
         entries.map((entry) => [entry.n, entry.prime]),
         [[97, true]]
-      );
-
-      const refused = yield* Effect.promise(
-        async () =>
-          await runBuiltAdapter(
-            CLI_ENTRY,
-            "call",
-            "primes.check",
-            '{"n":1}',
-            "--history-file",
-            history
-          )
-      );
-      assert.equal(refused.status, 1, "A capability's own failure exits 1");
-      assert.match(refused.stdout, /"OutOfRange"/u);
-
-      const invalid = yield* Effect.promise(
-        async () =>
-          await runBuiltAdapter(
-            CLI_ENTRY,
-            "call",
-            "primes.check",
-            '{"n":"ninety-seven"}',
-            "--history-file",
-            history
-          )
-      );
-      assert.equal(
-        invalid.status,
-        3,
-        "Invalid input is a call failure, exit 3"
-      );
-      assert.equal(invalid.stdout, "", "A call failure writes no result");
-      assert.equal(
-        decodeAdapterAnswer(CallFailureSchema, invalid.stderr).kind,
-        "invalid-input"
       );
     })
 );

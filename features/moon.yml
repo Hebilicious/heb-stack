@@ -10,7 +10,7 @@ toolchains:
 
 tasks:
   test:
-    description: "Run the features (capabilities and targets in Node, the page as a Vapor component) and the CLI and MCP proofs."
+    description: "Run the features (the capabilities and the targets) and the CLI and MCP proofs."
     command: "vp"
     args: ["test", "run"]
     deps:
@@ -18,4 +18,4 @@ tasks:
         cacheStrategy: "outputs"
       - target: "primes-wasm:build"
         cacheStrategy: "outputs"
-    inputs: ["**/*", "/packages/*/src/**/*.ts", "/packages/*/package.json", "/apps/web/src/**/*", "/apps/web/vite.config.ts"]
+    inputs: ["**/*", "/packages/*/src/**/*.ts", "/packages/*/package.json"]

@@ -27,23 +27,6 @@ export function scopedSession<
   );
 }
 
-/** An in-memory `Storage`, so a browser-runtime Layer runs without a browser. */
-export function memoryStorage(): Pick<
-  Storage,
-  "getItem" | "setItem" | "removeItem"
-> {
-  const values = new Map<string, string>();
-  return {
-    getItem: (key) => values.get(key) ?? null,
-    removeItem: (key) => {
-      values.delete(key);
-    },
-    setItem: (key, value) => {
-      values.set(key, value);
-    },
-  };
-}
-
 /* BOUNDARY: Decode an adapter's wire answer with the schema that owns its shape. */
 export function decode<Value>(
   schema: Schema.Codec<Value, unknown>,

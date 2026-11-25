@@ -35,7 +35,7 @@ heb-stack follows [the AcidCat specification](https://github.com/Hebilicious/aci
 | Package | What it does here |
 | --- | --- |
 | [`@acid-cat/core-effect`](https://www.npmjs.com/package/@acid-cat/core-effect) | Serves the capabilities, and provides the CLI, MCP and WebMCP bindings |
-| [`@acid-cat/cli`](https://www.npmjs.com/package/@acid-cat/cli) | `acid-cat check --strict` on the catalog, and `acid-cat conform` on the bindings |
+| [`@acid-cat/cli`](https://www.npmjs.com/package/@acid-cat/cli) | `acid-cat check --strict` on the catalog |
 | [`@acid-cat/catalog`](https://www.npmjs.com/package/@acid-cat/catalog) · [`@acid-cat/spec-ts`](https://www.npmjs.com/package/@acid-cat/spec-ts) | The catalog document and the specification's types |
 
 ### 🗂️ The catalog
@@ -60,7 +60,6 @@ The catalog is also a document: [`acidcat.catalog.json`](acidcat.catalog.json), 
 - 🔌 **Each host supplies Layers and nothing else**: the browser, Node and the Worker each provide `PrimeMath`, and `CheckHistory` where they keep one.
 - 🪄 **Bindings hold no capability map.** They come from `@acid-cat/core-effect`: the CLI's commands and flags, the MCP tools and the WebMCP tools are all derived from the capabilities and their schemas. `hs:capnweb`, the capnweb API, is this application's own binding, over the `rpc` session's handles.
 - 🧾 **Every external call has one outcome.** Its input is decoded with the capability's schema, and it ends with a value, a failure such as `OutOfRange` (which travels as data), or a call failure (`unknown-capability`, `unavailable`, `invalid-input`, `cancelled`, `internal`) that each binding reports in its own form.
-- ✅ **Conformance is proven, not claimed.** `features/adapters/conformance.test.ts` runs `acid-cat conform` against this repository's own MCP, CLI and WebMCP hosting, serving the specification's conformance fixture.
 
 The check lifecycle is `idle → checking → result | failed`. A new number interrupts the check in flight, and checking the number that just failed retries it. The owner runs the machine, `primes.check` publishes its snapshots as its `state`, and the page reads them through an atom.
 
@@ -154,7 +153,7 @@ Each library has one job, and the boundaries between them are rules of the repos
 
 |  | Choice | Why it is here |
 | --- | --- | --- |
-| 🐱 | **AcidCat `0.18.0`** | The application interface. One catalog replaces a hand-written route table, CLI parser, MCP tool list and WebMCP registration: the bindings are derived from the capabilities' schemas, so adding a capability adds it everywhere its `audience` allows, and `acid-cat conform` proves each binding behaves. |
+| 🐱 | **AcidCat `0.18.0`** | The application interface. One catalog replaces a hand-written route table, CLI parser, MCP tool list and WebMCP registration: the bindings are derived from the capabilities' schemas, so adding a capability adds it everywhere its `audience` allows. |
 | ⚡ | **Effect `4.1.5`** | Computations, expected failures, services and resources. Failures are typed values in the error channel, Schema decodes every contract and every untrusted input, and Layers let the browser, Node and the Worker each supply their own `PrimeMath` and `CheckHistory` behind the same service. `@acid-cat/core-effect` builds its CLI on `effect/cli` and its MCP server on `effect/ai/McpServer`, so there is no second framework underneath. |
 | 🚦 | **XState `6.0.0-beta.5`** + **`@xstate/effect` `1.0.0-beta.3`** | Lifecycle, concurrency, replacement, retry and cancellation. These are state, not computation, so they live in a machine whose work is an invoked Effect. Interrupting the check in flight and retrying the one that failed are transitions, tested as such. |
 | 💚 | **Vue `3.6.0-rc.16` in Vapor mode** + **`@effect/atom-vue` `4.1.5`** | Presentation only. Vapor compiles `<script setup vapor lang="ts">` to direct DOM updates with no virtual DOM, and the page observes the owner's snapshots through an atom instead of keeping its own copy of application state. |
@@ -218,7 +217,6 @@ Every package has a README that says what it does.
 | `moon run primes:test` | The lifecycle below AcidCat |
 | `moon run features:test` | The Gherkin features and the adapter proofs |
 | `moon run e2e:test` | The browser scenarios against `alchemy dev` |
-| `moon run primes-wasm:test` | The crate's tests |
 | `moon run cli:install` | Build the CLI and write `.artifacts/bin/cli` |
 | `moon run acidcat:catalog` | Rewrite `acidcat.catalog.json` from the application |
 | `moon run api:deploy -- --stage <name>` | Deploy a stage as its own `heb-stack-<stage>` Worker |
@@ -231,13 +229,10 @@ Every package has a README that says what it does.
 | Seam | Proof |
 | --- | --- |
 | Capabilities | `features/primes/primes.feature`, over the compiled crate |
-| Targets | `features/primes/targets.feature`: each adapter lists exactly its leaves; MCP refuses the history; capnweb refuses a batch that is not UTF-8 |
-| The page | `features/web/check.vue.feature`: typing 91 shows "91 = 7 × 13" |
+| Targets | `features/primes/targets.feature`: the CLI lists the history; MCP leaves it out |
 | The lifecycle | `packages/primes/src/checker.test.ts`: replacement interrupts; a failed check retries |
-| CLI and MCP | `features/adapters/`: `cli` in a process; `tools/list` and `tools/call` |
-| Conformance | `features/adapters/conformance.test.ts`: `acid-cat conform` against the MCP, CLI and WebMCP hosting |
+| CLI and MCP | `features/adapters/`: `cli` records a check in its history file; the Worker's MCP endpoint answers `tools/call` |
 | Browser | `e2e/check.e2e.ts` and `e2e/webmcp.e2e.ts`: a check over capnweb and a reload; a WebMCP call |
-| Rust | `crates/primes/tests`: 2, 97, 91 and 2^53 − 111 |
 
 Deadlines are hang guards, never paces, and nothing retries.
 

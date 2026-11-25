@@ -31,7 +31,6 @@ catalog:
   alchemy: 2.0.0-beta.87
   capnweb: 0.13.1
   effect: 4.1.5
-  happy-dom: 21.0.4
   lefthook: 2.2.2
   oxfmt: 0.80.0
   oxlint: 1.95.0

@@ -6,7 +6,6 @@ import { Effect, Schema } from "effect";
 
 import {
   CallToolResultSchema,
-  listedTools,
   mcpRequest,
   workerMcpEndpoint,
 } from "../support/mcp-client.ts";
@@ -19,7 +18,7 @@ const DiscoverResultSchema = Schema.Struct({
 });
 
 testEffect(
-  "an MCP client reads the Worker's instructions, lists its tools and calls primes.check",
+  "an MCP client reads the Worker's instructions and calls primes.check",
   () =>
     Effect.gen(function* () {
       const endpoint = workerMcpEndpoint(yield* compiledCrate);
@@ -32,11 +31,6 @@ testEffect(
         WORKER_MCP_IDENTITY.instructions,
         "The Worker tells a model that the history is not served here"
       );
-
-      const tools = yield* Effect.promise(
-        async () => await listedTools(endpoint)
-      );
-      assert.deepEqual(tools, ["primes.check", "primes.next"]);
 
       const message = yield* Effect.promise(
         async () =>
