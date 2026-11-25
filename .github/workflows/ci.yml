@@ -22,13 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # rustup installs the toolchain rust-toolchain.toml names, with its profile, components and target. proto then
-      # finds it installed. When proto installed it, the runner's toolchain had no rustc and no cargo.
-      - run: |
-          rustup toolchain install
-          ls "$(rustc --print sysroot)/bin"
-
-      # proto installs the Node, pnpm and moon that .prototools pins.
+      # proto installs the Node, pnpm, moon and Rust that .prototools pins.
       - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
         with:
           auto-install: true
