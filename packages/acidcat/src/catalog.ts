@@ -2,15 +2,15 @@ import { App } from "@acid-cat/core-effect";
 import { primeCapabilities } from "@heb-stack/primes";
 
 /**
- * What each session is for, with the bindings that serve it. `web` is the page: Vue and the WebMCP tools that drive
+ * What each session is for, with the surfaces that serve it. `web` is the page: Vue and the WebMCP tools that drive
  * it. `cli`, `mcp` and `rpc` are tool surfaces, and `hs:capnweb` is this application's own capnweb API. A capability
  * reaches a target only when its audience names it.
  */
 const targets = {
-  cli: { bindings: ["cli"] },
-  mcp: { bindings: ["mcp"] },
-  rpc: { bindings: ["hs:capnweb"] },
-  web: { bindings: ["typescript", "webmcp"] },
+  cli: { surfaces: ["cli"] },
+  mcp: { surfaces: ["mcp"] },
+  rpc: { surfaces: ["hs:capnweb"] },
+  web: { surfaces: ["typescript", "webmcp"] },
 } as const satisfies Record<string, App.Target>;
 
 export type SessionTarget = keyof typeof targets;

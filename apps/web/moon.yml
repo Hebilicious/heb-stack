@@ -3,7 +3,7 @@ layer: "application"
 
 project:
   title: "Web"
-  description: "The prime checker page: Vue Vapor, built by Vite and vize, styled with cssforge."
+  description: "The prime checker page: Vue Vapor, built by Vite+ and vize, styled with cssforge."
 
 toolchains:
   default: ["javascript", "node", "pnpm"]
@@ -13,7 +13,6 @@ fileGroups:
     - "src/**/*"
     - "index.html"
     - "cssforge.config.ts"
-    - "vize.config.ts"
     - "vite.config.ts"
     - "tsconfig.json"
     - "/packages/*/src/**/*.ts"
@@ -22,14 +21,14 @@ fileGroups:
 tasks:
   build:
     description: "Build the page into dist."
-    command: "vite"
+    command: "vp"
     args: ["build"]
     inputs: ["@group(sources)"]
     outputs: ["dist/**/*"]
 
   dev:
     description: "Rebuild the page into dist whenever a source changes."
-    command: "vite"
+    command: "vp"
     args: ["build", "--watch"]
     preset: "server"
 
@@ -43,7 +42,7 @@ tasks:
     description: "Lint the Vue components with vize, denying warnings."
     command: "vize"
     args: ["lint", "--max-warnings", "0", "src"]
-    inputs: ["src/**/*", "vize.config.ts"]
+    inputs: ["src/**/*", "vite.config.ts"]
 
   format:
     description: "Format the Vue components with vize."
@@ -56,4 +55,4 @@ tasks:
     description: "Check the Vue components' formatting with vize."
     command: "vize"
     args: ["fmt", "--check", "src/**/*.vue"]
-    inputs: ["src/**/*.vue", "vize.config.ts"]
+    inputs: ["src/**/*.vue", "vite.config.ts"]

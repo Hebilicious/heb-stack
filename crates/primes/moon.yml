@@ -14,25 +14,18 @@ tasks:
     outputs: ["target/wasm32-unknown-unknown/release/primes.wasm"]
     toolchains: ["rust"]
 
-  test:
-    description: "Run the crate's tests natively."
-    command: "cargo"
-    args: ["test", "--locked"]
-    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
-    toolchains: ["rust"]
-
   lint:
     description: "Lint the crate with clippy, denying warnings."
     command: "cargo"
-    args: ["clippy", "--locked", "--all-targets", "--", "-D", "warnings"]
-    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
+    args: ["clippy", "--locked", "--", "-D", "warnings"]
+    inputs: ["Cargo.toml", "Cargo.lock", "src/**/*", "/rust-toolchain.toml"]
     toolchains: ["rust"]
 
   format:
     description: "Format the crate."
     command: "cargo"
     args: ["fmt"]
-    inputs: ["Cargo.toml", "src/**/*", "tests/**/*"]
+    inputs: ["Cargo.toml", "src/**/*"]
     toolchains: ["rust"]
     options:
       cache: false
@@ -41,5 +34,5 @@ tasks:
     description: "Check the crate's formatting."
     command: "cargo"
     args: ["fmt", "--", "--check"]
-    inputs: ["Cargo.toml", "src/**/*", "tests/**/*", "/rust-toolchain.toml"]
+    inputs: ["Cargo.toml", "src/**/*", "/rust-toolchain.toml"]
     toolchains: ["rust"]

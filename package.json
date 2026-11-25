@@ -7,13 +7,10 @@
   "devDependencies": {
     "@acid-cat/catalog": "catalog:",
     "@acid-cat/cli": "catalog:",
-    "@acid-cat/core-effect": "catalog:",
-    "@acid-cat/spec-ts": "catalog:",
     "@cucumber/cucumber-expressions": "catalog:",
     "@cucumber/gherkin": "catalog:",
     "@cucumber/messages": "catalog:",
     "@cucumber/tag-expressions": "catalog:",
-    "@effect/atom-vue": "catalog:",
     "@effect/platform-node": "catalog:",
     "@effect/tsgo": "catalog:",
     "@gommage/cli": "catalog:",
@@ -29,22 +26,18 @@
     "@oxlint/plugins": "catalog:",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
-    "@vizejs/vite-plugin": "catalog:",
     "@xstate/effect": "catalog:",
     "capnweb": "catalog:",
     "effect": "catalog:",
-    "happy-dom": "catalog:",
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "typescript": "catalog:",
     "ultracite": "catalog:",
-    "vite": "catalog:",
-    "vitest": "catalog:",
+    "vite-plus": "catalog:",
     "vize": "catalog:",
-    "vue": "catalog:",
     "xstate": "catalog:"
   },
-  "packageManager": "pnpm@12.8.1"
+  "packageManager": "pnpm@12.23.0"
 }

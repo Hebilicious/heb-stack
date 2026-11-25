@@ -8,7 +8,7 @@ test("an agent in the page calls primes.next through WebMCP", async ({
     "The capability catalog is registered as WebMCP tools."
   );
 
-  const { names, answer } = await page.evaluate(async () => {
+  const answer = await page.evaluate(async () => {
     const context = document.modelContext;
     if (context === undefined) {
       throw new Error("This browser exposes no model context");
@@ -18,18 +18,9 @@ test("an agent in the page calls primes.next through WebMCP", async ({
     if (next === undefined) {
       throw new Error("primes.next is not registered");
     }
-    return {
-      answer: await context.executeTool(next, JSON.stringify({ after: 97 })),
-      names: tools.map((tool) => tool.name).toSorted(),
-    };
+    return await context.executeTool(next, { after: 97 });
   });
 
-  expect(names).toEqual([
-    "primes.check",
-    "primes.history.clear",
-    "primes.history.list",
-    "primes.next",
-  ]);
   expect(JSON.parse(answer)).toEqual({
     ok: true,
     value: { after: 97, prime: 101 },

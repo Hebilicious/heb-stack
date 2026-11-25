@@ -11,7 +11,7 @@ export function vaporComponent(component: unknown): VaporComponent {
     component.__vapor !== true
   ) {
     throw new TypeError(
-      "The component was not compiled for Vapor; check compiler.vapor in vize.config.ts"
+      "The component was not compiled for Vapor; check vue.compiler.vapor in vite.config.ts"
     );
   }
   // SAFETY: `defineVaporComponent` marks exactly the components it defines with `__vapor: true`, checked above.

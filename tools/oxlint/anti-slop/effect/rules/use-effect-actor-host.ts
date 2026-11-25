@@ -48,7 +48,7 @@ export const useEffectActorHostRule = defineRule({
       rawActor:
         "Create Effect-backed actors with createEffectActor from @xstate/effect inside the owning Layer/Scope.",
       inlineEffect:
-        "Declare Effect actions in setupEffect({ actions }) and enqueue the named action. Use an invoked fromEffect actor for work that controls settlement.",
+        "Declare Effect actions in setupEffect({ actions }) and enqueue the named action. Use an invoked createEffectLogic actor for work that controls settlement.",
     },
   },
   create(context) {

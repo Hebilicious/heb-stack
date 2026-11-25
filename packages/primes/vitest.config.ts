@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus/test/config";
 
 /** The domain's own tests: the lifecycle below AcidCat. Nothing retries. */
 export default defineConfig({

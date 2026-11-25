@@ -1,6 +1,6 @@
 import { TestStepResultStatus } from "@cucumber/messages";
 import { capabilityIds } from "@heb-stack/acidcat";
-import { test } from "vitest";
+import { test } from "vite-plus/test";
 
 import { effectTests } from "./effect-test.ts";
 import type { ExecutableFeatureManifest } from "./manifest.ts";

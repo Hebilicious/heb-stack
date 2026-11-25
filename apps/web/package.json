@@ -13,6 +13,6 @@
   "devDependencies": {
     "@hebilicious/cssforge-unplugin": "catalog:",
     "@vizejs/vite-plugin": "catalog:",
-    "vite": "catalog:"
+    "vite-plus": "catalog:"
   }
 }

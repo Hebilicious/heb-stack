@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@alchemy.run/cloudflare": "catalog:",
     "@heb-stack/edge-runtime": "workspace:*",
     "@heb-stack/rpc": "workspace:*",
     "alchemy": "catalog:",

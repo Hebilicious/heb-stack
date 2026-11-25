@@ -6,49 +6,52 @@ packages:
 
 # Every dependency is pinned exactly, once, here. Workspace packages name `catalog:` and never a version.
 catalog:
-  "@acid-cat/catalog": 0.6.1
-  "@acid-cat/cli": 0.6.1
-  "@acid-cat/core-effect": 0.6.1
-  "@acid-cat/spec-ts": 0.6.1
-  "@cloudflare/workers-types": 5.20261001.1
-  "@cucumber/cucumber-expressions": 20.1.0
-  "@cucumber/gherkin": 42.0.1
-  "@cucumber/messages": 34.2.1
-  "@cucumber/tag-expressions": 11.0.1
-  "@effect/atom-vue": 4.0.0
-  "@effect/platform-node": 4.0.0
-  "@effect/platform-node-shared": 4.0.0
-  "@effect/tsgo": 0.47.2
+  "@acid-cat/catalog": 0.18.0
+  "@acid-cat/cli": 0.18.0
+  "@acid-cat/core-effect": 0.18.0
+  "@acid-cat/spec-ts": 0.18.0
+  "@alchemy.run/cloudflare": 2.0.0-beta.87
+  "@cloudflare/workers-types": 5.20261125.1
+  "@cucumber/cucumber-expressions": 20.2.0
+  "@cucumber/gherkin": 43.0.0
+  "@cucumber/messages": 35.0.0
+  "@cucumber/tag-expressions": 11.2.0
+  "@effect/atom-vue": 4.1.5
+  "@effect/platform-node": 4.1.5
+  "@effect/platform-node-shared": 4.1.5
+  "@effect/tsgo": 0.73.4
   "@gommage/cli": 0.1.0
-  "@hebilicious/cssforge": 0.9.0
-  "@hebilicious/cssforge-unplugin": 0.1.1
-  "@oxlint/plugins": 1.86.0
-  "@playwright/test": 1.63.0
-  "@types/node": 26.6.3
-  "@vizejs/vite-plugin": 0.429.2
-  "@xstate/effect": 0.1.0-alpha.6
-  alchemy: 2.0.0-beta.81
-  capnweb: 0.12.0
-  effect: 4.0.0
-  happy-dom: 20.14.5
-  lefthook: 2.1.15
-  oxfmt: 0.71.0
-  oxlint: 1.86.0
-  oxlint-tsgolint: 7.0.2003
+  "@hebilicious/cssforge": 0.11.1
+  "@hebilicious/cssforge-unplugin": 0.1.3
+  "@oxlint/plugins": 1.95.0
+  "@playwright/test": 1.65.1
+  "@types/node": 26.6.9
+  "@vizejs/vite-plugin": 0.795.0
+  "@xstate/effect": 1.0.0-beta.3
+  alchemy: 2.0.0-beta.87
+  capnweb: 0.13.1
+  effect: 4.1.5
+  lefthook: 2.2.2
+  oxfmt: 0.80.0
+  oxlint: 1.95.0
+  oxlint-tsgolint: 7.0.2008
   typescript: 7.0.2
-  ultracite: 7.12.2
-  vite: 8.3.2
-  vitest: 5.0.3
-  vize: 0.429.2
-  vue: 3.6.0-rc.10
-  xstate: 6.0.0-alpha.63
+  ultracite: 8.3.1
+  vite-plus: 1.8.0
+  vize: 0.795.0
+  vue: 3.6.0-rc.16
+  xstate: 6.0.0-beta.5
 
 overrides:
+  # Vite+ installs its core as `vite` and pins the Vitest it bundles. Every plugin and runner that asks for `vite` or
+  # `vitest` resolves to those same copies, so the build, the dev server and `vp test` load one Vite and one Vitest.
+  vite: "npm:@voidzero-dev/vite-plus-core@8.3.8001"
+  vitest: 5.1.1
   # One XState core for every consumer, the one @xstate/effect pairs with.
   "xstate@*": "catalog:"
   # The platform-node-shared of our platform-node, at the effect version we pin; otherwise it dedupes to the newer one
   # @acid-cat/cli brings, which needs a newer effect.
-  "@effect/platform-node@4.0.0>@effect/platform-node-shared": "catalog:"
+  "@effect/platform-node@4.1.5>@effect/platform-node-shared": "catalog:"
 
 allowBuilds:
   esbuild: true
@@ -58,18 +61,22 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - "@acid-cat/*"
-  - "@effect/atom-vue@4.0.0"
-  - "@effect/platform-node-shared@4.0.0"
-  - "@effect/platform-node@4.0.0"
-  - "@effect/tsgo-darwin-arm64@0.47.2"
-  - "@effect/tsgo-darwin-x64@0.47.2"
-  - "@effect/tsgo-linux-arm64@0.47.2"
-  - "@effect/tsgo-linux-arm@0.47.2"
-  - "@effect/tsgo-linux-x64@0.47.2"
-  - "@effect/tsgo-win32-arm64@0.47.2"
-  - "@effect/tsgo-win32-x64@0.47.2"
-  - "@effect/tsgo@0.47.2"
-  - "@xstate/effect@0.1.0-alpha.6"
-  - effect@4.0.0
-  - vite@8.3.2
-  - "@cloudflare/workers-types@5.20261001.1"
+  - "@cloudflare/workers-types@5.20261125.1"
+  - "@types/node@26.6.9"
+  - "@vizejs/native-darwin-arm64@0.795.0"
+  - "@vizejs/native-darwin-x64@0.795.0"
+  - "@vizejs/native-linux-arm64-gnu@0.795.0"
+  - "@vizejs/native-linux-arm64-musl@0.795.0"
+  - "@vizejs/native-linux-x64-gnu@0.795.0"
+  - "@vizejs/native-linux-x64-musl@0.795.0"
+  - "@vizejs/native-win32-arm64-msvc@0.795.0"
+  - "@vizejs/native-win32-x64-msvc@0.795.0"
+  - "@vizejs/native@0.795.0"
+  - "@vizejs/unplugin@0.795.0"
+  - "@vizejs/vite-plugin@0.795.0"
+  - vize@0.795.0
+
+permissions:
+  # Ultracite ships agent skills; skills are installed into .agents/skills on purpose, never by a dependency.
+  ultracite:
+    skills: false

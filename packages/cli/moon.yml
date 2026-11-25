@@ -11,7 +11,7 @@ toolchains:
 tasks:
   build:
     description: "Bundle the command line into the one Node entry point a caller runs."
-    command: "vite"
+    command: "vp"
     args: ["build"]
     inputs: ["src/**/*.ts", "vite.config.ts", "package.json", "/packages/*/src/**/*.ts", "/packages/*/package.json"]
     outputs: ["/.artifacts/cli/**/*"]
